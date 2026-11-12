@@ -20,7 +20,7 @@ Si aparece un desmonte, la primera lectura mala pone la parcela en revisión. La
 
 **[1:05 · Demo — replay de 2025]**
 
-En la demo repetimos el 2025 de dos parcelas reales en un minuto: una cobra todos los meses; la otra se desmonta en agosto y el contrato corta solo.
+En la demo repetimos el 2025 de dos parcelas reales en un minuto: una cobra todos los meses; en la otra aparece el desmonte y el contrato corta solo.
 
 **[1:20 · Por qué blockchain]**
 
