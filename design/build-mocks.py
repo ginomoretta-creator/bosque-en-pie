@@ -26,8 +26,16 @@ def inline_assets(html):
     cache = {}
     return re.sub(r'(assets/[\w/.-]+\.(?:jpg|png))', lambda m: cache.setdefault(m.group(1), data(m.group(1))), html)
 
+def icon_symbols():
+    """Cada assets/iconos/<nombre>.svg pasa a <symbol id="ic-<nombre>">; el mock lo usa con data-m="<nombre>"."""
+    out = []
+    for f in sorted((DESIGN / "assets/iconos").glob("*.svg")):
+        inner = re.search(r'<svg[^>]*>(.*)</svg>', f.read_text(encoding="utf-8"), re.S).group(1)
+        out.append(f'<symbol id="ic-{f.stem}" viewBox="0 0 48 48">{inner}</symbol>')
+    return '<svg width="0" height="0" style="position:absolute" aria-hidden="true">' + "".join(out) + "</svg>"
+
 vb_h, symbols = logo_symbols()
-src = (DESIGN / "mock-v4.src.html").read_text(encoding="utf-8").replace("{{LOGO_SIMBOLOS}}", symbols).replace("{{LOGO_H_VB}}", vb_h)
+src = (DESIGN / "mock-v4.src.html").read_text(encoding="utf-8").replace("{{LOGO_SIMBOLOS}}", symbols).replace("{{LOGO_H_VB}}", vb_h).replace("{{ICONOS}}", icon_symbols())
 (DESIGN / "mock-v4.html").write_text(src, encoding="utf-8")
 (DESIGN / "mock-v4-standalone.html").write_text(inline_assets(src), encoding="utf-8")
 for f in ("mock-v4.html", "mock-v4-standalone.html"):
