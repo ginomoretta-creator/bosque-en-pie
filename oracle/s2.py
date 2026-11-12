@@ -127,7 +127,7 @@ def _scene_from_item(item) -> Scene:
         tile=str(tile).replace("MGRS-", ""),
         cloud_cover=props.get("eo:cloud_cover"),
         crs=CRS.from_user_input(code),
-        hrefs={k: item.assets[k].href for k in ("red", "nir", "scl")},
+        hrefs={k: item.assets[k].href for k in ("red", "nir", "scl", "visual") if k in item.assets},
         bands=bands,
         boa_offset_applied=props.get("earthsearch:boa_offset_applied"),
         processing_baseline=props.get("s2:processing_baseline"),
@@ -247,6 +247,20 @@ def read_clip(scene: Scene, geom, scl_only: bool = False) -> Clip:
         return Clip(scene, empty, empty, scl, mask, tuple(tvals))
     np.savez_compressed(cache, red=red, nir=nir, scl=scl, mask=mask, transform=tvals)
     return Clip(scene, red, nir, scl, mask, tuple(tvals))
+
+
+def read_visual(scene: Scene, clip: Clip) -> np.ndarray | None:
+    """Color real (asset `visual`, 10 m) sobre la misma ventana del recorte. Devuelve (alto, ancho, 3) uint8."""
+    href = scene.hrefs.get("visual")
+    if not href:
+        return None
+    t = rasterio.Affine(*clip.transform)
+    h, w = clip.scl.shape
+    with rasterio.Env(**GDAL_ENV), rasterio.open(href) as ds:
+        col, row = ~ds.transform * (t.c, t.f)
+        win = Window(round(col), round(row), w, h)
+        arr = ds.read([1, 2, 3], window=win, boundless=True, fill_value=0)
+    return np.transpose(arr, (1, 2, 0))
 
 
 def best_scene(geom, start: str, end: str, tile: str | None = None,
