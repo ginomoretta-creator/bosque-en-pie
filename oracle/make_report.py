@@ -112,6 +112,7 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
     report = {
         "parcel": name,
         "parcelId": parcel_id,
+        "month": f"{year}-{month:02d}",
         "tObs": s_now.t_obs,
         "coverBps": res.cover_bps,
         "validBps": res.valid_bps,
