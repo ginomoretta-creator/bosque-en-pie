@@ -120,6 +120,13 @@ def _scene_from_item(item) -> Scene:
     for k in ("red", "nir", "scl"):
         rb = (item.assets[k].extra_fields.get("raster:bands") or [{}])[0]
         bands[k] = {"scale": rb.get("scale", 1.0), "offset": rb.get("offset", 0.0), "nodata": rb.get("nodata", 0)}
+        # Earth Search sirve los COG de L2A con el offset BOA (-1000 DN) ya aplicado, aunque raster:bands
+        # siga anunciando -0,1 y aunque `earthsearch:boa_offset_applied` a veces diga False (visto en
+        # S2B_20KNA_20250222_0_L2A: mismos DN que las imágenes con True, rojo ~430 sobre monte).
+        # Restarlo de nuevo da reflectancias negativas y NDVI > 1. Se usa offset 0 y se guarda el del catálogo.
+        if k in ("red", "nir"):
+            bands[k]["offset_catalogo"] = bands[k]["offset"]
+            bands[k]["offset"] = 0.0
     tile = props.get("grid:code") or props.get("s2:mgrs_tile") or item.id.split("_")[1]
     return Scene(
         item_id=item.id,

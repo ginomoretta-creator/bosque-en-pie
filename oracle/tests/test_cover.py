@@ -56,7 +56,7 @@ def test_ruido_aislado_y_manchas_chicas_no_cuentan():
 
 
 def test_caida_de_hojas_no_es_desmonte():
-    # Bajó 0,30 pero quedó en 0,50 (> 0,35): monte seco de invierno, no desmonte.
+    # Bajó 0,30 pero quedó en 0,50 (> 0,28): monte seco de invierno, no desmonte.
     res = compute_cover(**scene(ndvi_base=0.80, ndvi_now=0.50))
     assert res.cover_bps == 10000
 
@@ -101,7 +101,7 @@ def test_fuera_de_la_parcela_no_cuenta():
 
 
 def test_poco_monte_base_no_da_lectura():
-    res = compute_cover(**scene(ndvi_base=0.30, ndvi_now=0.30))
+    res = compute_cover(**scene(ndvi_base=0.20, ndvi_now=0.20))
     assert res.cover_bps is None
     assert "monte base visible insuficiente" in res.reason
 
@@ -135,3 +135,20 @@ def test_formas_distintas_falla():
     s["scl"] = s["scl"][:50]
     with pytest.raises(ValueError):
         compute_cover(**s)
+
+
+def test_offset_ya_aplicado_por_earth_search():
+    """El offset del catálogo no se resta: Earth Search ya lo aplicó (bug real de NDVI > 1, aun con la bandera en False)."""
+    from types import SimpleNamespace
+    from oracle.s2 import _scene_from_item
+
+    band = {"raster:bands": [{"scale": 0.0001, "offset": -0.1, "nodata": 0}], "proj:epsg": 32720}
+    assets = {k: SimpleNamespace(href=f"https://x/{k}.tif", extra_fields=band) for k in ("red", "nir", "scl")}
+    from datetime import datetime, timezone
+    item = SimpleNamespace(id="S2C_20KNA_20250531_0_L2A", datetime=datetime(2025, 5, 31, tzinfo=timezone.utc),
+                           assets=assets, properties={"earthsearch:boa_offset_applied": False, "proj:epsg": 32720})
+    s = _scene_from_item(item)
+    assert s.bands["red"]["offset"] == 0.0 and s.bands["red"]["offset_catalogo"] == -0.1
+    red = to_reflectance(np.array([292]), s.bands["red"]["scale"], s.bands["red"]["offset"])
+    nir = to_reflectance(np.array([2000]), s.bands["nir"]["scale"], s.bands["nir"]["offset"])
+    assert 0.7 < ndvi(red, nir)[0] < 0.8
