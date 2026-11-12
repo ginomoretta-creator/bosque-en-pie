@@ -6,395 +6,489 @@
 <title>Bosque en pie · Mock v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@200;300;400;600;700;800&family=Chivo+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-/* ---------- Tokens "Noche" (base para web/) ---------- */
+/* =========================================================
+   Tokens del Figma "Bosque en pie — Marca e interfaz"
+   Colección Color · modo Noche · Medidas · Estilos de texto
+   Nombres iguales a las variables de Figma para pasar a web/
+   ========================================================= */
 :root{
-  --bg:#0b110d; --surface:#111a14; --surface-2:#16211a; --line:#223027; --line-2:#2c3b31;
-  --text:#e9efe7; --muted:#8c9a8f; --faint:#5d6b61;
-  --green:#5fd38a; --green-dim:#1f3a29; --amber:#f2b53a; --amber-dim:#3a2f14; --red:#ef6a4a; --red-dim:#3b1d16;
-  --cream:#efeadf; --ink:#121512;
-  --sans:"Inter Tight",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
-  --r:10px;
+  /* base */
+  --background:#14120e; --foreground:#eee8db; --card:#1b1813; --muted:#221e18; --muted-foreground:#aba192;
+  --secondary:#2a251e; --border:#3a342a; --input:#8c8273; --primary:#eee8db; --primary-foreground:#14120e;
+  --signal:#ff5fb1; --halo:#0b0a08;
+  /* estados */
+  --standing-solid:#93ae74; --standing-bg:#232e1b; --standing-fg:#a9c38b;
+  --review-solid:#e2ae3c;   --review-bg:#2f2611;   --review-fg:#ebc062; --review-fill:#b8850f;
+  --lost-solid:#e29a78;     --lost-bg:#3d2920;     --lost-fg:#eead8f;   --lost-fill:#583a2a;
+  --nodata-solid:#9aa3ad;   --pending-solid:#8c8273;
+  /* medidas */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --radius:2px; --gutter:16px; --topbar:56px; --nav:64px;
+  --sans:"Archivo",system-ui,sans-serif; --mono:"Chivo Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#070b08;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:40px 24px 80px}
-.board-head{max-width:1500px;margin:0 auto 32px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:end}
-.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
-h1{font-size:40px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin-top:8px}
-.board-head p{color:var(--muted);font-size:15px;line-height:1.5;margin-top:10px;max-width:60ch}
-.changes{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;font-size:13px;line-height:1.55;color:var(--muted)}
-.changes b{color:var(--text);font-weight:600}
-.changes li{margin-left:16px}
-.warn{max-width:1500px;margin:0 auto 28px;border:1px dashed var(--amber);color:var(--amber);border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:12px}
-.ph{border-bottom:1px dashed var(--amber);cursor:help}
+body{background:var(--halo);color:var(--foreground);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:40px 24px 80px}
 
-.board{max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:28px;justify-content:flex-start}
-.slot{width:360px}
-.slot-label{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:8px;display:flex;justify-content:space-between}
-.slot-label em{color:var(--green);font-style:normal}
+/* ---------- Estilos de texto (mismos nombres que Figma) ---------- */
+.title-lg{font-weight:800;font-size:30px;line-height:36px;letter-spacing:-.01em}
+.title-md{font-weight:700;font-size:22px;line-height:28px}
+.title-sm{font-weight:700;font-size:17px;line-height:22px}
+.body-md{font-size:16px;line-height:24px}
+.body-sm{font-size:14px;line-height:20px}
+.body-sm-strong{font-size:14px;line-height:20px;font-weight:700}
+.mono-md{font-family:var(--mono);font-size:14px;line-height:20px}
+.mono-sm{font-family:var(--mono);font-size:12px;line-height:16px;letter-spacing:.04em;text-transform:uppercase}
+.data-xl{font-weight:800;font-size:80px;line-height:68px;letter-spacing:-.01em}
+.data-lg{font-weight:700;font-size:52px;line-height:50px;letter-spacing:-.01em}
+.data-md{font-weight:700;font-size:24px;line-height:28px}
+/* el desmonte adelgaza la cifra: data/xl/lost = Archivo Light */
+.data-xl.lost{font-weight:300} .data-lg.lost{font-weight:300} .data-xl.review{font-weight:600}
+.fg{color:var(--foreground)} .mf{color:var(--muted-foreground)}
+.c-standing{color:var(--standing-fg)} .c-review{color:var(--review-fg)} .c-lost{color:var(--lost-fg)}
 
-/* ---------- Teléfono ---------- */
-.phone{background:var(--bg);border:1px solid var(--line);border-radius:28px;overflow:hidden;min-height:740px;display:flex;flex-direction:column}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
-.logo{display:flex;gap:8px;align-items:center;font-weight:700;font-size:15px;letter-spacing:-.01em}
-.logo i{width:18px;height:18px;border-radius:50%;background:var(--green);display:inline-block;position:relative}
-.logo i::after{content:"";position:absolute;inset:5px 7px 3px;background:var(--bg);border-radius:2px}
-.logo span{color:var(--green)}
-.wallet{font-family:var(--mono);font-size:11px;border:1px solid var(--line-2);border-radius:999px;padding:5px 10px;color:var(--muted)}
-.wallet::before{content:"● ";color:var(--green)}
-.content{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1}
-.back{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-h2{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
-.sub{font-size:12px;color:var(--muted);margin-top:4px}
-.chip{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:6px;white-space:nowrap;border:1px solid}
-.chip.ok{color:var(--green);border-color:var(--green-dim);background:#0f2016}
-.chip.rev{color:var(--amber);border-color:var(--amber-dim);background:#1d180c}
-.chip.cut{color:var(--red);border-color:var(--red-dim);background:#1e110d}
-.label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
-.card.tight{padding:10px 12px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
-.row + .row{margin-top:8px}
-.row .v{font-family:var(--mono);font-size:12px}
-.muted{color:var(--muted)}
+/* ---------- Tablero ---------- */
+.board-head{max-width:1560px;margin:0 auto 24px;display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:end}
+.board-head h1{font-weight:800;font-size:48px;line-height:46px;margin-top:10px}
+.board-head p{color:var(--muted-foreground);margin-top:12px;max-width:62ch}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.panel ul{margin:8px 0 0 18px;color:var(--muted-foreground);font-size:14px;line-height:21px}
+.panel b{color:var(--foreground)}
+.ejemplo{max-width:1560px;margin:0 auto 32px;display:flex;gap:10px;align-items:center;border:1px dashed var(--review-solid);color:var(--review-fg);padding:10px 14px;border-radius:var(--radius)}
+.ph{text-decoration:underline dashed var(--review-solid);text-underline-offset:3px;text-decoration-thickness:1px}
+.board{max-width:1560px;margin:0 auto;display:flex;flex-wrap:wrap;gap:40px 32px}
+.slot{width:390px;max-width:100%;flex:none}
+@media (max-width:900px){body{padding:24px 16px 60px}.board-head{grid-template-columns:1fr}.board-head h1{font-size:36px;line-height:36px}}
+.slot-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.slot-head .new{color:var(--signal)}
+.slot-foot{margin-top:10px;color:var(--muted-foreground);font-size:12px;line-height:17px}
+.slot-foot b{color:var(--foreground);font-weight:600}
+.slot-foot .nuevo{color:var(--signal)}
 
-/* Estado grande */
-.hero{display:flex;align-items:flex-end;justify-content:space-between}
-.big{font-size:54px;font-weight:800;letter-spacing:-.04em;line-height:.9}
-.big small{font-size:26px;letter-spacing:-.02em}
-.big.ok{color:var(--green)} .big.rev{color:var(--amber)} .big.cut{color:var(--red)}
-.hero-note{font-size:11px;color:var(--muted);text-align:right;line-height:1.4;max-width:130px}
+/* ---------- Pantalla de celular ---------- */
+.phone{background:var(--background);border:1px solid var(--border);min-height:844px;display:flex;flex-direction:column}
+.topbar{height:var(--topbar);display:flex;align-items:center;justify-content:space-between;padding:0 var(--gutter);gap:12px}
+.topbar .left{display:flex;align-items:center;gap:12px}
+.iconbtn{width:36px;height:36px;border:1px solid var(--foreground);border-radius:var(--radius);display:grid;place-items:center}
+.balance{font-family:var(--mono);font-size:13px;border:1px solid var(--foreground);border-radius:var(--radius);padding:7px 12px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo span{color:var(--standing-fg)}
+.netbar{background:var(--muted);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px var(--gutter);display:flex;align-items:center;gap:8px;color:var(--muted-foreground)}
+.netbar i{width:6px;height:6px;border-radius:50%;background:var(--review-solid)}
+.body{padding:var(--space-5) var(--gutter) var(--space-6);display:flex;flex-direction:column;gap:var(--space-5);flex:1}
+.kicker{font-family:var(--mono);font-size:12px;line-height:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--standing-fg)}
+.kicker.lost{color:var(--lost-fg)} .kicker.review{color:var(--review-fg)} .kicker.mf{color:var(--muted-foreground)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.rule{height:1px;background:var(--foreground);opacity:.9}
+.hair{height:1px;background:var(--border)}
+.sec{display:flex;flex-direction:column;gap:var(--space-3)}
+.sec-title{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--foreground);padding-bottom:8px}
 
-/* Línea de 12 meses */
-.months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
-.m{display:flex;flex-direction:column;gap:4px;align-items:center}
-.m .t{width:100%;aspect-ratio:1;border-radius:4px;border:1px solid var(--line-2);background:
-  repeating-linear-gradient(135deg,#1a2a1f 0 3px,#15211a 3px 6px)}
-.m.ok .t{border-color:var(--green);box-shadow:inset 0 -3px 0 var(--green)}
-.m.rev .t{border-color:var(--amber);box-shadow:inset 0 -3px 0 var(--amber)}
-.m.cut .t{border-color:var(--red);box-shadow:inset 0 -3px 0 var(--red)}
-.m.off .t{background:transparent;border-style:dashed;opacity:.5}
-.m.sel .t{outline:2px solid var(--text);outline-offset:1px}
-.m b{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--faint)}
-.legend{display:flex;gap:12px;font-family:var(--mono);font-size:10px;color:var(--muted)}
-.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.legend .lg::before{background:var(--green)} .legend .la::before{background:var(--amber)} .legend .lr::before{background:var(--red)}
+/* Chip de estado */
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid;border-radius:999px;padding:5px 12px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.chip i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip.standing{color:var(--standing-fg);border-color:var(--standing-solid)}
+.chip.review{color:var(--review-fg);border-color:var(--review-solid)}
+.chip.lost{color:var(--lost-fg);border-color:var(--lost-solid)}
 
-/* Imagen satelital (pendiente) */
-.sat{height:150px;border-radius:var(--r);border:1px solid var(--line-2);position:relative;overflow:hidden;
-  background:radial-gradient(circle at 30% 40%,#2c4a31 0 18%,transparent 19%),radial-gradient(circle at 70% 65%,#2a452e 0 22%,transparent 23%),
-  repeating-linear-gradient(45deg,#16251b 0 6px,#1a2c20 6px 12px)}
-.sat svg{position:absolute;inset:0;width:100%;height:100%}
-.sat .tag{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;background:#0b110dcc;padding:4px 6px;border-radius:4px;color:var(--muted)}
-.sat .tag.r{left:auto;right:8px}
+/* Aviso */
+.aviso{border-left:3px solid;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.aviso.lost{border-color:var(--lost-solid);background:var(--lost-bg)}
+.aviso.review{border-color:var(--review-solid);background:var(--review-bg)}
+.aviso.standing{border-color:var(--standing-solid);background:var(--standing-bg)}
+.aviso.info{border-color:var(--input);background:var(--muted)}
 
-/* Firmas */
-.sigs{display:flex;gap:6px}
-.sig{flex:1;border:1px solid var(--line-2);border-radius:8px;padding:7px 8px;font-family:var(--mono);font-size:10px;color:var(--muted)}
-.sig.on{border-color:var(--green-dim);color:var(--text)}
-.sig.on::before{content:"✓ ";color:var(--green)}
-.sig.offs::before{content:"– ";color:var(--faint)}
+/* Imagen satelital (de ejemplo) */
+.sat{position:relative;aspect-ratio:1;border:1px solid var(--border);overflow:hidden;
+  background:radial-gradient(circle at 28% 30%,#4e5a3a 0 16%,transparent 17%),radial-gradient(circle at 68% 62%,#56633f 0 20%,transparent 21%),
+  radial-gradient(circle at 80% 20%,#c9c6bd 0 9%,transparent 10%),repeating-linear-gradient(45deg,#3b4730 0 7px,#435037 7px 14px)}
+.sat.cut{background:linear-gradient(#a08a64,#a08a64) 30% 35%/40% 38% no-repeat,radial-gradient(circle at 20% 80%,#4e5a3a 0 16%,transparent 17%),repeating-linear-gradient(45deg,#3b4730 0 7px,#435037 7px 14px)}
+.sat .tag{position:absolute;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;background:var(--background);color:var(--foreground);padding:4px 7px}
+.sat .tl{left:8px;top:8px} .sat .tr{right:8px;top:8px} .sat .bl{left:8px;bottom:8px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
-/* Barra de pozo */
-.meter{height:6px;border-radius:999px;background:var(--line);overflow:hidden;display:flex}
-.meter i{display:block;height:100%}
+/* Tira de doce meses */
+.strip{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.mo{display:flex;flex-direction:column;align-items:center;gap:6px}
+.mo .sq{width:100%;aspect-ratio:1;border-radius:var(--radius);background:var(--standing-solid)}
+.mo.review .sq{background:var(--review-solid)} .mo.lost .sq{background:var(--lost-solid)}
+.mo.empty .sq{background:transparent;border:1px dashed var(--border)}
+.mo.sel .sq{outline:2px solid var(--foreground);outline-offset:2px}
+.mo b{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--muted-foreground)}
+.mo.sel b{color:var(--foreground)}
 
-/* Botones */
-.btn{display:block;text-align:center;text-decoration:none;font-family:var(--sans);font-weight:700;font-size:15px;border-radius:10px;padding:13px;border:1px solid transparent}
-.btn.pri{background:var(--green);color:#06210f}
-.btn.sec{border-color:var(--line-2);color:var(--text)}
-.btn.warn{background:var(--amber);color:#2a1d00}
-.btn.dis{background:var(--line);color:var(--faint)}
+/* Grilla de datos 2x2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.grid2 > div{padding:12px 0 12px 0;display:flex;flex-direction:column;gap:4px}
+.grid2 > div:nth-child(odd){border-right:1px solid var(--border);padding-right:12px}
+.grid2 > div:nth-child(even){padding-left:16px}
+.grid2 > div:nth-child(-n+2){border-bottom:1px solid var(--border)}
+
+/* Sello de firmas */
+.sello{display:flex;gap:6px}
+.firma{flex:1;border:1px solid var(--border);padding:8px;display:flex;flex-direction:column;gap:2px}
+.firma.ok{border-color:var(--standing-solid);background:var(--standing-bg)}
+.firma .mono-sm{color:var(--muted-foreground)} .firma.ok .mono-sm{color:var(--standing-fg)}
+
+/* Barra del pozo */
+.bar{height:14px;border:1px solid var(--foreground);display:flex;overflow:hidden}
+.bar i{display:block;height:100%}
+.legend{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;justify-content:space-between;align-items:center}
+.lrow .k{display:flex;align-items:center;gap:8px}
+.sw{width:10px;height:10px;display:inline-block}
+
+/* Fila de lista */
+.list{display:flex;flex-direction:column}
+.li{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border);gap:12px}
+.li.hl{background:var(--card);padding:13px 12px;margin:0 -12px;border-bottom-color:transparent}
+.li .r{font-family:var(--mono);font-size:13px}
+
+/* Botón */
+.btn{display:flex;justify-content:center;align-items:center;gap:8px;height:52px;border-radius:var(--radius);font-weight:700;font-size:16px;text-decoration:none}
+.btn.pri{background:var(--primary);color:var(--primary-foreground)}
+.btn.sec{border:1px solid var(--foreground);color:var(--foreground)}
+.btn.txt{height:auto;justify-content:flex-end;color:var(--foreground);font-size:14px}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dock{padding:12px var(--gutter) 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
 
-/* Banner */
-.banner{border-radius:var(--r);padding:12px;font-size:13px;line-height:1.45}
-.banner.rev{background:#1d180c;border:1px solid var(--amber-dim);color:#f6d58e}
-.banner.cut{background:#1e110d;border:1px solid var(--red-dim);color:#f6b2a1}
-.banner b{display:block;margin-bottom:2px;color:var(--text)}
+/* Opción de monto */
+.montos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.monto{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:14px 0 10px;text-align:center}
+.monto .v{font-weight:800;font-size:28px;line-height:30px}
+.monto .u{font-family:var(--mono);font-size:11px;color:var(--muted-foreground);text-transform:uppercase;letter-spacing:.04em}
+.monto.on{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+.monto.on .u{color:#5a6b45}
 
-/* Aportar */
-.amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.amt{border:1px solid var(--line-2);border-radius:8px;padding:12px 0;text-align:center;font-weight:700;font-size:18px}
-.amt small{display:block;font-family:var(--mono);font-size:9px;font-weight:400;color:var(--faint);margin-top:2px}
-.amt.on{border-color:var(--green);background:#0f2016;color:var(--green)}
-.choice{border:1px solid var(--line-2);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:18px 1fr;gap:10px;font-size:13px;line-height:1.4}
-.choice .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line-2);margin-top:2px}
-.choice.on{border-color:var(--green)}
-.choice.on .dot{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 4px,transparent 5px)}
-.choice b{display:block;font-size:14px}
+/* NUEVO · Opción de destino */
+.destino{border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:grid;grid-template-columns:20px 1fr;gap:12px}
+.destino .radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--input);margin-top:2px}
+.destino.on{border-color:var(--foreground);background:var(--card)}
+.destino.on .radio{border-color:var(--foreground);background:radial-gradient(circle,var(--foreground) 0 4px,transparent 5px)}
 
-/* Navegación inferior */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:auto}
-.tabs a{padding:10px 0 12px;text-align:center;font-size:10px;color:var(--faint);font-family:var(--mono);text-decoration:none}
-.tabs a::before{content:"";display:block;width:18px;height:18px;margin:0 auto 4px;border-radius:5px;border:1.5px solid currentColor}
-.tabs a.on{color:var(--green)}
+/* NUEVO · Tarjeta de certificado */
+.cert{border:1px solid var(--standing-solid);background:var(--standing-bg);padding:18px 16px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:8px}
+.cert::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 15px,#93ae7414 15px 16px),repeating-linear-gradient(90deg,transparent 0 15px,#93ae7414 15px 16px)}
+.cert > *{position:relative}
 
-/* Certificados */
-.cert{border-radius:var(--r);padding:16px;background:linear-gradient(160deg,#13241a,#0e1712);border:1px solid #2a4a34;position:relative;overflow:hidden}
-.cert::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;border:1px solid #2a4a34}
-.cert .n{font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--green)}
-.cert .n small{font-size:16px;color:var(--text);font-weight:600}
-.fine{font-size:11px;color:var(--faint);line-height:1.45}
+/* NUEVO · Reparto de cuota */
+.reparto{display:flex;height:14px;border:1px solid var(--foreground)}
+.reparto i{display:block;height:100%}
 
-/* Hash */
-.hash{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all}
-a.ext{color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px}
+/* Barra inferior */
+.nav{height:var(--nav);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);margin-top:auto}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted-foreground);font-size:13px;text-decoration:none;position:relative}
+.nav a.on{color:var(--foreground);font-weight:700}
+.nav a.on::before{content:"";position:absolute;top:-1px;left:30%;right:30%;height:3px;background:var(--standing-solid)}
+.nav svg{width:20px;height:20px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+  <symbol id="map" viewBox="0 0 24 24"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></symbol>
+  <symbol id="activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></symbol>
+  <symbol id="receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/></symbol>
+  <symbol id="help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
+  <symbol id="ext" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+</svg>
+
 <header class="board-head">
   <div>
-    <div class="kicker">Mock v3 · dirección A · pulido del v2 "Noche"</div>
-    <h1>Bosque en pie<br>pantallas del celular</h1>
-    <p>Misma estética que el Figma v2 Noche. Cambia la jerarquía: el estado de la parcela y los 12 meses van primero, el aporte entra en una sola pantalla y se suman los certificados de monte en pie y la vista de quienes cuidan. Es la base de estilos para <code>web/</code>.</p>
+    <div class="kicker">v3 · Propuesta · Noche · celular 390</div>
+    <h1>Bosque en pie<br>v3 sobre el sistema del Figma</h1>
+    <p class="body-md">Usa los tokens, las tipografías (Archivo y Chivo Mono) y los componentes del archivo "Bosque en pie — Marca e interfaz". Suma lo que el v2 no cubre: el destino del saldo al aportar, el fondo de restauración, el reparto dueño/operador y los certificados de monte en pie.</p>
   </div>
-  <div class="changes">
+  <div class="panel body-sm">
     <b>Qué cambia respecto del v2</b>
     <ul>
-      <li><b>Línea de 12 meses</b> con miniatura por mes y color de estado, tocable para abrir el informe.</li>
-      <li><b>Aportar en 1 pantalla:</b> monto + qué pasa con tu saldo si hay desmonte, con el resumen al lado del botón.</li>
-      <li><b>Firmas visibles</b> (2 de 3) en cada informe, con link al explorer.</li>
-      <li><b>Certificados de monte en pie</b> (ERC-1155): pantalla propia, transferir y retirar.</li>
-      <li><b>Vista de quienes cuidan</b> (dueño y operador): qué cobró cada uno por mes.</li>
-      <li><b>Estados con texto,</b> no solo color: "en pie", "en revisión", "desmontada".</li>
+      <li><b>Aportar:</b> se elige qué pasa con el saldo si hay desmonte (devolución o restauración) y se ven los certificados estimados.</li>
+      <li><b>Parcela desmontada:</b> el saldo se parte en devolución y fondo de restauración (regla 6).</li>
+      <li><b>Quienes cuidan:</b> dueño y operador por separado, con su parte de cada cuota (v2 tenía un solo "cuidador").</li>
+      <li><b>Certificados de monte en pie:</b> pantalla nueva dentro de "Mi aporte", sin pestaña nueva.</li>
+      <li><b>Informe del mes:</b> firmas con nombre de cada verificador y qué pasa después.</li>
+      <li>Componentes nuevos para el Figma, en <span style="color:var(--signal)">magenta</span>: Opción de destino, Tarjeta de certificado, Reparto de cuota.</li>
     </ul>
   </div>
 </header>
 
-<div class="warn">⚠ Todos los números, fechas, montos y nombres de este mock son DE RELLENO (subrayado punteado). La web real muestra solo datos leídos del contrato y de los informes Sentinel-2.</div>
+<div class="ejemplo mono-sm">● Números, fechas, hectáreas y montos de ejemplo, iguales a los del v2 (subrayado punteado). La web real muestra solo datos del contrato y de los informes Sentinel-2.</div>
 
 <main class="board">
 
-<!-- 1 · Parcela en pie -->
+<!-- ===================== C03 · Parcela · en pie ===================== -->
 <section class="slot">
-  <div class="slot-label"><span>01 · Parcela · en pie</span><em>reemplaza C03</em></div>
+  <div class="slot-head mono-sm mf"><span>C03 · Parcela · en pie · v3</span><span>actualiza C03</span></div>
   <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
-    <div class="content">
-      <div class="back">← Mapa</div>
-      <div class="title-row">
-        <div><h2>Parcela A</h2><div class="sub">Chaco salteño · <span class="ph">120 ha</span></div></div>
-        <span class="chip ok">● En pie</span>
+    <div class="topbar"><div class="left"><span class="iconbtn"><svg class="i"><use href="#arrow-left"/></svg></span><span class="title-sm">Parcela A</span></div><span class="balance"><span class="ph">2,00</span> AVAX</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div class="head">
+        <div><div class="kicker">Parcela A · <span class="ph">214</span> ha</div><div class="title-lg" style="margin-top:4px">Monte en pie</div><div class="body-sm mf">Dpto. Rivadavia, Salta (de ejemplo)</div></div>
+        <span class="chip standing"><i></i>En pie</span>
       </div>
-      <div class="hero">
-        <div class="big ok"><span class="ph">99,3</span><small> %</small></div>
-        <div class="hero-note">del monte de 2024 sigue en pie según la imagen de <span class="ph">oct 2025</span></div>
+      <div class="sat"><span class="tag tl">10 dic 2025</span><span class="tag tr">Imagen de ejemplo</span><span class="tag bl">10 m por píxel</span></div>
+      <div>
+        <div class="data-xl c-standing"><span class="ph">99,3</span> %</div>
+        <div class="body-sm mf" style="margin-top:6px">monte en pie · contra el año base (2024)</div>
       </div>
-      <div class="card">
-        <div class="row" style="margin-bottom:10px"><span class="label">2025 · un informe por mes</span><span class="legend"><span class="lg">pagó</span><span class="la">revisión</span></span></div>
-        <div class="months">
-          <div class="m ok"><div class="t"></div><b>E</b></div><div class="m ok"><div class="t"></div><b>F</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>S</b></div><div class="m ok sel"><div class="t"></div><b>O</b></div><div class="m off"><div class="t"></div><b>N</b></div><div class="m off"><div class="t"></div><b>D</b></div>
+      <div class="sec">
+        <div class="lrow"><span class="mono-sm mf">Doce cuotas · tocá un mes</span><span class="mono-sm c-standing"><span class="ph">12 de 12</span> pagadas</span></div>
+        <div class="strip">
+          <div class="mo"><div class="sq"></div><b>E</b></div><div class="mo"><div class="sq"></div><b>F</b></div><div class="mo"><div class="sq"></div><b>M</b></div><div class="mo"><div class="sq"></div><b>A</b></div><div class="mo"><div class="sq"></div><b>M</b></div><div class="mo"><div class="sq"></div><b>J</b></div><div class="mo"><div class="sq"></div><b>J</b></div><div class="mo"><div class="sq"></div><b>A</b></div><div class="mo"><div class="sq"></div><b>S</b></div><div class="mo"><div class="sq"></div><b>O</b></div><div class="mo"><div class="sq"></div><b>N</b></div><div class="mo sel"><div class="sq"></div><b>D</b></div>
         </div>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="label">Último informe</span><a class="ext" href="#">ver en explorer ↗</a></div>
-        <div class="row"><span class="muted">Imagen Sentinel-2</span><span class="v ph">12 oct 2025</span></div>
-        <div class="row"><span class="muted">Parte visible</span><span class="v ph">96 %</span></div>
-        <div class="sigs" style="margin-top:10px"><div class="sig on">Verif. 1</div><div class="sig on">Verif. 2</div><div class="sig offs">Verif. 3</div></div>
+      <div class="sec">
+        <div class="sec-title"><span class="mono-sm">Diciembre 2025</span><span class="mono-sm c-standing">Pagado</span></div>
+        <div class="grid2">
+          <div><span class="mono-sm mf">Imagen</span><span class="data-md ph">10 dic 2025</span></div>
+          <div><span class="mono-sm mf">Parte visible</span><span class="data-md ph">68 %</span></div>
+          <div><span class="mono-sm mf">Firmas</span><span class="data-md">2 de 3</span></div>
+          <div><span class="mono-sm mf">Comprobante</span><span class="mono-md ph">0xd6b7…81a0</span></div>
+        </div>
+        <a class="btn txt" href="#">Ver informe completo <svg class="i" style="width:16px;height:16px"><use href="#ext"/></svg></a>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="label">Pozo</span><span class="v"><span class="ph">2,20</span> AVAX</span></div>
-        <div class="meter" style="margin-top:8px"><i style="width:55%;background:var(--green)"></i><i style="width:45%;background:var(--line-2)"></i></div>
-        <div class="row" style="margin-top:8px"><span class="muted">Cuota mensual</span><span class="v"><span class="ph">0,10</span> AVAX · alcanza <span class="ph">22</span> meses</span></div>
-      </div>
-      <a class="btn pri" href="#">Aportar a esta parcela</a>
-    </div>
-    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
-  </div>
-</section>
-
-<!-- 2 · Parcela desmontada -->
-<section class="slot">
-  <div class="slot-label"><span>02 · Parcela · desmontada</span><em>reemplaza C04 + C05</em></div>
-  <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
-    <div class="content">
-      <div class="back">← Mapa</div>
-      <div class="title-row">
-        <div><h2>Parcela B</h2><div class="sub">Chaco salteño · <span class="ph">95 ha</span></div></div>
-        <span class="chip cut">✕ Desmontada</span>
-      </div>
-      <div class="banner cut"><b>Pagos cortados para siempre.</b>Dos lecturas malas seguidas (<span class="ph">jul</span> y <span class="ph">ago</span>). El saldo no va al dueño ni al operador: vuelve a los donantes o queda para restaurar.</div>
-      <div class="sat">
-        <svg viewBox="0 0 320 150" preserveAspectRatio="none"><polygon points="70,30 250,22 270,120 60,128" fill="none" stroke="#ef6a4a" stroke-width="1.5" stroke-dasharray="4 3"/><rect x="120" y="50" width="90" height="55" fill="#ef6a4a33" stroke="#ef6a4a"/></svg>
-        <span class="tag">imagen Sentinel-2 · pendiente</span><span class="tag r">ago 2025</span>
-      </div>
-      <div class="hero">
-        <div class="big cut"><span class="ph">38,6</span><small> %</small></div>
-        <div class="hero-note">del monte de 2024 sigue en pie</div>
-      </div>
-      <div class="card">
-        <div class="row" style="margin-bottom:10px"><span class="label">2025</span><span class="legend"><span class="lg">pagó</span><span class="la">revisión</span><span class="lr">corte</span></span></div>
-        <div class="months">
-          <div class="m ok"><div class="t"></div><b>E</b></div><div class="m ok"><div class="t"></div><b>F</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m rev"><div class="t"></div><b>J</b></div><div class="m cut sel"><div class="t"></div><b>A</b></div><div class="m off"><div class="t"></div><b>S</b></div><div class="m off"><div class="t"></div><b>O</b></div><div class="m off"><div class="t"></div><b>N</b></div><div class="m off"><div class="t"></div><b>D</b></div>
+      <div class="sec">
+        <div class="kicker">02 / Pozo</div>
+        <div><div class="data-lg"><span class="ph">3,20</span> AVAX</div><div class="body-sm mf">aportados por <span class="ph">3</span> personas</div></div>
+        <div class="bar"><i style="width:37%;background:var(--standing-solid)"></i></div>
+        <div class="legend body-sm">
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--standing-solid)"></span>Pagado a quienes cuidan</span><span class="mono-md ph">1,20</span></div>
+          <div class="lrow"><span class="k"><span class="sw" style="border:1px solid var(--foreground)"></span>Saldo en el contrato</span><span class="mono-md ph">2,00</span></div>
         </div>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="label">Saldo al corte</span><span class="v"><span class="ph">3,60</span> AVAX</span></div>
-        <div class="meter" style="margin-top:8px"><i style="width:60%;background:var(--green)"></i><i style="width:40%;background:var(--amber)"></i></div>
-        <div class="row" style="margin-top:8px"><span class="muted">● Devolución a donantes</span><span class="v ph">2,16 AVAX</span></div>
-        <div class="row"><span class="muted">● Fondo de restauración</span><span class="v ph">1,44 AVAX</span></div>
+      <div class="sec">
+        <div class="kicker">03 / Quienes cuidan</div>
+        <div class="reparto"><i style="width:60%;background:var(--standing-solid)"></i><i style="width:40%;background:var(--standing-bg)"></i></div>
+        <div class="list body-md">
+          <div class="li"><span>Dueño de prueba A <span class="mf body-sm">· no desmontar</span></span><span class="r ph">60 %</span></div>
+          <div class="li"><span>Operador de prueba A <span class="mf body-sm">· cortafuegos</span></span><span class="r ph">40 %</span></div>
+        </div>
       </div>
-      <a class="btn sec" href="#">Ver mi parte →</a>
+      <div class="li hl body-md"><span class="k" style="display:flex;gap:10px;align-items:center"><svg class="i" style="color:var(--standing-fg)"><use href="#sprout"/></svg>Cada cuota genera certificados</span><span class="r ph">214 ha-mes</span></div>
     </div>
-    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+    <div class="dock"><a class="btn pri" href="#">Aportar a esta parcela</a></div>
+    <nav class="nav"><a class="on" href="#"><svg class="i"><use href="#map"/></svg>Mapa</a><a href="#"><svg class="i"><use href="#activity"/></svg>Actividad</a><a href="#"><svg class="i"><use href="#receipt"/></svg>Mi aporte</a><a href="#"><svg class="i"><use href="#help"/></svg>Cómo funciona</a></nav>
   </div>
+  <p class="slot-foot"><b>Componentes:</b> Barra superior de celular (Volver) · Aviso de red · Chip de estado · Imagen satelital · Cifra de monte en pie (XL) · Tira de doce meses · Detalle del mes · Barra del pozo · Fila de lista · Botón (Primario, L) · Barra inferior de celular. <span class="nuevo">Nuevo: Reparto de cuota.</span></p>
 </section>
 
-<!-- 3 · Aportar -->
+<!-- ===================== C05 · Parcela · desmontada ===================== -->
 <section class="slot">
-  <div class="slot-label"><span>03 · Aportar · una pantalla</span><em>reemplaza C06–C08</em></div>
+  <div class="slot-head mono-sm mf"><span>C05 · Parcela · desmontada · v3</span><span>actualiza C05</span></div>
   <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
-    <div class="content">
-      <div class="back">← Parcela A</div>
-      <h2>¿Cuánto querés aportar?</h2>
-      <div class="amounts">
-        <div class="amt">0,1<small>1 mes</small></div><div class="amt">0,5<small>5 meses</small></div><div class="amt on">1<small>10 meses</small></div><div class="amt">2<small>20 meses</small></div>
+    <div class="topbar"><div class="left"><span class="iconbtn"><svg class="i"><use href="#arrow-left"/></svg></span><span class="title-sm">Parcela B</span></div><span class="balance"><span class="ph">0,99</span> AVAX</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div class="head">
+        <div><div class="kicker lost">Parcela B · <span class="ph">187</span> ha</div><div class="title-lg" style="margin-top:4px">Desmontada</div><div class="body-sm mf">Dpto. Anta, Salta (de ejemplo)</div></div>
+        <span class="chip lost"><i></i>Desmontada</span>
       </div>
-      <div class="label" style="margin-top:4px">Si hay desmonte, tu saldo…</div>
-      <div class="choice on"><div class="dot"></div><div><b>Vuelve a mí</b><span class="muted">Lo retirás en proporción a tu aporte.</span></div></div>
-      <div class="choice"><div class="dot"></div><div><b>Va a restaurar esta parcela</b><span class="muted">Queda bloqueado para restauración. Si no se usa en <span class="ph">12 meses</span>, también lo podés retirar.</span></div></div>
-      <div class="card tight">
-        <div class="row"><span class="muted">Aporte</span><span class="v">1,00 AVAX</span></div>
-        <div class="row"><span class="muted">Cubre</span><span class="v">10 cuotas · <span class="ph">0,10</span> c/u</span></div>
-        <div class="row"><span class="muted">Certificados estimados</span><span class="v ph">≈ 120 ha-mes</span></div>
-        <div class="row"><span class="muted">Red</span><span class="v">Avalanche Fuji · prueba</span></div>
+      <div class="aviso lost">
+        <span class="mono-sm c-lost"><span class="ph">Agosto 2025</span></span>
+        <span class="title-sm">Dos lecturas malas seguidas. Los pagos se cortaron para siempre.</span>
+        <span class="body-sm mf">El saldo nunca va al dueño ni al operador: vuelve a los donantes o queda para restaurar, según eligió cada uno.</span>
       </div>
-      <p class="fine">Billetera de prueba sin valor real. La clave está solo en este celular (fragmento de la URL) y nunca se envía a ningún servidor.</p>
-      <a class="btn pri" href="#">Aportar 1 AVAX</a>
-    </div>
-    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
-  </div>
-</section>
-
-<!-- 4 · Mi aporte -->
-<section class="slot">
-  <div class="slot-label"><span>04 · Mi aporte</span><em>reemplaza C09–C11</em></div>
-  <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
-    <div class="content">
-      <h2>Mi aporte</h2>
-      <div class="sub" style="margin-top:-8px">Total aportado: <span class="ph">2,00</span> AVAX en 2 parcelas</div>
-      <div class="card">
-        <div class="title-row"><div><b>Parcela A</b><div class="sub">Si hay desmonte: vuelve a mí</div></div><span class="chip ok">● En pie</span></div>
-        <div class="meter" style="margin:12px 0 8px"><i style="width:40%;background:var(--green)"></i><i style="width:60%;background:var(--line-2)"></i></div>
-        <div class="row"><span class="muted">Pagado a quienes cuidan</span><span class="v ph">0,40 AVAX</span></div>
-        <div class="row"><span class="muted">Todavía en el pozo</span><span class="v ph">0,60 AVAX</span></div>
-        <div class="row"><span class="muted">Meses financiados</span><span class="v ph">4 de 10</span></div>
+      <div class="pair">
+        <div class="sat"><span class="tag tl"><span class="ph">jun 2025 · 97,2 %</span></span><span class="tag bl">Ejemplo</span></div>
+        <div class="sat cut"><span class="tag tl"><span class="ph">ago 2025 · 38,6 %</span></span><span class="tag bl">Ejemplo</span></div>
       </div>
-      <div class="card" style="border-color:var(--red-dim)">
-        <div class="title-row"><div><b>Parcela B</b><div class="sub">Si hay desmonte: vuelve a mí</div></div><span class="chip cut">✕ Desmontada</span></div>
-        <div class="row" style="margin-top:12px"><span class="muted">Pagado antes del corte</span><span class="v ph">0,60 AVAX</span></div>
-        <div class="row"><span class="muted">Te corresponde recuperar</span><span class="v ph" style="color:var(--green)">0,40 AVAX</span></div>
-        <a class="btn warn" href="#" style="margin-top:12px">Recuperar 0,40 AVAX</a>
+      <div>
+        <div class="data-xl lost c-lost"><span class="ph">38,6</span> %</div>
+        <div class="body-sm mf" style="margin-top:6px">monte en pie · contra el año base (2024)</div>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="muted">Certificados de monte en pie</span><a class="ext" href="#"><span class="ph">460</span> ha-mes →</a></div>
+      <div class="sec">
+        <div class="lrow"><span class="mono-sm mf">Doce cuotas</span><span class="mono-sm c-lost"><span class="ph">6 de 12</span> · corte en agosto</span></div>
+        <div class="strip">
+          <div class="mo"><div class="sq"></div><b>E</b></div><div class="mo"><div class="sq"></div><b>F</b></div><div class="mo"><div class="sq"></div><b>M</b></div><div class="mo"><div class="sq"></div><b>A</b></div><div class="mo"><div class="sq"></div><b>M</b></div><div class="mo"><div class="sq"></div><b>J</b></div><div class="mo review"><div class="sq"></div><b>J</b></div><div class="mo lost sel"><div class="sq"></div><b>A</b></div><div class="mo empty"><div class="sq"></div><b>S</b></div><div class="mo empty"><div class="sq"></div><b>O</b></div><div class="mo empty"><div class="sq"></div><b>N</b></div><div class="mo empty"><div class="sq"></div><b>D</b></div>
+        </div>
+        <span class="body-sm mf">J · en revisión, sin pago · A · desmonte confirmado</span>
+      </div>
+      <div class="sec">
+        <div class="kicker lost">Pozo al corte</div>
+        <div><div class="data-lg lost"><span class="ph">4,20</span> AVAX</div><div class="body-sm mf">aportados por <span class="ph">4</span> personas</div></div>
+        <div class="bar"><i style="width:14%;background:var(--standing-solid)"></i><i style="width:52%;background:var(--lost-solid)"></i><i style="width:34%;background:var(--review-fill)"></i></div>
+        <div class="legend body-sm">
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--standing-solid)"></span>Pagado antes del corte</span><span class="mono-md ph">0,60</span></div>
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--lost-solid)"></span><b class="c-lost">Vuelve a los donantes</b></span><span class="mono-md c-lost ph">2,16</span></div>
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--review-fill)"></span><b class="c-review">Fondo de restauración</b></span><span class="mono-md c-review ph">1,44</span></div>
+        </div>
+        <div class="aviso info"><span class="body-sm">El fondo de restauración queda bloqueado para esta parcela. Si en <span class="ph">12 meses</span> no se usa, quienes lo eligieron también lo pueden retirar.</span></div>
       </div>
     </div>
-    <nav class="tabs"><a href="#">Mapa</a><a class="on" href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+    <div class="dock"><a class="btn pri" href="#">Ver mi parte</a></div>
+    <nav class="nav"><a class="on" href="#"><svg class="i"><use href="#map"/></svg>Mapa</a><a href="#"><svg class="i"><use href="#activity"/></svg>Actividad</a><a href="#"><svg class="i"><use href="#receipt"/></svg>Mi aporte</a><a href="#"><svg class="i"><use href="#help"/></svg>Cómo funciona</a></nav>
   </div>
+  <p class="slot-foot"><b>Componentes:</b> Aviso (Desmontada, Información) · Antes y después · Cifra de monte en pie (Desmontada: Archivo Light) · Tira de doce meses con leyenda · Barra del pozo (Desmontada, ahora con tres tramos).</p>
 </section>
 
-<!-- 5 · Certificados -->
+<!-- ===================== C06 · Aportar ===================== -->
 <section class="slot">
-  <div class="slot-label"><span>05 · Certificados de monte en pie</span><em>nueva</em></div>
+  <div class="slot-head mono-sm mf"><span>C06 · Aportar · una pantalla · v3</span><span>reemplaza C06–C07</span></div>
   <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Empresa · prueba</div></div>
-    <div class="content">
-      <h2>Certificados</h2>
+    <div class="topbar"><div class="left"><span class="iconbtn"><svg class="i"><use href="#arrow-left"/></svg></span><span class="title-sm">Parcela A</span></div><span class="balance"><span class="ph">2,00</span> AVAX</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div><div class="kicker">Aportar · Parcela A</div><div class="title-lg" style="margin-top:4px">¿Cuánto querés aportar?</div></div>
+      <div class="rule"></div>
+      <div class="sec">
+        <span class="mono-sm mf">01 / Monto en AVAX de prueba</span>
+        <div class="montos">
+          <div class="monto"><div class="v">0,1</div><div class="u">1 cuota</div></div>
+          <div class="monto"><div class="v">0,5</div><div class="u">5 cuotas</div></div>
+          <div class="monto on"><div class="v">1</div><div class="u">10 cuotas</div></div>
+          <div class="monto"><div class="v">2</div><div class="u">20 cuotas</div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <span class="mono-sm mf">02 / Si hay desmonte, tu saldo…</span>
+        <div class="destino on"><span class="radio"></span><div><div class="body-sm-strong">Vuelve a mí</div><div class="body-sm mf">Lo retirás en proporción a lo que aportaste.</div></div></div>
+        <div class="destino"><span class="radio"></span><div><div class="body-sm-strong">Va a restaurar esta parcela</div><div class="body-sm mf">Queda bloqueado como fondo de restauración. Si no se usa en <span class="ph">12 meses</span>, lo podés retirar.</div></div></div>
+      </div>
+      <div class="grid2">
+        <div><span class="mono-sm mf">Tu saldo</span><span class="data-md"><span class="ph">2,00</span> AVAX</span></div>
+        <div><span class="mono-sm mf">Alcanza para</span><span class="data-md">10 cuotas</span></div>
+        <div><span class="mono-sm mf">Cuota mensual</span><span class="data-md"><span class="ph">0,10</span> AVAX</span></div>
+        <div><span class="mono-sm mf">Certificados · ha-mes</span><span class="data-md c-standing ph">≈ 2.140</span></div>
+      </div>
+    </div>
+    <div class="dock"><span class="body-sm mf" style="text-align:center">Firmás en tu billetera de prueba. No sale plata real.</span><a class="btn pri" href="#">Aportar 1 AVAX de prueba</a></div>
+  </div>
+  <p class="slot-foot"><b>Componentes:</b> Opción de monto (Elegido) · Fila de comprobante · Botón (Primario, L) · Pasos de la operación para "enviando". <span class="nuevo">Nuevo: Opción de destino (Reposo / Elegido).</span> Certificados = ha de la parcela × cuotas que paga tu aporte.</p>
+</section>
+
+<!-- ===================== C09 · Mi aporte ===================== -->
+<section class="slot">
+  <div class="slot-head mono-sm mf"><span>C09 · Mi aporte · v3</span><span>actualiza C09–C10</span></div>
+  <div class="phone">
+    <div class="topbar"><div class="logo"><svg class="i" style="color:var(--standing-solid)"><use href="#sprout"/></svg>bosque <span>en pie</span></div><span class="balance"><span class="ph">0,99</span> AVAX</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div><div class="kicker">Mi aporte · Billetera 3 · <span class="ph">0x7a3f…c41e</span></div><div class="title-lg" style="margin-top:4px">Aportaste en dos parcelas.</div></div>
+      <div class="list body-md">
+        <div class="li" style="align-items:flex-start;flex-direction:column;gap:10px">
+          <div class="lrow" style="width:100%"><span class="title-sm">Parcela A</span><span class="chip standing"><i></i>En pie</span></div>
+          <div class="lrow body-sm" style="width:100%"><span class="mf">Aportaste · si hay desmonte vuelve a vos</span><span class="mono-md ph">1,00</span></div>
+          <div class="lrow body-sm" style="width:100%"><span class="mf">Ya pagó a quienes cuidan</span><span class="mono-md ph">0,40</span></div>
+        </div>
+        <div class="li" style="align-items:flex-start;flex-direction:column;gap:10px">
+          <div class="lrow" style="width:100%"><span class="title-sm">Parcela B</span><span class="chip lost"><i></i>Desmontada</span></div>
+          <div class="lrow body-sm" style="width:100%"><span class="mf">Aportaste · si hay desmonte vuelve a vos</span><span class="mono-md ph">1,00</span></div>
+          <div class="lrow body-sm" style="width:100%"><span class="mf">Llegó a quienes cuidan · 6 cuotas</span><span class="mono-md ph">0,1429</span></div>
+          <div class="lrow body-sm" style="width:100%"><span class="c-lost"><b>Para recuperar</b></span><span class="mono-md c-lost ph">0,8571</span></div>
+        </div>
+      </div>
+      <div class="aviso lost"><span class="title-sm">Los pagos de la Parcela B se cortaron en agosto.</span><span class="body-sm mf">Podés recuperar lo que quedó de tu aporte.</span></div>
+      <a class="li hl body-md" href="#" style="text-decoration:none;color:inherit"><span style="display:flex;gap:10px;align-items:center"><svg class="i" style="color:var(--standing-fg)"><use href="#sprout"/></svg>Certificados de monte en pie</span><span class="r c-standing ph">1.123 ha-mes →</span></a>
+    </div>
+    <div class="dock"><a class="btn pri" href="#">Recuperar 0,8571 AVAX</a></div>
+    <nav class="nav"><a href="#"><svg class="i"><use href="#map"/></svg>Mapa</a><a href="#"><svg class="i"><use href="#activity"/></svg>Actividad</a><a class="on" href="#"><svg class="i"><use href="#receipt"/></svg>Mi aporte</a><a href="#"><svg class="i"><use href="#help"/></svg>Cómo funciona</a></nav>
+  </div>
+  <p class="slot-foot"><b>Componentes:</b> Barra superior de celular (Marca) · Chip de estado · Fila de lista · Aviso (Desmontada) · Fila de lista resaltada como acceso a certificados · Botón.</p>
+</section>
+
+<!-- ===================== C16 · Certificados ===================== -->
+<section class="slot">
+  <div class="slot-head mono-sm"><span class="mf">C16 · Certificados · v3</span><span class="new">nueva</span></div>
+  <div class="phone">
+    <div class="topbar"><div class="left"><span class="iconbtn"><svg class="i"><use href="#arrow-left"/></svg></span><span class="title-sm">Mi aporte</span></div><span class="balance">Empresa · prueba</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div><div class="kicker">Certificados de monte en pie</div><div class="title-lg" style="margin-top:4px">Lo que tu aporte mantuvo en pie.</div></div>
       <div class="cert">
-        <div class="label">Total financiado</div>
-        <div class="n"><span class="ph">460</span> <small>ha-mes de monte en pie</small></div>
-        <div class="fine" style="margin-top:6px">1 ha-mes = una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</div>
+        <span class="mono-sm c-standing">Total financiado</span>
+        <div><span class="data-lg c-standing ph">2.406</span> <span class="title-sm">ha-mes</span></div>
+        <span class="body-sm mf">Una ha-mes es una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</span>
       </div>
-      <div class="card">
-        <div class="row"><b>Parcela A</b><span class="v ph">400 ha-mes</span></div>
-        <div class="row"><span class="muted">Meses confirmados</span><span class="v ph">ene–oct 2025</span></div>
-        <div class="row"><span class="muted">Retirados</span><span class="v ph">0</span></div>
+      <div class="list body-md">
+        <div class="li"><span>Parcela A <span class="mf body-sm">· ene–dic 2025</span></span><span class="r ph">1.284</span></div>
+        <div class="li"><span>Parcela B <span class="mf body-sm">· ene–jun 2025</span></span><span class="r ph">1.122</span></div>
+        <div class="li"><span class="mf">Retirados a nombre de la empresa</span><span class="r ph">0</span></div>
       </div>
-      <div class="card">
-        <div class="row"><b>Parcela B</b><span class="v ph">60 ha-mes</span></div>
-        <div class="row"><span class="muted">Meses confirmados</span><span class="v ph">ene–jun 2025</span></div>
-        <div class="row"><span class="muted">Retirados</span><span class="v ph">60</span></div>
-      </div>
-      <div class="btns"><a class="btn sec" href="#">Transferir</a><a class="btn pri" href="#">Retirar</a></div>
-      <p class="fine">Retirar quema el certificado y lo deja registrado a tu nombre, para que nadie más lo use en un reporte. <b style="color:var(--text)">No es un bono de carbono:</b> certifica hectáreas-mes de monte que siguieron en pie, no toneladas de CO₂.</p>
+      <div class="aviso info"><span class="body-sm-strong">No es un bono de carbono.</span><span class="body-sm mf">Certifica hectáreas-mes de monte que siguieron en pie, no toneladas de CO₂. Retirar lo quema y lo deja registrado a tu nombre para que nadie más lo use en un reporte.</span></div>
     </div>
-    <nav class="tabs"><a href="#">Mapa</a><a href="#">Mi aporte</a><a class="on" href="#">Certificados</a><a href="#">Actividad</a></nav>
+    <div class="dock"><div class="btns"><a class="btn sec" href="#">Transferir</a><a class="btn pri" href="#">Retirar</a></div></div>
+    <nav class="nav"><a href="#"><svg class="i"><use href="#map"/></svg>Mapa</a><a href="#"><svg class="i"><use href="#activity"/></svg>Actividad</a><a class="on" href="#"><svg class="i"><use href="#receipt"/></svg>Mi aporte</a><a href="#"><svg class="i"><use href="#help"/></svg>Cómo funciona</a></nav>
   </div>
+  <p class="slot-foot"><span class="nuevo">Nuevo: Tarjeta de certificado</span> (usa status/standing y la grilla de fx/grid-line). <b>Componentes:</b> Fila de lista · Aviso (Información) · Botón Secundario + Primario. ERC-1155, un id por parcela.</p>
 </section>
 
-<!-- 6 · Informe del mes -->
+<!-- ===================== C14 · Informe del mes ===================== -->
 <section class="slot">
-  <div class="slot-label"><span>06 · Informe del mes</span><em>reemplaza C14</em></div>
+  <div class="slot-head mono-sm mf"><span>C14 · Informe del mes · v3</span><span>actualiza C14</span></div>
   <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
-    <div class="content">
-      <div class="back">← Parcela B</div>
-      <div class="title-row"><div><h2>Julio 2025</h2><div class="sub">Parcela B · lectura mala, primera</div></div><span class="chip rev">◐ Revisión</span></div>
-      <div class="btns">
-        <div class="sat" style="height:120px"><span class="tag">base · jul 2024</span></div>
-        <div class="sat" style="height:120px"><svg viewBox="0 0 160 120" preserveAspectRatio="none"><rect x="50" y="35" width="55" height="40" fill="#f2b53a33" stroke="#f2b53a"/></svg><span class="tag">jul 2025</span></div>
+    <div class="topbar"><div class="left"><span class="iconbtn"><svg class="i"><use href="#arrow-left"/></svg></span><span class="title-sm">Parcela B</span></div><span class="balance"><span class="ph">0,99</span> AVAX</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div class="head">
+        <div><div class="kicker review">Informe · Parcela B</div><div class="title-lg" style="margin-top:4px"><span class="ph">Julio 2025</span></div></div>
+        <span class="chip review"><i></i>En revisión</span>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="muted">Monte en pie (coverBps)</span><span class="v ph" style="color:var(--amber)">71,3 %</span></div>
-        <div class="row"><span class="muted">Umbral de la parcela</span><span class="v">95,0 %</span></div>
-        <div class="row"><span class="muted">Parte visible (validBps)</span><span class="v ph">100 %</span></div>
-        <div class="row"><span class="muted">Algoritmo</span><span class="v">bosque-v1</span></div>
+      <div class="pair">
+        <div class="sat"><span class="tag tl">Base <span class="ph">jul 2024</span></span><span class="tag bl">Ejemplo</span></div>
+        <div class="sat cut"><span class="tag tl"><span class="ph">jul 2025</span></span><span class="tag bl">Ejemplo</span></div>
       </div>
-      <div class="card tight">
-        <div class="label" style="margin-bottom:8px">Firmas · 3 de 3</div>
-        <div class="sigs"><div class="sig on">Verif. 1</div><div class="sig on">Verif. 2</div><div class="sig on">Verif. 3</div></div>
+      <div><div class="data-xl review c-review"><span class="ph">71,3</span> %</div><div class="body-sm mf" style="margin-top:6px">monte en pie · umbral de la parcela 95,0 %</div></div>
+      <div class="grid2">
+        <div><span class="mono-sm mf">Imagen</span><span class="data-md ph">13 jul 2025</span></div>
+        <div><span class="mono-sm mf">Parte visible</span><span class="data-md ph">100 %</span></div>
+        <div><span class="mono-sm mf">Algoritmo</span><span class="data-md">bosque-v1</span></div>
+        <div><span class="mono-sm mf">Comprobante</span><span class="mono-md ph">0x9f3c…e21a</span></div>
       </div>
-      <div class="card tight">
-        <div class="label" style="margin-bottom:6px">Evidencia</div>
-        <div class="hash ph">0x9f3c…e21a</div>
-        <div class="row" style="margin-top:8px"><a class="ext" href="#">JSON de evidencia ↗</a><a class="ext" href="#">transacción ↗</a></div>
+      <div class="sec">
+        <span class="mono-sm mf">Firmaron 3 de 3</span>
+        <div class="sello">
+          <div class="firma ok"><span class="mono-sm">✓ Verif. 1</span><span class="mono-md ph">0x12a…9c</span></div>
+          <div class="firma ok"><span class="mono-sm">✓ Verif. 2</span><span class="mono-md ph">0x4be…07</span></div>
+          <div class="firma ok"><span class="mono-sm">✓ Verif. 3</span><span class="mono-md ph">0x9d1…3f</span></div>
+        </div>
       </div>
-      <p class="fine">Qué pasa ahora: no paga ni corta. Si la próxima imagen también da mal, la parcela queda desmontada.</p>
+      <div class="aviso review"><span class="title-sm">Primera lectura mala: no paga ni corta.</span><span class="body-sm mf">Si la próxima imagen también da mal, la parcela queda desmontada. Si da bien, vuelve a en pie y paga.</span></div>
+      <div class="lrow"><a class="btn txt" href="#">Evidencia (JSON) <svg class="i" style="width:16px;height:16px"><use href="#ext"/></svg></a><a class="btn txt" href="#">Ver en el explorador <svg class="i" style="width:16px;height:16px"><use href="#ext"/></svg></a></div>
     </div>
-    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+    <nav class="nav"><a class="on" href="#"><svg class="i"><use href="#map"/></svg>Mapa</a><a href="#"><svg class="i"><use href="#activity"/></svg>Actividad</a><a href="#"><svg class="i"><use href="#receipt"/></svg>Mi aporte</a><a href="#"><svg class="i"><use href="#help"/></svg>Cómo funciona</a></nav>
   </div>
+  <p class="slot-foot"><b>Componentes:</b> Antes y después · Cifra de monte en pie (En revisión: Archivo SemiBold) · Detalle del mes · Sello de firmas (Sello, L) · Aviso (En revisión) · Enlace.</p>
 </section>
 
-<!-- 7 · Quienes cuidan -->
+<!-- ===================== C17 · Quienes cuidan ===================== -->
 <section class="slot">
-  <div class="slot-label"><span>07 · Quienes cuidan</span><em>nueva</em></div>
+  <div class="slot-head mono-sm"><span class="mf">C17 · Quienes cuidan · v3</span><span class="new">nueva</span></div>
   <div class="phone">
-    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Operador A · prueba</div></div>
-    <div class="content">
-      <h2>Lo que cobraste</h2>
-      <div class="sub" style="margin-top:-8px">Parcela A · sos el operador</div>
-      <div class="hero">
-        <div class="big ok"><span class="ph">0,40</span><small> AVAX</small></div>
-        <div class="hero-note">en <span class="ph">10</span> cuotas de 2025</div>
+    <div class="topbar"><div class="logo"><svg class="i" style="color:var(--standing-solid)"><use href="#sprout"/></svg>bosque <span>en pie</span></div><span class="balance">Operador A</span></div>
+    <div class="netbar mono-sm"><i></i>Red de prueba Fuji · no es plata real</div>
+    <div class="body">
+      <div><div class="kicker">Parcela A · sos el operador</div><div class="title-lg" style="margin-top:4px">Lo que cobraste por cuidar.</div></div>
+      <div><div class="data-lg c-standing"><span class="ph">0,48</span> AVAX</div><div class="body-sm mf">en <span class="ph">12</span> cuotas de 2025</div></div>
+      <div class="sec">
+        <span class="mono-sm mf">01 / Reparto de cada cuota</span>
+        <div class="reparto"><i style="width:60%;background:var(--standing-bg)"></i><i style="width:40%;background:var(--standing-solid)"></i></div>
+        <div class="legend body-sm">
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--standing-bg);border:1px solid var(--standing-solid)"></span>Dueño · no desmontar</span><span class="mono-md ph">60 % · 0,06</span></div>
+          <div class="lrow"><span class="k"><span class="sw" style="background:var(--standing-solid)"></span><b>Vos · cortafuegos y vigilancia</b></span><span class="mono-md ph">40 % · 0,04</span></div>
+        </div>
       </div>
-      <div class="card tight">
-        <div class="label" style="margin-bottom:8px">Reparto de cada cuota</div>
-        <div class="meter"><i style="width:60%;background:var(--green)"></i><i style="width:40%;background:#3f8f5f"></i></div>
-        <div class="row" style="margin-top:8px"><span class="muted">Dueño · no desmontar</span><span class="v ph">60 %</span></div>
-        <div class="row"><span class="muted">Operador · cortafuegos y vigilancia</span><span class="v ph">40 %</span></div>
+      <div class="sec">
+        <span class="mono-sm mf">02 / Últimos cobros</span>
+        <div class="list body-md">
+          <div class="li"><span><span class="ph">Dic 2025</span> <span class="mf body-sm">· informe 2 de 3</span></span><span class="r c-standing ph">+0,04</span></div>
+          <div class="li"><span><span class="ph">Nov 2025</span> <span class="mf body-sm">· informe 3 de 3</span></span><span class="r c-standing ph">+0,04</span></div>
+          <div class="li"><span><span class="ph">Oct 2025</span> <span class="mf body-sm">· informe 2 de 3</span></span><span class="r c-standing ph">+0,04</span></div>
+        </div>
       </div>
-      <div class="card tight">
-        <div class="label" style="margin-bottom:8px">Últimos cobros</div>
-        <div class="row"><span class="muted">oct 2025</span><span class="v ph">+0,04 AVAX</span></div>
-        <div class="row"><span class="muted">sep 2025</span><span class="v ph">+0,04 AVAX</span></div>
-        <div class="row"><span class="muted">ago 2025</span><span class="v ph">+0,04 AVAX</span></div>
+      <div class="grid2">
+        <div><span class="mono-sm mf">Próximo informe</span><span class="data-md">≥ 20 días</span></div>
+        <div><span class="mono-sm mf">El pozo alcanza</span><span class="data-md ph">20 cuotas</span></div>
       </div>
-      <div class="card tight">
-        <div class="row"><span class="muted">Próximo informe</span><span class="v">≥ 20 días después del último</span></div>
-        <div class="row"><span class="muted">Pozo alcanza para</span><span class="v ph">22 meses</span></div>
-      </div>
-      <a class="btn sec" href="#">Impugnar un informe</a>
+      <span class="body-sm mf">¿Un informe está mal? Si la ventana de impugnación está abierta, podés pedir que lo revise el curador.</span>
     </div>
-    <nav class="tabs"><a class="on" href="#">Parcela</a><a href="#">Cobros</a><a href="#">Informes</a><a href="#">Actividad</a></nav>
+    <div class="dock"><a class="btn sec" href="#">Impugnar un informe</a></div>
   </div>
+  <p class="slot-foot"><b>Componentes:</b> Barra superior de celular (Marca) · Dato · Fila de lista · Botón (Secundario). <span class="nuevo">Nuevo: Reparto de cuota.</span> En la demo la impugnación está apagada (ventana = 0).</p>
 </section>
 
 </main>
