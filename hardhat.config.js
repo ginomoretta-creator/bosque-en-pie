@@ -21,4 +21,20 @@ module.exports = {
       accounts: keys,
     },
   },
+  // Verificación del código en el explorer (#14): Routescan acepta la API de Etherscan y no pide clave real.
+  // Uso: npm run fuji:verificar
+  etherscan: {
+    apiKey: { fuji: "routescan" },
+    customChains: [
+      {
+        network: "fuji",
+        chainId: 43113,
+        urls: {
+          apiURL: "https://api.routescan.io/v2/network/testnet/evm/43113/etherscan",
+          browserURL: "https://testnet.snowtrace.io",
+        },
+      },
+    ],
+  },
+  sourcify: { enabled: false },
 };
