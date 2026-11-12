@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bosque en pie · Tres direcciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e9e7e2;color:#111;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.intro{max-width:1320px;margin:0 auto;padding:48px 24px 8px}
+.intro h1{font:800 44px/1.05 Geist,sans-serif;letter-spacing:-.03em}
+.intro p{margin-top:12px;max-width:70ch;color:#555;line-height:1.55}
+.note{margin-top:14px;display:inline-block;font:500 12px/1.4 "Geist Mono",monospace;background:#fff6d6;border:1px dashed #c99a00;padding:8px 12px;border-radius:8px;color:#6b5200}
+.dir{max-width:1320px;margin:40px auto 0;padding:0 24px}
+.dir-head{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:end;padding-bottom:16px;border-bottom:1px solid #cfccc4;margin-bottom:20px}
+.dir-head .letter{font:800 64px/0.9 Geist,sans-serif;letter-spacing:-.04em}
+.dir-head h2{font:700 26px/1.1 Geist,sans-serif;letter-spacing:-.02em}
+.dir-head p{color:#555;font-size:14px;line-height:1.5;margin-top:4px;max-width:70ch}
+.dir-head .refs{font:500 11px/1.6 "Geist Mono",monospace;color:#777;text-align:right;white-space:nowrap}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+.proscons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;font-size:13px;line-height:1.5;color:#444}
+.proscons div{background:#f6f5f1;border-radius:10px;padding:12px 14px}
+.proscons b{display:block;font:600 11px/1.4 "Geist Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:#111;margin-bottom:4px}
+.ph{text-decoration:underline dashed;text-underline-offset:3px;text-decoration-thickness:1px}
+.desk{border-radius:14px;overflow:hidden;min-height:640px;position:relative;box-shadow:0 1px 0 #0000000d,0 20px 50px -20px #0004}
+.phone{width:360px;height:740px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #111,0 30px 60px -20px #0006;margin:10px}
+.attr{font:400 10px/1.3 "Geist Mono",monospace;opacity:.7}
+@media (max-width:1100px){.stage{grid-template-columns:1fr}.phone{margin:10px auto 20px}.proscons{grid-template-columns:1fr}.dir-head{grid-template-columns:auto 1fr}.dir-head .refs{display:none}}
+@media (max-width:640px){.desk{min-height:auto}.intro h1{font-size:32px}}
+
+/* =====================================================
+   A · ÓRBITA — satélite cinematográfico + vidrio líquido
+   ===================================================== */
+.a{--lime:#c8f56a;--amber:#ffc857;--coral:#ff7a5c;--ink:#f3f5ef;--muted:#b8c0b2;font-family:Geist,sans-serif;color:var(--ink);background:#05070a}
+.a .bg{position:absolute;inset:0;background:url(assets/sat/chaco-z12.jpg) center/cover;filter:saturate(1.1) contrast(1.05)}
+.a .bg::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 40%,transparent 20%,#05070acc 70%,#05070a 100%),linear-gradient(180deg,#05070a99,transparent 25%,transparent 60%,#05070af0)}
+.a .grain{position:absolute;inset:0;opacity:.18;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.a .glass{background:linear-gradient(180deg,#ffffff1f,#ffffff0a);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid #ffffff2e;box-shadow:inset 0 1px 0 #ffffff40,0 20px 40px -20px #000a;border-radius:20px}
+.a .nav{position:relative;display:flex;justify-content:space-between;align-items:center;margin:18px 22px;padding:10px 12px 10px 18px;border-radius:999px}
+.a .brand{font-weight:700;letter-spacing:-.02em;display:flex;gap:8px;align-items:center}
+.a .brand i{width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.a .links{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+.a .pill{background:var(--ink);color:#05070a;font-weight:600;font-size:14px;border-radius:999px;padding:10px 18px}
+.a .pill.ghost{background:transparent;color:var(--ink);border:1px solid #ffffff40}
+.a .hero{position:relative;padding:70px 48px 40px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:end}
+.a .eyebrow{font:500 12px "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;border:1px solid #c8f56a40;background:#c8f56a12}
+.a h3{font-weight:700;font-size:64px;line-height:.98;letter-spacing:-.045em;margin-top:18px}
+.a h3 em{font-style:normal;color:var(--lime)}
+.a .lead{margin-top:18px;font-size:17px;line-height:1.5;color:var(--muted);max-width:44ch}
+.a .ctas{display:flex;gap:10px;margin-top:26px}
+.a .card{padding:18px}
+.a .card .row{display:flex;justify-content:space-between;align-items:center}
+.a .chip{font:500 11px "Geist Mono",monospace;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:#c8f56a24;color:var(--lime)}
+.a .chip.cut{background:#ff7a5c24;color:var(--coral)}
+.a .num{font-weight:300;font-size:56px;letter-spacing:-.04em;line-height:1;margin:12px 0 2px}
+.a .num.lime{color:var(--lime)} .a .num.coral{color:var(--coral)}
+.a .months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:14px}
+.a .months i{height:22px;border-radius:6px;background:var(--lime);opacity:.9}
+.a .months i.r{background:var(--amber)} .a .months i.c{background:var(--coral)} .a .months i.e{background:#ffffff1a}
+.a .small{font-size:12px;color:var(--muted)}
+.a .stack{display:flex;flex-direction:column;gap:12px}
+.a .poly{position:absolute;border:2px solid var(--lime);border-radius:4px;box-shadow:0 0 0 1px #0006,0 0 24px #c8f56a66}
+.a .poly.cut{border-color:var(--coral);box-shadow:0 0 0 1px #0006,0 0 24px #ff7a5c66}
+.a .poly b{position:absolute;top:-28px;left:-2px;font:500 11px "Geist Mono",monospace;background:var(--lime);color:#05070a;padding:3px 7px;border-radius:6px;white-space:nowrap}
+.a .poly.cut b{background:var(--coral)}
+.a .foot{position:absolute;left:48px;right:48px;bottom:16px;display:flex;justify-content:space-between}
+/* teléfono A */
+.a.phone .top{position:absolute;inset:0 0 auto 0;height:430px;background:url(assets/sat/chaco-z13.jpg) 40% 100%/240% auto}
+.a.phone .top::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#05070a80,transparent 30%,transparent 60%,#05070a)}
+.a.phone .status{position:absolute;top:52px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 14px;border-radius:999px}
+.a.phone .sheet{position:absolute;left:12px;right:12px;bottom:84px;padding:18px}
+.a.phone .tabbar{position:absolute;left:12px;right:12px;bottom:14px;display:grid;grid-template-columns:repeat(4,1fr);padding:10px 6px;border-radius:24px;font-size:11px;text-align:center;color:var(--muted)}
+.a.phone .tabbar b{color:var(--ink);font-weight:600}
+.a.phone .cta{display:block;text-align:center;margin-top:14px;background:var(--ink);color:#05070a;font-weight:600;border-radius:999px;padding:13px}
+
+/* =====================================================
+   B · CUADERNO DE CAMPO — editorial, papel y tinta
+   ===================================================== */
+.b{--paper:#f3eee4;--paper2:#ebe4d6;--ink:#1c1a15;--muted:#6d665a;--monte:#2f5d3a;--monte2:#dfe7d6;--tierra:#b9532b;--ambar:#b98512;--rule:#d8d0bf;background:var(--paper);color:var(--ink);font-family:Inter,sans-serif}
+.b .serif{font-family:"Instrument Serif",serif;font-weight:400}
+.b .nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--rule)}
+.b .brand{font-family:"Instrument Serif",serif;font-size:26px;letter-spacing:-.01em}
+.b .brand em{color:var(--monte)}
+.b .links{display:flex;gap:26px;font-size:14px;color:var(--muted)}
+.b .btn{background:var(--ink);color:var(--paper);font-size:14px;font-weight:500;padding:10px 18px;border-radius:999px}
+.b .btn.line{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.b .hero{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;padding:44px 40px 28px;align-items:start}
+.b .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--monte)}
+.b h3{font-family:"Instrument Serif",serif;font-weight:400;font-size:72px;line-height:.95;letter-spacing:-.02em;margin-top:14px}
+.b h3 em{font-style:italic;color:var(--monte)}
+.b .lead{font-size:17px;line-height:1.6;color:var(--muted);margin-top:18px;max-width:46ch}
+.b .ctas{display:flex;gap:10px;margin-top:24px}
+.b figure{position:relative}
+.b figure .img{aspect-ratio:4/3.2;border-radius:6px;background:url(assets/sat/chaco-z13.jpg) center/cover;position:relative}
+.b figure .img .poly{position:absolute;left:8%;top:62%;width:56%;height:30%;border:2px solid #fff;outline:1px solid #0005}
+.b figure .img .poly.cut{left:30%;top:22%;width:62%;height:42%;border-style:dashed;border-color:#ffd9c7}
+.b figcaption{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px;border-top:1px solid var(--rule);padding-top:8px}
+.b .stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);margin:0 40px}
+.b .stats div{padding:16px 0;border-right:1px solid var(--rule);padding-right:16px}
+.b .stats div + div{padding-left:18px}
+.b .stats div:last-child{border-right:0}
+.b .stats .v{font-family:"Instrument Serif",serif;font-size:40px;line-height:1}
+.b .stats .k{font-size:12px;color:var(--muted);margin-top:6px}
+.b .word{font-family:"Instrument Serif",serif;font-size:150px;line-height:.8;letter-spacing:-.04em;color:var(--paper2);padding:24px 30px 0;white-space:nowrap;overflow:hidden}
+.b .word em{color:#d6dfcb}
+/* teléfono B */
+.b.phone{padding:54px 22px 0;display:flex;flex-direction:column;gap:16px}
+.b.phone .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.b.phone .state{display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:var(--monte);background:var(--monte2);padding:5px 10px;border-radius:999px}
+.b.phone .state::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--monte)}
+.b.phone h4{font-family:"Instrument Serif",serif;font-weight:400;font-size:44px;line-height:.95;letter-spacing:-.01em}
+.b.phone .img{height:170px;border-radius:6px;background:url(assets/sat/chaco-z13.jpg) 40% 100%/220% auto;position:relative}
+.b.phone .img span{position:absolute;left:8px;bottom:8px;font-size:10px;background:var(--paper);padding:3px 7px;border-radius:4px;white-space:nowrap}
+.b.phone .big{font-family:"Instrument Serif",serif;font-size:76px;line-height:.85;color:var(--monte);letter-spacing:-.02em}
+.b.phone .months{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.b.phone .months i{aspect-ratio:1;background:var(--monte);border-radius:2px}
+.b.phone .months i.e{background:transparent;border:1px solid var(--rule)}
+.b.phone .ml{display:grid;grid-template-columns:repeat(12,1fr);font-size:9px;color:var(--muted);text-align:center;margin-top:3px}
+.b.phone .line{display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-top:1px solid var(--rule)}
+.b.phone .cta{margin-top:auto;margin-bottom:18px;text-align:center;background:var(--ink);color:var(--paper);padding:14px;border-radius:999px;font-weight:500}
+
+/* =====================================================
+   C · VIVO — táctil, claro, íconos 3D
+   ===================================================== */
+.c{--bg:#f2f5ec;--card:#ffffff;--ink:#0f1a12;--muted:#5d6b60;--green:#16a34a;--deep:#0b3d22;--lime:#d9ff4a;--amber:#ffb020;--red:#ff5a3c;font-family:"Bricolage Grotesque",sans-serif;background:var(--bg);color:var(--ink)}
+.c .nav{display:flex;justify-content:space-between;align-items:center;margin:16px;padding:10px 10px 10px 20px;background:var(--card);border-radius:20px}
+.c .brand{font-weight:800;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.c .brand i{width:26px;height:26px;border-radius:9px;background:var(--green);display:grid;place-items:center;color:var(--lime);font-style:normal;font-size:14px}
+.c .links{display:flex;gap:6px;font-size:14px;font-weight:600}
+.c .links span{padding:8px 14px;border-radius:12px}
+.c .links span.on{background:var(--bg)}
+.c .btn{background:var(--ink);color:var(--lime);font-weight:800;padding:12px 20px;border-radius:14px;font-size:15px}
+.c .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;padding:8px 16px 16px}
+.c .panel{background:var(--deep);color:#fff;border-radius:28px;padding:40px 36px;position:relative;overflow:hidden;min-height:440px}
+.c .panel h3{font-weight:800;font-size:66px;line-height:.92;letter-spacing:-.045em}
+.c .panel h3 span{background:var(--lime);color:var(--deep);padding:0 10px;border-radius:14px;display:inline-block;transform:rotate(-2deg)}
+.c .panel p{margin-top:18px;font-size:17px;line-height:1.45;color:#cfe3d4;max-width:34ch}
+.c .panel .btn{display:inline-block;margin-top:24px;background:var(--lime);color:var(--deep)}
+.c .panel img{position:absolute;width:150px;filter:drop-shadow(0 20px 20px #0006)}
+.c .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.c .tile{background:var(--card);border-radius:28px;padding:22px;position:relative;overflow:hidden}
+.c .tile img{width:64px;height:64px}
+.c .tile .v{font-weight:800;font-size:40px;letter-spacing:-.04em;line-height:1;margin-top:8px}
+.c .tile .k{color:var(--muted);font-size:14px;margin-top:4px}
+.c .tile.sat{grid-column:1/-1;min-height:190px;background:url(assets/sat/chaco-z12.jpg) center 60%/cover;color:#fff;display:flex;flex-direction:column;justify-content:flex-end}
+.c .tile.sat .tag{align-self:flex-start;background:#fff;color:var(--ink);font-weight:700;font-size:13px;padding:7px 12px;border-radius:12px;display:flex;gap:6px;align-items:center}
+.c .tile.sat .tag i{width:8px;height:8px;border-radius:50%;background:var(--green)}
+/* teléfono C */
+.c.phone{padding:52px 14px 0;display:flex;flex-direction:column;gap:12px}
+.c.phone .top{display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.c.phone .bal{background:var(--card);font-weight:700;font-size:13px;padding:8px 12px;border-radius:12px}
+.c.phone .hero{display:block;padding:0;background:var(--deep);color:#fff;border-radius:26px;padding:18px;position:relative;overflow:hidden}
+.c.phone .hero .img{height:130px;border-radius:18px;background:url(assets/sat/chaco-z13.jpg) 40% 100%/220% auto;margin-bottom:14px}
+.c.phone .state{display:inline-flex;align-items:center;gap:6px;background:var(--lime);color:var(--deep);font-weight:800;font-size:13px;padding:6px 12px;border-radius:12px}
+.c.phone .big{font-weight:800;font-size:58px;letter-spacing:-.05em;line-height:1;margin-top:10px}
+.c.phone .hero p{color:#cfe3d4;font-size:13px}
+.c.phone .hero img{position:absolute;right:-6px;bottom:-8px;width:96px;filter:drop-shadow(0 10px 12px #0007)}
+.c.phone .months{background:var(--card);border-radius:22px;padding:14px;display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.c.phone .months i{height:30px;border-radius:9px;background:var(--green)}
+.c.phone .months i.e{background:var(--bg)}
+.c.phone .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.c.phone .mini{background:var(--card);border-radius:22px;padding:14px}
+.c.phone .mini img{width:40px;height:40px}
+.c.phone .mini .v{font-weight:800;font-size:22px;letter-spacing:-.03em}
+.c.phone .mini .k{font-size:12px;color:var(--muted)}
+.c.phone .cta{text-align:center;background:var(--ink);color:var(--lime);font-weight:800;padding:15px;border-radius:18px;font-size:16px}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Tres direcciones nuevas para Bosque en pie</h1>
+  <p>Tomadas de lo que muestran scrolltide, glass (samasante), supahero, refero styles, cta.gallery, navbar.gallery, footer.design y 3dicons. Cada una tiene una pantalla de inicio (escritorio) y la pantalla de una parcela (celular). La imagen satelital es real: Sentinel-2 del Chaco salteño. Elegí una y la llevo a todas las pantallas.</p>
+  <div class="note">Números, hectáreas y montos de ejemplo (subrayado punteado). La imagen muestra la zona, no las parcelas de la demo.</div>
+</div>
+
+<!-- ================================ A ================================ -->
+<section class="dir">
+  <div class="dir-head">
+    <div class="letter">A</div>
+    <div><h2>Órbita — el satélite como escenario</h2><p>La imagen satelital ocupa toda la pantalla, oscura y con grano, y los datos flotan encima en paneles de vidrio. Se ve desde lejos: monte oscuro contra lotes desmontados. Tipografía Geist, acento lima clorofila.</p></div>
+    <div class="refs">scrolltide · glass.samasante<br>refero: "constellation on black"</div>
+  </div>
+  <div class="stage">
+    <div class="desk a">
+      <div class="bg"></div><div class="grain"></div>
+      <div class="poly cut" style="left:61%;top:19%;width:11%;height:15%"><b>Parcela B · desmontada</b></div>
+      <div class="poly" style="left:80%;top:20%;width:11%;height:14%"><b>Parcela A · en pie</b></div>
+      <nav class="nav glass"><span class="brand"><i></i>bosque en pie</span><span class="links"><span>Mapa</span><span>Cómo funciona</span><span>Actividad</span></span><span class="pill">Aportar</span></nav>
+      <div class="hero">
+        <div>
+          <span class="eyebrow">● Verificado por Sentinel-2 · Avalanche</span>
+          <h3>Pagamos por cada mes que el monte <em>sigue en pie.</em></h3>
+          <p class="lead">Dejás AVAX en un contrato. Cada mes una imagen satelital confirma la parcela y el contrato paga a quienes la cuidan. Si aparece un desmonte, se corta.</p>
+          <div class="ctas"><span class="pill">Ver las parcelas</span><span class="pill ghost">Cómo funciona</span></div>
+        </div>
+        <div class="stack">
+          <div class="glass card"><div class="row"><b>Parcela A</b><span class="chip">● En pie</span></div><div class="num lime"><span class="ph">99,3</span>%</div><div class="small">monte en pie contra 2024</div><div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+          <div class="glass card"><div class="row"><b>Parcela B</b><span class="chip cut">✕ Desmontada</span></div><div class="num coral"><span class="ph">38,6</span>%</div><div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i class="r"></i><i class="c"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i></div></div>
+        </div>
+      </div>
+      <div class="foot"><span class="attr">Sentinel-2 cloudless 2023 · EOX IT Services GmbH · contiene datos Copernicus Sentinel modificados</span><span class="attr">Red de prueba Fuji</span></div>
+    </div>
+    <div class="phone a">
+      <div class="top"></div><div class="grain"></div>
+      <div class="status glass"><b style="font-size:14px">Parcela A</b><span class="pill" style="padding:7px 12px;font-size:12px"><span class="ph">2,00</span> AVAX</span></div>
+      <div class="sheet glass">
+        <div class="row" style="display:flex;justify-content:space-between;align-items:center"><span class="small"><span class="ph">214</span> ha · Chaco salteño</span><span class="chip">● En pie</span></div>
+        <div class="num lime" style="font-size:64px"><span class="ph">99,3</span>%</div>
+        <div class="small">monte en pie · imagen del <span class="ph">10 dic 2025</span> · firmaron 2 de 3</div>
+        <div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="small" style="display:flex;justify-content:space-between;margin-top:12px"><span>Pozo <b style="color:var(--ink)"><span class="ph">3,20</span> AVAX</b></span><span>Cuota <b style="color:var(--ink)"><span class="ph">0,10</span></b></span></div>
+        <span class="cta">Aportar a esta parcela</span>
+      </div>
+      <div class="tabbar glass"><b>Mapa</b><span>Actividad</span><span>Mi aporte</span><span>Cómo</span></div>
+    </div>
+  </div>
+  <div class="proscons"><div><b>Fuerte en</b>El video y la pantalla grande. El problema se entiende en un segundo, sin texto.</div><div><b>Riesgo</b>El vidrio y la imagen oscura bajan la legibilidad al sol en un celular. Hay que cuidar el contraste.</div><div><b>Costo</b>Medio. Leaflet con capa satelital y paneles con <code>backdrop-filter</code>.</div></div>
+</section>
+
+<!-- ================================ B ================================ -->
+<section class="dir">
+  <div class="dir-head">
+    <div class="letter">B</div>
+    <div><h2>Cuaderno de campo — editorial y confiable</h2><p>Papel claro, tinta oscura y una serif grande (Instrument Serif) con texto en Inter. Parece un informe de campo o una fundación seria: transmite confianza a un donante o a una empresa. Logotipo gigante en el pie.</p></div>
+    <div class="refs">refero: "warm cream editorial"<br>footer.design: Trove, Vansita · navbar: Orchid</div>
+  </div>
+  <div class="stage">
+    <div class="desk b">
+      <nav class="nav"><span class="brand">bosque <em>en pie</em></span><span class="links"><span>Parcelas</span><span>Cómo funciona</span><span>Informes</span><span>Para empresas</span></span><span class="btn">Aportar</span></nav>
+      <div class="hero">
+        <div>
+          <span class="kicker">Conservación verificada por satélite</span>
+          <h3>El monte en pie, <em>pagado</em> mes a mes.</h3>
+          <p class="lead">Un contrato en Avalanche guarda tu aporte. Cada mes, una imagen Sentinel-2 confirma que la parcela sigue entera y el contrato paga a quienes la cuidan. Si hay desmonte, los pagos se cortan.</p>
+          <div class="ctas"><span class="btn">Ver las parcelas</span><span class="btn line">Leer un informe</span></div>
+        </div>
+        <figure><div class="img"><span class="poly"></span><span class="poly cut"></span></div><figcaption><span>Fig. 1 — Monte nativo y lotes desmontados, Chaco salteño.</span><span>Sentinel-2 · EOX</span></figcaption></figure>
+      </div>
+      <div class="stats"><div><div class="v">20.122 ha</div><div class="k">desmontadas en Salta, ene–sep 2026 (relevamiento de Greenpeace)</div></div><div><div class="v">2 de 3</div><div class="k">verificadores firman cada informe</div></div><div><div class="v">0 AVAX</div><div class="k">van al dueño o al operador si hay desmonte</div></div></div>
+      <div class="word">bosque <em>en pie</em></div>
+    </div>
+    <div class="phone b">
+      <div class="top"><span>← Parcelas</span><span><span class="ph">2,00</span> AVAX</span></div>
+      <div><span class="state">En pie</span><h4 style="margin-top:10px">Parcela A</h4><div style="font-size:13px;color:var(--muted);margin-top:4px"><span class="ph">214</span> ha · Chaco salteño (de ejemplo)</div></div>
+      <div class="img"><span>Sentinel-2 · <span class="ph">10 dic 2025</span></span></div>
+      <div style="display:flex;align-items:flex-end;gap:10px"><div class="big"><span class="ph">99,3</span>%</div><div style="font-size:12px;color:var(--muted);padding-bottom:6px">del monte de 2024 sigue en pie</div></div>
+      <div><div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ml"><span>E</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
+      <div><div class="line"><span>Pozo</span><b><span class="ph">3,20</span> AVAX</b></div><div class="line"><span>Firmas del último informe</span><b>2 de 3</b></div></div>
+      <div class="cta">Aportar a esta parcela</div>
+    </div>
+  </div>
+  <div class="proscons"><div><b>Fuerte en</b>Confianza y claridad. Es lo más legible en celular y lo que mejor le habla a una empresa (certificados).</div><div><b>Riesgo</b>Menos impacto visual en el video. Se apoya en buena tipografía y en mucho aire.</div><div><b>Costo</b>Bajo. Es casi todo tipografía y grillas; lo más rápido de construir.</div></div>
+</section>
+
+<!-- ================================ C ================================ -->
+<section class="dir">
+  <div class="dir-head">
+    <div class="letter">C</div>
+    <div><h2>Vivo — táctil, claro y con íconos 3D</h2><p>Tarjetas grandes y redondeadas, verde profundo con lima eléctrico y la tipografía Bricolage Grotesque. Usa íconos 3D de 3dicons (CC0): pin, bolsa de plata, escudo, medalla y hacha. Se siente como una app de consumo: amable para el jurado que la usa desde el celular.</p></div>
+    <div class="refs">3dicons · supahero: eddie, spectrum<br>cta.gallery · navbar.gallery</div>
+  </div>
+  <div class="stage">
+    <div class="desk c">
+      <nav class="nav"><span class="brand"><i>●</i>bosque en pie</span><span class="links"><span class="on">Parcelas</span><span>Cómo funciona</span><span>Empresas</span></span><span class="btn">Aportar</span></nav>
+      <div class="hero">
+        <div class="panel">
+          <h3>Tu plata<br><span>cuida</span> el monte.</h3>
+          <p>Cada mes que el satélite confirma que la parcela sigue en pie, el contrato paga a quienes la cuidan. Si hay desmonte, se corta.</p>
+          <span class="btn">Elegir una parcela →</span>
+          <img src="assets/3d/sheild.png" alt="" style="right:20px;top:24px;transform:rotate(8deg)">
+          <img src="assets/3d/money-bag.png" alt="" style="right:-10px;bottom:-30px;width:150px">
+        </div>
+        <div class="grid">
+          <div class="tile sat"><span class="tag"><i></i>Parcela A · en pie · <span class="ph">99,3 %</span></span></div>
+          <div class="tile"><img src="assets/3d/map-pin.png" alt=""><div class="v ph">2</div><div class="k">parcelas en el Chaco salteño</div></div>
+          <div class="tile"><img src="assets/3d/medal.png" alt=""><div class="v ph">2.406</div><div class="k">ha-mes certificadas</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="phone c">
+      <div class="top"><b style="font-size:18px;letter-spacing:-.03em">← Parcela A</b><span class="bal"><span class="ph">2,00</span> AVAX</span></div>
+      <div class="hero">
+        <div class="img"></div>
+        <span class="state">● En pie</span>
+        <div class="big"><span class="ph">99,3</span>%</div>
+        <p>del monte de 2024 · <span class="ph">214</span> ha</p>
+        <img src="assets/3d/sheild.png" alt="">
+      </div>
+      <div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="two">
+        <div class="mini"><img src="assets/3d/money-bag.png" alt=""><div class="v"><span class="ph">3,20</span> AVAX</div><div class="k">en el pozo</div></div>
+        <div class="mini"><img src="assets/3d/tick.png" alt=""><div class="v">2 de 3</div><div class="k">firmas del informe</div></div>
+      </div>
+      <div class="cta">Aportar a esta parcela</div>
+    </div>
+  </div>
+  <div class="proscons"><div><b>Fuerte en</b>Lo más amigable y memorable. Ideal para que el jurado aporte desde el QR sin pensarlo.</div><div><b>Riesgo</b>Puede verse menos serio para un tema de conservación y plata. Los íconos 3D no tienen árbol, así que usamos escudo, pin y bolsa.</div><div><b>Costo</b>Bajo a medio. Tarjetas simples más imágenes PNG.</div></div>
+</section>
+
+<div style="height:60px"></div>
+</body>
+</html>
