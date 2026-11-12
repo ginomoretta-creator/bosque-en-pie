@@ -28,6 +28,25 @@ Guion del pitch: [docs/pitch-2min.md](docs/pitch-2min.md).
 - Dirección: _pendiente_
 - Explorer: _pendiente_
 
+## Cómo correr
+
+Requisitos: Node 18 o más nuevo y Python 3.11 o más nuevo.
+
+```bash
+npm install
+npx hardhat test                      # 34 pruebas del contrato
+python -m venv .venv
+.venv/Scripts/pip install -r oracle/requirements.txt   # en Linux/Mac: .venv/bin/pip
+.venv/Scripts/python -m pytest oracle/tests            # la firma de Python valida en el contrato
+```
+
+Despliegue en Fuji (claves de prueba en `.env`, ver `.env.example`):
+
+```bash
+npx hardhat run scripts/deploy.js --network fuji
+npx hardhat run scripts/register-parcels.js --network fuji   # requiere hectáreas en parcels/registry.json
+```
+
 ## Estructura
 
 ```

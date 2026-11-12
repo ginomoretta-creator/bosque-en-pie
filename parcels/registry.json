@@ -1,0 +1,27 @@
+{
+  "nota": "Datos de registro de cada parcela. hectares se completa con el área real del GeoJSON. feeAvax es chico porque se paga con AVAX de faucet. commitEnd = 0 en la demo.",
+  "parcels": [
+    {
+      "name": "A",
+      "geojson": "parcels/A.geojson",
+      "hectares": null,
+      "ownerEnv": "OWNER_A",
+      "operatorEnv": "OPERATOR_A",
+      "feeAvax": "0.01",
+      "thresholdBps": 0,
+      "ownerShareBps": 6000,
+      "commitEnd": 0
+    },
+    {
+      "name": "B",
+      "geojson": "parcels/B.geojson",
+      "hectares": null,
+      "ownerEnv": "OWNER_B",
+      "operatorEnv": "OPERATOR_B",
+      "feeAvax": "0.01",
+      "thresholdBps": 0,
+      "ownerShareBps": 6000,
+      "commitEnd": 0
+    }
+  ]
+}
