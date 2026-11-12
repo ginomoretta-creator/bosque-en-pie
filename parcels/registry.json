@@ -4,24 +4,26 @@
     {
       "name": "A",
       "geojson": "parcels/A.geojson",
-      "hectares": null,
+      "hectares": 101,
       "ownerEnv": "OWNER_A",
       "operatorEnv": "OPERATOR_A",
       "feeAvax": "0.01",
       "thresholdBps": 0,
       "ownerShareBps": 6000,
-      "commitEnd": 0
+      "commitEnd": 0,
+      "tile": "20KNA"
     },
     {
       "name": "B",
       "geojson": "parcels/B.geojson",
-      "hectares": null,
+      "hectares": 84,
       "ownerEnv": "OWNER_B",
       "operatorEnv": "OPERATOR_B",
       "feeAvax": "0.01",
       "thresholdBps": 0,
       "ownerShareBps": 6000,
-      "commitEnd": 0
+      "commitEnd": 0,
+      "tile": "20KNA"
     }
   ]
 }
