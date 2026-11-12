@@ -1,6 +1,7 @@
 // Carga los aportes iniciales de la demo para que los informes tengan de dónde pagar.
 // La "empresa de prueba" aporta a A (devolución) y a B (mitad devolución, mitad restauración).
 // Si se corre dos veces no duplica: saltea las parcelas donde la empresa ya aportó.
+// Si la empresa no tiene saldo, se lo pasa el curador.
 // Uso: npx hardhat run scripts/aportes-demo.js --network localhost   (o --network fuji)
 const fs = require("fs");
 const path = require("path");
@@ -20,9 +21,17 @@ async function main() {
   const c = await ethers.getContractAt("BosqueEnPie", deployment.address, empresa);
   const ids = Object.fromEntries((deployment.parcels || []).map((p) => [p.name, p.id]));
 
-  const saldo = await ethers.provider.getBalance(empresa.address);
+  // Si a la empresa no le alcanza para los aportes (más gas), el curador le pasa la diferencia.
+  const total = APORTES.reduce((t, a) => t + ethers.parseEther(a.avax), 0n) + ethers.parseEther("0.01");
+  let saldo = await ethers.provider.getBalance(empresa.address);
+  if (saldo < total) {
+    const [curador] = await ethers.getSigners();
+    const tx = await curador.sendTransaction({ to: empresa.address, value: total - saldo });
+    await tx.wait();
+    console.log(`El curador le pasó ${ethers.formatEther(total - saldo)} AVAX a la empresa de prueba · tx ${tx.hash}`);
+    saldo = total;
+  }
   console.log(`Red: ${network.name} · empresa de prueba: ${empresa.address} · saldo: ${ethers.formatEther(saldo)} AVAX`);
-  if (saldo === 0n) throw new Error("La empresa de prueba no tiene saldo. Pasale AVAX de prueba desde el curador.");
 
   for (const a of APORTES) {
     const id = ids[a.parcela];
