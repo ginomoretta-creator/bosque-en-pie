@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-marca="v2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bosque en pie · Mock v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Geist:wght@400..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    Bosque en pie · v4 · "Cada píxel cuenta"
@@ -21,6 +21,31 @@
   --r-xl:32px; --r-lg:24px; --r-md:16px; --r-sm:12px;
   --display:"Bricolage Grotesque",system-ui,sans-serif; --sans:Inter,system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
 }
+/* ============================================================
+   Marca v2 (logo de la «b» y tokens de design/tokens-v2.css).
+   Pisa las variables del mock. Para volver al aspecto v4 original,
+   sacá data-marca="v2" del <html>.
+   ============================================================ */
+:root[data-marca="v2"]{
+  --bg:#F4F2EC; --card:#FBFAF6; --line:#D9D5CA; --ink:#121410; --muted:#5E6259; --faint:#5E6259;
+  --deep:#121410; --deep-2:#1A1D18; --leaf:#2E7D4F; --lime:#6CC58A; --lime-ink:#121410;
+  --stand:#2A7349; --stand-bg:#E3EFE4;
+  --review:#D99A1E; --review-bg:#F7EBCF;
+  --cut:#C2532F; --cut-bg:#F6E6DE;
+  --r-xl:8px; --r-lg:6px; --r-md:4px; --r-sm:3px;
+  --display:"Geist",system-ui,sans-serif; --sans:"Geist",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
+}
+/* Íconos propios: tinta = color del texto; el acento sigue el estado y se aclara sobre fondo oscuro. Sin sombra. */
+[data-marca="v2"] .vx svg{width:100%;height:auto;display:block}
+[data-marca="v2"] :is(.on-dark,.h-card,.cert) .vx{--ic-v:#6CC58A;--ic-t:#E58A66;--ic-a:#E2B04A}
+[data-marca="v2"] .intro .icons .vx{width:40px}
+[data-marca="v2"] .step .vx{width:64px;margin:0 0 8px}
+[data-marca="v2"] .h-card .vx{width:68px;right:14px;bottom:14px}
+[data-marca="v2"] .tile .vx{width:36px;margin:0 0 6px}
+[data-marca="v2"] .notice .vx{width:34px}
+[data-marca="v2"] .choice .vx{width:36px}
+[data-marca="v2"] .cert .vx{width:56px;right:16px;top:16px}
+[data-marca="v2"] .float{width:96px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#e8ebe2;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
@@ -212,23 +237,16 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 
-<!-- Logotipo del Figma (componente "Logotipo", Horizontal L y Signo) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="logo-h" viewBox="0 0 250 48"><!-- PROVISORIO: reemplazar por el logo v2 exportado del Figma -->
-    <circle cx="24" cy="24" r="22" fill="currentColor"/>
-    <path d="M24 37V21" stroke="var(--logo-bg,#fff)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M24 25c0-7.5 5-12 13-12 0 7.5-5 12-13 12z" fill="var(--logo-sq,#2fb35a)"/>
-    <path d="M24 29c0-5.5-4-9-10-9 0 5.5 4 9 10 9z" fill="var(--logo-bg,#fff)"/>
-    <text x="56" y="34" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="27" letter-spacing="-1.1" fill="currentColor">bosque <tspan fill="var(--logo-sq,#2fb35a)">en pie</tspan></text>
-  </symbol>
-  <symbol id="logo-s" viewBox="0 0 48 48"><path fill="currentColor" d="M19.5 24H28.5V42H19.5V24ZM6 42H42V45H6V42Z"/><path fill="var(--logo-sq,#2fb35a)" d="M15 3H33V21H15V3Z"/></symbol>
-</svg>
+<!-- Logo v2 (design/assets/logo/): build-mocks.py inserta los símbolos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo-h" viewBox="-2.24 -2.64 189.44 35.28"><g transform="translate(0 1) scale(0.07)"><path fill="var(--logo-sq,#2E7D4F)" d="M40 92L112 20V60L40 132Z"/><path fill="currentColor" d="M40 144L112 72V380H76A36 36 0 0 1 40 344Z"/><circle fill="currentColor" cx="236" cy="254" r="126"/><path fill="var(--logo-sq,#2E7D4F)" d="M168 322C168 236 220 186 304 186C304 272 254 322 168 322Z"/><path stroke="currentColor" stroke-width="12" stroke-linecap="round" d="M168 322L268 222"/></g><g transform="translate(37.403 6.302) scale(0.23)"><path fill="currentColor" d="M32.9999 73.8001C29.1999 73.8001 25.9332 73.0334 23.1999 71.5001C20.5332 69.9001 18.4332 67.6668 16.8999 64.8001L16.5999 72.6001H-9.72152e-05V1.60009H17.1999V26.5001C18.6666 23.9001 20.7332 21.7668 23.3999 20.1001C26.1332 18.4334 29.3332 17.6001 32.9999 17.6001C37.5332 17.6001 41.4332 18.7668 44.6999 21.1001C48.0332 23.4334 50.5999 26.7001 52.3999 30.9001C54.2666 35.1001 55.1999 40.0334 55.1999 45.7001C55.1999 51.3668 54.2666 56.3001 52.3999 60.5001C50.5999 64.7001 48.0332 67.9668 44.6999 70.3001C41.4332 72.6334 37.5332 73.8001 32.9999 73.8001ZM27.5999 61.1001C30.5332 61.1001 32.8999 59.7668 34.6999 57.1001C36.5666 54.3668 37.4999 50.5668 37.4999 45.7001C37.4999 40.7668 36.5999 36.9668 34.7999 34.3001C33.0666 31.6334 30.6999 30.3001 27.6999 30.3001C25.4999 30.3001 23.5999 30.9001 21.9999 32.1001C20.3999 33.3001 19.1999 35.0668 18.3999 37.4001C17.5999 39.6668 17.1999 42.4334 17.1999 45.7001C17.1999 48.9001 17.5999 51.6668 18.3999 54.0001C19.1999 56.2668 20.3666 58.0334 21.8999 59.3001C23.4999 60.5001 25.3999 61.1001 27.5999 61.1001ZM84.8694 73.8001C79.2028 73.8001 74.2361 72.6334 69.9694 70.3001C65.7694 67.9668 62.4694 64.7001 60.0694 60.5001C57.7361 56.3001 56.5694 51.3668 56.5694 45.7001C56.5694 40.0334 57.7361 35.1001 60.0694 30.9001C62.4694 26.7001 65.7694 23.4334 69.9694 21.1001C74.2361 18.7668 79.2028 17.6001 84.8694 17.6001C90.5361 17.6001 95.4694 18.7668 99.6694 21.1001C103.869 23.4334 107.136 26.7001 109.469 30.9001C111.869 35.1001 113.069 40.0334 113.069 45.7001C113.069 51.3668 111.869 56.3001 109.469 60.5001C107.136 64.7001 103.869 67.9668 99.6694 70.3001C95.4694 72.6334 90.5361 73.8001 84.8694 73.8001ZM84.8694 61.1001C88.2028 61.1001 90.7694 59.7668 92.5694 57.1001C94.4361 54.4334 95.3694 50.6334 95.3694 45.7001C95.3694 40.8334 94.4361 37.0668 92.5694 34.4001C90.7694 31.6668 88.2028 30.3001 84.8694 30.3001C81.4694 30.3001 78.8361 31.6668 76.9694 34.4001C75.1694 37.0668 74.2694 40.8334 74.2694 45.7001C74.2694 50.6334 75.1694 54.4334 76.9694 57.1001C78.8361 59.7668 81.4694 61.1001 84.8694 61.1001ZM141.174 73.8001C135.374 73.8001 130.541 73.0334 126.674 71.5001C122.807 69.9001 119.841 67.7334 117.774 65.0001C115.774 62.2668 114.641 59.1668 114.374 55.7001L131.774 55.1001C132.174 57.5001 133.141 59.3001 134.674 60.5001C136.207 61.7001 138.407 62.3001 141.274 62.3001C143.607 62.3001 145.407 61.9334 146.674 61.2001C147.941 60.4001 148.574 59.2334 148.574 57.7001C148.574 56.6334 148.307 55.7668 147.774 55.1001C147.307 54.4334 146.341 53.8334 144.874 53.3001C143.474 52.7668 141.374 52.2668 138.574 51.8001C132.707 50.8668 128.107 49.7334 124.774 48.4001C121.441 47.0001 119.074 45.2334 117.674 43.1001C116.341 40.9668 115.674 38.3001 115.674 35.1001C115.674 29.8334 117.741 25.6001 121.874 22.4001C126.074 19.2001 132.407 17.6001 140.874 17.6001C146.141 17.6001 150.541 18.4001 154.074 20.0001C157.674 21.6001 160.441 23.8334 162.374 26.7001C164.374 29.5001 165.607 32.7668 166.074 36.5001L148.974 37.1001C148.774 35.4334 148.307 34.0001 147.574 32.8001C146.841 31.6001 145.907 30.7001 144.774 30.1001C143.641 29.4334 142.274 29.1001 140.674 29.1001C138.407 29.1001 136.607 29.6001 135.274 30.6001C134.007 31.5334 133.374 32.8334 133.374 34.5001C133.374 35.6334 133.641 36.6001 134.174 37.4001C134.774 38.1334 135.741 38.7334 137.074 39.2001C138.407 39.6668 140.207 40.0668 142.474 40.4001C148.274 41.1334 152.907 42.2334 156.374 43.7001C159.841 45.1001 162.341 46.9334 163.874 49.2001C165.474 51.4001 166.274 54.1001 166.274 57.3001C166.274 60.8334 165.241 63.8334 163.174 66.3001C161.174 68.7668 158.307 70.6334 154.574 71.9001C150.841 73.1668 146.374 73.8001 141.174 73.8001ZM222.789 87.6001H205.589V61.4001L206.889 62.0001C206.156 64.4001 204.956 66.5001 203.289 68.3001C201.689 70.0334 199.756 71.4001 197.489 72.4001C195.289 73.3334 192.889 73.8001 190.289 73.8001C185.422 73.8001 181.289 72.6001 177.889 70.2001C174.556 67.7334 171.989 64.3668 170.189 60.1001C168.456 55.8334 167.589 51.0334 167.589 45.7001C167.589 40.3001 168.456 35.5001 170.189 31.3001C171.922 27.0334 174.456 23.7001 177.789 21.3001C181.122 18.8334 185.222 17.6001 190.089 17.6001C194.156 17.6001 197.689 18.6334 200.689 20.7001C203.689 22.7668 205.822 25.7334 207.089 29.6001L205.789 30.1001L206.089 18.8001H222.789V87.6001ZM195.489 61.1001C197.689 61.1001 199.522 60.5334 200.989 59.4001C202.456 58.2001 203.589 56.4668 204.389 54.2001C205.189 51.9334 205.589 49.1001 205.589 45.7001C205.589 42.3001 205.189 39.4668 204.389 37.2001C203.589 34.9334 202.422 33.2334 200.889 32.1001C199.422 30.9001 197.622 30.3001 195.489 30.3001C192.356 30.3001 189.856 31.7001 187.989 34.5001C186.189 37.2334 185.289 40.9668 185.289 45.7001C185.289 50.4334 186.189 54.2001 187.989 57.0001C189.856 59.7334 192.356 61.1001 195.489 61.1001ZM248.235 73.8001C242.635 73.8001 238.268 72.0334 235.135 68.5001C232.068 64.9001 230.535 59.9001 230.535 53.5001V18.8001H247.735V49.5001C247.735 53.3001 248.268 56.0668 249.335 57.8001C250.468 59.5334 252.235 60.4001 254.635 60.4001C257.302 60.4001 259.335 59.4668 260.735 57.6001C262.202 55.6668 262.935 52.6668 262.935 48.6001V18.8001H280.135V72.6001H264.635L264.135 56.4001L266.135 56.7001C265.468 62.4334 263.635 66.7334 260.635 69.6001C257.635 72.4001 253.502 73.8001 248.235 73.8001ZM312.175 73.8001C306.575 73.8001 301.675 72.6334 297.475 70.3001C293.275 67.9668 290.008 64.7001 287.675 60.5001C285.342 56.3001 284.175 51.3668 284.175 45.7001C284.175 40.0334 285.342 35.1334 287.675 31.0001C290.008 26.8001 293.242 23.5334 297.375 21.2001C301.575 18.8001 306.475 17.6001 312.075 17.6001C317.675 17.6001 322.508 18.8001 326.575 21.2001C330.708 23.5334 333.875 26.9001 336.075 31.3001C338.275 35.7001 339.375 40.9334 339.375 47.0001V50.2001H301.975C302.175 53.9334 303.208 56.7334 305.075 58.6001C307.008 60.4001 309.475 61.3001 312.475 61.3001C314.742 61.3001 316.642 60.8668 318.175 60.0001C319.708 59.0668 320.808 57.5668 321.475 55.5001L338.675 56.5001C337.208 62.1001 334.108 66.4001 329.375 69.4001C324.642 72.3334 318.908 73.8001 312.175 73.8001ZM301.975 40.4001H321.975C321.842 36.8668 320.875 34.2334 319.075 32.5001C317.275 30.7001 314.942 29.8001 312.075 29.8001C309.342 29.8001 307.042 30.7334 305.175 32.6001C303.375 34.4668 302.308 37.0668 301.975 40.4001Z"/><path fill="var(--logo-sq,#2E7D4F)" d="M387.257 73.8001C381.657 73.8001 376.757 72.6334 372.557 70.3001C368.357 67.9668 365.09 64.7001 362.757 60.5001C360.424 56.3001 359.257 51.3668 359.257 45.7001C359.257 40.0334 360.424 35.1334 362.757 31.0001C365.09 26.8001 368.324 23.5334 372.457 21.2001C376.657 18.8001 381.557 17.6001 387.157 17.6001C392.757 17.6001 397.59 18.8001 401.657 21.2001C405.79 23.5334 408.957 26.9001 411.157 31.3001C413.357 35.7001 414.457 40.9334 414.457 47.0001V50.2001H377.057C377.257 53.9334 378.29 56.7334 380.157 58.6001C382.09 60.4001 384.557 61.3001 387.557 61.3001C389.824 61.3001 391.724 60.8668 393.257 60.0001C394.79 59.0668 395.89 57.5668 396.557 55.5001L413.757 56.5001C412.29 62.1001 409.19 66.4001 404.457 69.4001C399.724 72.3334 393.99 73.8001 387.257 73.8001ZM377.057 40.4001H397.057C396.924 36.8668 395.957 34.2334 394.157 32.5001C392.357 30.7001 390.024 29.8001 387.157 29.8001C384.424 29.8001 382.124 30.7334 380.257 32.6001C378.457 34.4668 377.39 37.0668 377.057 40.4001ZM418.492 72.6001V18.8001H433.892L434.592 35.3001L432.492 34.9001C432.959 30.6334 433.992 27.2334 435.592 24.7001C437.259 22.1668 439.325 20.3668 441.792 19.3001C444.259 18.1668 446.992 17.6001 449.992 17.6001C453.792 17.6001 457.059 18.4334 459.792 20.1001C462.592 21.7001 464.725 24.0334 466.192 27.1001C467.659 30.1001 468.392 33.7334 468.392 38.0001V72.6001H451.192V43.9001C451.192 41.1668 450.992 38.8334 450.592 36.9001C450.192 34.9668 449.459 33.5001 448.392 32.5001C447.392 31.5001 445.925 31.0001 443.992 31.0001C441.192 31.0001 439.092 32.1334 437.692 34.4001C436.359 36.6001 435.692 39.7668 435.692 43.9001V72.6001H418.492ZM493.672 87.6001V18.8001H510.372L510.672 30.1001L509.372 29.6001C510.705 25.7334 512.838 22.7668 515.772 20.7001C518.772 18.6334 522.305 17.6001 526.372 17.6001C531.238 17.6001 535.338 18.8334 538.672 21.3001C542.005 23.7001 544.538 27.0334 546.272 31.3001C548.005 35.5001 548.872 40.3001 548.872 45.7001C548.872 51.0334 547.972 55.8334 546.172 60.1001C544.438 64.3668 541.872 67.7334 538.472 70.2001C535.138 72.6001 531.038 73.8001 526.172 73.8001C523.572 73.8001 521.138 73.3334 518.872 72.4001C516.672 71.4001 514.738 70.0334 513.072 68.3001C511.472 66.5001 510.305 64.4001 509.572 62.0001L510.872 61.4001V87.6001H493.672ZM520.972 61.1001C524.105 61.1001 526.572 59.7334 528.372 57.0001C530.238 54.2001 531.172 50.4334 531.172 45.7001C531.172 40.9668 530.238 37.2334 528.372 34.5001C526.572 31.7001 524.105 30.3001 520.972 30.3001C518.838 30.3001 517.005 30.9001 515.472 32.1001C514.005 33.2334 512.872 34.9334 512.072 37.2001C511.272 39.4668 510.872 42.3001 510.872 45.7001C510.872 49.1001 511.272 51.9334 512.072 54.2001C512.872 56.4668 514.005 58.2001 515.472 59.4001C517.005 60.5334 518.838 61.1001 520.972 61.1001ZM552.941 72.6001V18.8001H570.141V72.6001H552.941ZM552.641 12.8001V9.65595e-05H570.441V12.8001H552.641ZM602.159 73.8001C596.559 73.8001 591.659 72.6334 587.459 70.3001C583.259 67.9668 579.993 64.7001 577.659 60.5001C575.326 56.3001 574.159 51.3668 574.159 45.7001C574.159 40.0334 575.326 35.1334 577.659 31.0001C579.993 26.8001 583.226 23.5334 587.359 21.2001C591.559 18.8001 596.459 17.6001 602.059 17.6001C607.659 17.6001 612.493 18.8001 616.559 21.2001C620.693 23.5334 623.859 26.9001 626.059 31.3001C628.259 35.7001 629.359 40.9334 629.359 47.0001V50.2001H591.959C592.159 53.9334 593.193 56.7334 595.059 58.6001C596.993 60.4001 599.459 61.3001 602.459 61.3001C604.726 61.3001 606.626 60.8668 608.159 60.0001C609.693 59.0668 610.793 57.5668 611.459 55.5001L628.659 56.5001C627.193 62.1001 624.093 66.4001 619.359 69.4001C614.626 72.3334 608.893 73.8001 602.159 73.8001ZM591.959 40.4001H611.959C611.826 36.8668 610.859 34.2334 609.059 32.5001C607.259 30.7001 604.926 29.8001 602.059 29.8001C599.326 29.8001 597.026 30.7334 595.159 32.6001C593.359 34.4668 592.293 37.0668 591.959 40.4001Z"/></g></symbol><symbol id="logo-s" viewBox="0 0 400 400"><path fill="var(--logo-sq,#2E7D4F)" d="M40 92L112 20V60L40 132Z"/><path fill="currentColor" d="M40 144L112 72V380H76A36 36 0 0 1 40 344Z"/><circle fill="currentColor" cx="236" cy="254" r="126"/><path fill="var(--logo-sq,#2E7D4F)" d="M168 322C168 236 220 186 304 186C304 272 254 322 168 322Z"/><path stroke="currentColor" stroke-width="12" stroke-linecap="round" d="M168 322L268 222"/></symbol></svg>
+<!-- Íconos de la marca (design/assets/iconos/): build-mocks.py inserta los símbolos -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="ic-axe" viewBox="0 0 48 48"><path stroke="currentColor" stroke-width="4" d="M11 42L30 18"/><path fill="var(--ic-t,#C2532F)" d="M25 13L32 6L42 9L39 21Z"/></symbol><symbol id="ic-coin" viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="currentColor"/><circle cx="24" cy="24" r="11" fill="var(--ic-v,#2E7D4F)"/></symbol><symbol id="ic-coins" viewBox="0 0 48 48"><rect x="10" y="35" width="28" height="7" rx="3.5" fill="currentColor"/><rect x="10" y="27" width="28" height="7" rx="3.5" fill="currentColor"/><rect x="10" y="19" width="28" height="7" rx="3.5" fill="var(--ic-v,#2E7D4F)"/><rect x="14" y="11" width="20" height="7" rx="3.5" fill="var(--ic-v,#2E7D4F)"/></symbol><symbol id="ic-medal" viewBox="0 0 48 48"><path fill="currentColor" d="M12 4H19L26 18H19Z"/><path fill="currentColor" d="M36 4H29L22 18H29Z"/><circle cx="24" cy="30" r="13" fill="var(--ic-v,#2E7D4F)"/><path fill="currentColor" d="M19 28L22 25H29V35H19Z"/></symbol><symbol id="ic-pin" viewBox="0 0 48 48"><path fill="currentColor" d="M24 44C24 44 10 30 10 19A14 14 0 0 1 38 19C38 30 24 44 24 44Z"/><circle cx="24" cy="19" r="6" fill="var(--ic-v,#2E7D4F)"/></symbol><symbol id="ic-satellite" viewBox="0 0 48 48"><g transform="rotate(-45 24 24)"><rect x="19" y="17" width="10" height="14" fill="currentColor"/><rect x="3" y="20" width="6" height="8" fill="var(--ic-v,#2E7D4F)"/><rect x="10" y="20" width="6" height="8" fill="var(--ic-v,#2E7D4F)"/><rect x="32" y="20" width="6" height="8" fill="var(--ic-v,#2E7D4F)"/><rect x="39" y="20" width="6" height="8" fill="var(--ic-v,#2E7D4F)"/><rect x="16" y="23" width="3" height="2" fill="currentColor"/><rect x="29" y="23" width="3" height="2" fill="currentColor"/><rect x="23" y="11" width="2" height="6" fill="currentColor"/><circle cx="24" cy="9" r="2.5" fill="currentColor"/></g></symbol><symbol id="ic-shield" viewBox="0 0 48 48"><path fill="var(--ic-v,#2E7D4F)" d="M24 4L40 10V24C40 33 33 40 24 44C15 40 8 33 8 24V10Z"/><path fill="currentColor" d="M17 31C17 23 22 18 31 18C31 26 26 31 17 31Z"/></symbol><symbol id="ic-sigs" viewBox="0 0 48 48"><rect x="5" y="18" width="11" height="11" fill="var(--ic-v,#2E7D4F)"/><rect x="18.5" y="18" width="11" height="11" fill="var(--ic-v,#2E7D4F)"/><rect x="33" y="19" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2"/></symbol><symbol id="ic-sprout" viewBox="0 0 48 48"><rect x="22.5" y="24" width="3" height="18" fill="currentColor"/><path fill="var(--ic-v,#2E7D4F)" d="M24 33C24 26 19 22 12 22C12 29 17 33 24 33Z"/><path fill="var(--ic-v,#2E7D4F)" d="M22.5 26C22.5 18 28 13 37 13C37 21 31.5 26 22.5 26Z"/><rect x="12" y="42" width="24" height="3" fill="currentColor"/></symbol><symbol id="ic-stump" viewBox="0 0 48 48"><path fill="var(--ic-t,#C2532F)" d="M14 27V25L16 23H34V27Z"/><rect x="14" y="28" width="20" height="14" fill="currentColor"/><rect x="8" y="42" width="32" height="3" fill="currentColor"/></symbol><symbol id="ic-tree" viewBox="0 0 48 48"><rect x="22" y="31" width="4" height="11" fill="currentColor"/><circle cx="24" cy="19" r="13" fill="currentColor"/><path fill="var(--ic-v,#2E7D4F)" d="M16.98 26.02C16.98 17.15 22.35 11.98 31.02 11.98C31.02 20.86 25.86 26.02 16.98 26.02Z"/><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M16.98 26.02L27.3 15.7"/><rect x="10" y="42" width="28" height="3" fill="currentColor"/></symbol><symbol id="ic-warn" viewBox="0 0 48 48"><path fill="var(--ic-a,#D99A1E)" d="M24 6L44 41H4Z"/><rect x="22.5" y="17" width="3" height="13" fill="#121410"/><rect x="22.5" y="33" width="3" height="3" fill="#121410"/></symbol></svg>
 
 <header class="intro">
   <div>
     <div class="mono" style="color:var(--leaf)">Mock v4 · base C + toques de A</div>
     <h1>Bosque en pie — v4</h1>
-    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Los íconos son emojis 3D (Fluent Emoji de Microsoft): árbol, brote, satélite, tronco, bolsa de plata, medalla. Amables y reconocibles al toque desde el celular del jurado.</p>
+    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Los íconos son propios de la marca: formas planas en tinta con un color de estado, del mismo dibujo que el logo (árbol, brote, tocón, satélite, pozo, sello de firmas, certificado).</p>
   </div>
   <div class="icons"><span class="vx" data-m="tree"></span><span class="vx" data-m="satellite"></span><span class="vx" data-m="coins"></span><span class="vx" data-m="sigs"></span><span class="vx" data-m="sprout"></span><span class="vx" data-m="medal"></span><span class="vx" data-m="stump"></span></div>
 </header>
@@ -238,7 +256,7 @@ a{color:inherit;text-decoration:none}
 <div class="sec-title"><h2>Inicio · escritorio</h2><span>1440 · también es la base de la pantalla grande</span></div>
 <div class="desk"><div class="site">
   <nav class="nav">
-    <a class="logo" href="#"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></a>
+    <a class="logo" href="#"><svg viewBox="-2.24 -2.64 189.44 35.28"><use href="#logo-h"/></svg></a>
     <div class="links"><span class="on">Parcelas</span><span>Cómo funciona</span><span>Actividad</span><span>Empresas</span></div>
     <div class="right"><span class="btn ghost">Mi aporte</span><span class="btn ink">Aportar</span></div>
   </nav>
@@ -277,7 +295,7 @@ a{color:inherit;text-decoration:none}
   </section>
   <footer class="footer">
     <div class="cols"><div><b>Bosque en pie</b><span>Pago por conservar monte, verificado por satélite.</span><span>Competencia Argentina Space · Salta</span></div><div><b>Producto</b><span>Parcelas</span><span>Cómo funciona</span><span>Para empresas</span></div><div><b>Datos</b><span>Informes y evidencia</span><span>Contrato en Fuji ↗</span><span>Algoritmo bosque-v1</span></div><div><b>Código</b><span>GitHub ↗</span><span>README</span></div></div>
-    <div class="big"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></div>
+    <div class="big"><svg viewBox="-2.24 -2.64 189.44 35.28"><use href="#logo-h"/></svg></div>
     <div class="legal"><span>Contiene datos Copernicus Sentinel modificados, 2024 y 2025</span><span>Red de prueba Avalanche Fuji</span></div>
   </footer>
 </div></div>
@@ -350,7 +368,7 @@ a{color:inherit;text-decoration:none}
 <!-- Mi aporte -->
 <section class="slot"><div class="slot-h"><span>04 · Mi aporte</span></div>
 <div class="phone">
-  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
+  <div class="ph-top"><a class="logo"><svg viewBox="-2.24 -2.64 189.44 35.28" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
   <span class="net"><i></i>Billetera de prueba 3 · <span class="ph">0x7a3f…c41e</span></span>
   <div class="body">
     <div class="h1">Aportaste en dos parcelas.</div>
@@ -399,7 +417,7 @@ a{color:inherit;text-decoration:none}
 <!-- Quienes cuidan -->
 <section class="slot"><div class="slot-h"><span>07 · Quienes cuidan</span><span class="new">nueva</span></div>
 <div class="phone">
-  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i>Operador A</span></div>
+  <div class="ph-top"><a class="logo"><svg viewBox="-2.24 -2.64 189.44 35.28" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i>Operador A</span></div>
   <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
   <div class="body">
     <div class="h-card"><div class="meta" style="padding:8px 8px 10px"><span class="lbl" style="color:#a9c8b4">Cobraste por cuidar la Parcela A</span><div class="big lime"><span class="ph">0,48</span><small> AVAX</small></div><div class="sub">en <span class="ph">12</span> cuotas de 2025</div></div><span class="vx" data-m="tree"></span></div>
@@ -413,7 +431,7 @@ a{color:inherit;text-decoration:none}
 <!-- Entrada con QR -->
 <section class="slot"><div class="slot-h"><span>08 · Entrada desde el QR</span></div>
 <div class="phone" style="background:var(--deep);color:#fff">
-  <div class="ph-top on-dark"><a class="logo"><svg viewBox="0 0 261 61" style="height:22px"><use href="#logo-h"/></svg></a><span class="wallet" style="background:#ffffff1a;color:#fff"><i style="background:var(--lime)"></i>Billetera 3</span></div>
+  <div class="ph-top on-dark"><a class="logo"><svg viewBox="-2.24 -2.64 189.44 35.28" style="height:22px"><use href="#logo-h"/></svg></a><span class="wallet" style="background:#ffffff1a;color:#fff"><i style="background:var(--lime)"></i>Billetera 3</span></div>
   <div class="body" style="padding-top:8px">
     <div style="border-radius:28px;height:300px;background:url(assets/sat/chaco-z12.jpg) 60% 50%/cover;position:relative;overflow:hidden">
       <div class="glass" style="position:absolute;left:12px;right:12px;bottom:12px;border-radius:20px;padding:14px 16px"><span class="mono" style="color:var(--lime)">Tu billetera de prueba está lista</span><div style="font:800 34px/1 var(--display);letter-spacing:-.04em;margin-top:6px"><span class="ph">2,00</span> AVAX</div><div style="font-size:12px;color:#cfe3d6;margin-top:4px">en la red Fuji · no es plata real</div></div>
@@ -427,7 +445,7 @@ a{color:inherit;text-decoration:none}
 
 </div>
 
-<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo: provisorio, redibujado a partir de las pantallas v2 del Figma; se reemplaza por el original. Íconos: Fluent Emoji 3D de Microsoft (licencia MIT). Tipografías: Bricolage Grotesque, Inter y Geist Mono (Google Fonts).</div>
+<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo e íconos: propios de Bosque en pie (marca v2). Tipografías: Geist y Geist Mono (Google Fonts, licencia OFL). Sin data-marca="v2", el mock vuelve a los íconos Fluent Emoji 3D de Microsoft (licencia MIT) y a Bricolage Grotesque e Inter.</div>
 
 <script>
 /* ============ Íconos: Fluent Emoji 3D (Microsoft, licencia MIT) ============ */
@@ -436,7 +454,12 @@ const EMOJI = {
   coins:'assets/emoji/moneybag.png', coin:'assets/emoji/coin.png', sprout:'assets/emoji/seedling.png', medal:'assets/emoji/medal.png',
   sigs:'assets/emoji/check.png', warn:'assets/emoji/warning.png', shield:'assets/emoji/shield.png', pin:'assets/emoji/pin.png'
 };
-document.querySelectorAll('.vx[data-m]').forEach(el => { const src=EMOJI[el.dataset.m]; if (src) el.innerHTML = `<img src="${src}" alt="">`; });
+const MARCA_V2 = document.documentElement.dataset.marca === 'v2';
+document.querySelectorAll('.vx[data-m]').forEach(el => {
+  const k = el.dataset.m;
+  if (MARCA_V2 && document.getElementById('ic-' + k)) el.innerHTML = `<svg viewBox="0 0 48 48" aria-hidden="true"><use href="#ic-${k}"/></svg>`;
+  else if (EMOJI[k]) el.innerHTML = `<img src="${EMOJI[k]}" alt="">`;
+});
 
 /* QR decorativo (no es un código real) */
 const qr=document.getElementById('qr'); if (qr){ const on=[0,1,2,6,7,8,9,11,15,17,18,19,20,24,25,26,30,32,34,37,39,40,41,43,46,48,50,54,55,56,58,60,62,63,65,68,70,72,73,74,76,78,79,80];

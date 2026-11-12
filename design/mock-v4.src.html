@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-marca="v2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bosque en pie · Mock v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Geist:wght@400..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    Bosque en pie · v4 · "Cada píxel cuenta"
@@ -21,6 +21,31 @@
   --r-xl:32px; --r-lg:24px; --r-md:16px; --r-sm:12px;
   --display:"Bricolage Grotesque",system-ui,sans-serif; --sans:Inter,system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
 }
+/* ============================================================
+   Marca v2 (logo de la «b» y tokens de design/tokens-v2.css).
+   Pisa las variables del mock. Para volver al aspecto v4 original,
+   sacá data-marca="v2" del <html>.
+   ============================================================ */
+:root[data-marca="v2"]{
+  --bg:#F4F2EC; --card:#FBFAF6; --line:#D9D5CA; --ink:#121410; --muted:#5E6259; --faint:#5E6259;
+  --deep:#121410; --deep-2:#1A1D18; --leaf:#2E7D4F; --lime:#6CC58A; --lime-ink:#121410;
+  --stand:#2A7349; --stand-bg:#E3EFE4;
+  --review:#D99A1E; --review-bg:#F7EBCF;
+  --cut:#C2532F; --cut-bg:#F6E6DE;
+  --r-xl:8px; --r-lg:6px; --r-md:4px; --r-sm:3px;
+  --display:"Geist",system-ui,sans-serif; --sans:"Geist",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
+}
+/* Íconos propios: tinta = color del texto; el acento sigue el estado y se aclara sobre fondo oscuro. Sin sombra. */
+[data-marca="v2"] .vx svg{width:100%;height:auto;display:block}
+[data-marca="v2"] :is(.on-dark,.h-card,.cert) .vx{--ic-v:#6CC58A;--ic-t:#E58A66;--ic-a:#E2B04A}
+[data-marca="v2"] .intro .icons .vx{width:40px}
+[data-marca="v2"] .step .vx{width:64px;margin:0 0 8px}
+[data-marca="v2"] .h-card .vx{width:68px;right:14px;bottom:14px}
+[data-marca="v2"] .tile .vx{width:36px;margin:0 0 6px}
+[data-marca="v2"] .notice .vx{width:34px}
+[data-marca="v2"] .choice .vx{width:36px}
+[data-marca="v2"] .cert .vx{width:56px;right:16px;top:16px}
+[data-marca="v2"] .float{width:96px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#e8ebe2;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
@@ -212,23 +237,16 @@ a{color:inherit;text-decoration:none}
 </head>
 <body>
 
-<!-- Logotipo del Figma (componente "Logotipo", Horizontal L y Signo) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="logo-h" viewBox="0 0 250 48"><!-- PROVISORIO: reemplazar por el logo v2 exportado del Figma -->
-    <circle cx="24" cy="24" r="22" fill="currentColor"/>
-    <path d="M24 37V21" stroke="var(--logo-bg,#fff)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M24 25c0-7.5 5-12 13-12 0 7.5-5 12-13 12z" fill="var(--logo-sq,#2fb35a)"/>
-    <path d="M24 29c0-5.5-4-9-10-9 0 5.5 4 9 10 9z" fill="var(--logo-bg,#fff)"/>
-    <text x="56" y="34" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="27" letter-spacing="-1.1" fill="currentColor">bosque <tspan fill="var(--logo-sq,#2fb35a)">en pie</tspan></text>
-  </symbol>
-  <symbol id="logo-s" viewBox="0 0 48 48"><path fill="currentColor" d="M19.5 24H28.5V42H19.5V24ZM6 42H42V45H6V42Z"/><path fill="var(--logo-sq,#2fb35a)" d="M15 3H33V21H15V3Z"/></symbol>
-</svg>
+<!-- Logo v2 (design/assets/logo/): build-mocks.py inserta los símbolos -->
+{{LOGO_SIMBOLOS}}
+<!-- Íconos de la marca (design/assets/iconos/): build-mocks.py inserta los símbolos -->
+{{ICONOS}}
 
 <header class="intro">
   <div>
     <div class="mono" style="color:var(--leaf)">Mock v4 · base C + toques de A</div>
     <h1>Bosque en pie — v4</h1>
-    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Los íconos son emojis 3D (Fluent Emoji de Microsoft): árbol, brote, satélite, tronco, bolsa de plata, medalla. Amables y reconocibles al toque desde el celular del jurado.</p>
+    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Los íconos son propios de la marca: formas planas en tinta con un color de estado, del mismo dibujo que el logo (árbol, brote, tocón, satélite, pozo, sello de firmas, certificado).</p>
   </div>
   <div class="icons"><span class="vx" data-m="tree"></span><span class="vx" data-m="satellite"></span><span class="vx" data-m="coins"></span><span class="vx" data-m="sigs"></span><span class="vx" data-m="sprout"></span><span class="vx" data-m="medal"></span><span class="vx" data-m="stump"></span></div>
 </header>
@@ -238,7 +256,7 @@ a{color:inherit;text-decoration:none}
 <div class="sec-title"><h2>Inicio · escritorio</h2><span>1440 · también es la base de la pantalla grande</span></div>
 <div class="desk"><div class="site">
   <nav class="nav">
-    <a class="logo" href="#"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></a>
+    <a class="logo" href="#"><svg viewBox="{{LOGO_H_VB}}"><use href="#logo-h"/></svg></a>
     <div class="links"><span class="on">Parcelas</span><span>Cómo funciona</span><span>Actividad</span><span>Empresas</span></div>
     <div class="right"><span class="btn ghost">Mi aporte</span><span class="btn ink">Aportar</span></div>
   </nav>
@@ -277,7 +295,7 @@ a{color:inherit;text-decoration:none}
   </section>
   <footer class="footer">
     <div class="cols"><div><b>Bosque en pie</b><span>Pago por conservar monte, verificado por satélite.</span><span>Competencia Argentina Space · Salta</span></div><div><b>Producto</b><span>Parcelas</span><span>Cómo funciona</span><span>Para empresas</span></div><div><b>Datos</b><span>Informes y evidencia</span><span>Contrato en Fuji ↗</span><span>Algoritmo bosque-v1</span></div><div><b>Código</b><span>GitHub ↗</span><span>README</span></div></div>
-    <div class="big"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></div>
+    <div class="big"><svg viewBox="{{LOGO_H_VB}}"><use href="#logo-h"/></svg></div>
     <div class="legal"><span>Contiene datos Copernicus Sentinel modificados, 2024 y 2025</span><span>Red de prueba Avalanche Fuji</span></div>
   </footer>
 </div></div>
@@ -350,7 +368,7 @@ a{color:inherit;text-decoration:none}
 <!-- Mi aporte -->
 <section class="slot"><div class="slot-h"><span>04 · Mi aporte</span></div>
 <div class="phone">
-  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
+  <div class="ph-top"><a class="logo"><svg viewBox="{{LOGO_H_VB}}" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
   <span class="net"><i></i>Billetera de prueba 3 · <span class="ph">0x7a3f…c41e</span></span>
   <div class="body">
     <div class="h1">Aportaste en dos parcelas.</div>
@@ -399,7 +417,7 @@ a{color:inherit;text-decoration:none}
 <!-- Quienes cuidan -->
 <section class="slot"><div class="slot-h"><span>07 · Quienes cuidan</span><span class="new">nueva</span></div>
 <div class="phone">
-  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i>Operador A</span></div>
+  <div class="ph-top"><a class="logo"><svg viewBox="{{LOGO_H_VB}}" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i>Operador A</span></div>
   <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
   <div class="body">
     <div class="h-card"><div class="meta" style="padding:8px 8px 10px"><span class="lbl" style="color:#a9c8b4">Cobraste por cuidar la Parcela A</span><div class="big lime"><span class="ph">0,48</span><small> AVAX</small></div><div class="sub">en <span class="ph">12</span> cuotas de 2025</div></div><span class="vx" data-m="tree"></span></div>
@@ -413,7 +431,7 @@ a{color:inherit;text-decoration:none}
 <!-- Entrada con QR -->
 <section class="slot"><div class="slot-h"><span>08 · Entrada desde el QR</span></div>
 <div class="phone" style="background:var(--deep);color:#fff">
-  <div class="ph-top on-dark"><a class="logo"><svg viewBox="0 0 261 61" style="height:22px"><use href="#logo-h"/></svg></a><span class="wallet" style="background:#ffffff1a;color:#fff"><i style="background:var(--lime)"></i>Billetera 3</span></div>
+  <div class="ph-top on-dark"><a class="logo"><svg viewBox="{{LOGO_H_VB}}" style="height:22px"><use href="#logo-h"/></svg></a><span class="wallet" style="background:#ffffff1a;color:#fff"><i style="background:var(--lime)"></i>Billetera 3</span></div>
   <div class="body" style="padding-top:8px">
     <div style="border-radius:28px;height:300px;background:url(assets/sat/chaco-z12.jpg) 60% 50%/cover;position:relative;overflow:hidden">
       <div class="glass" style="position:absolute;left:12px;right:12px;bottom:12px;border-radius:20px;padding:14px 16px"><span class="mono" style="color:var(--lime)">Tu billetera de prueba está lista</span><div style="font:800 34px/1 var(--display);letter-spacing:-.04em;margin-top:6px"><span class="ph">2,00</span> AVAX</div><div style="font-size:12px;color:#cfe3d6;margin-top:4px">en la red Fuji · no es plata real</div></div>
@@ -427,7 +445,7 @@ a{color:inherit;text-decoration:none}
 
 </div>
 
-<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo: provisorio, redibujado a partir de las pantallas v2 del Figma; se reemplaza por el original. Íconos: Fluent Emoji 3D de Microsoft (licencia MIT). Tipografías: Bricolage Grotesque, Inter y Geist Mono (Google Fonts).</div>
+<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo e íconos: propios de Bosque en pie (marca v2). Tipografías: Geist y Geist Mono (Google Fonts, licencia OFL). Sin data-marca="v2", el mock vuelve a los íconos Fluent Emoji 3D de Microsoft (licencia MIT) y a Bricolage Grotesque e Inter.</div>
 
 <script>
 /* ============ Íconos: Fluent Emoji 3D (Microsoft, licencia MIT) ============ */
@@ -436,7 +454,12 @@ const EMOJI = {
   coins:'assets/emoji/moneybag.png', coin:'assets/emoji/coin.png', sprout:'assets/emoji/seedling.png', medal:'assets/emoji/medal.png',
   sigs:'assets/emoji/check.png', warn:'assets/emoji/warning.png', shield:'assets/emoji/shield.png', pin:'assets/emoji/pin.png'
 };
-document.querySelectorAll('.vx[data-m]').forEach(el => { const src=EMOJI[el.dataset.m]; if (src) el.innerHTML = `<img src="${src}" alt="">`; });
+const MARCA_V2 = document.documentElement.dataset.marca === 'v2';
+document.querySelectorAll('.vx[data-m]').forEach(el => {
+  const k = el.dataset.m;
+  if (MARCA_V2 && document.getElementById('ic-' + k)) el.innerHTML = `<svg viewBox="0 0 48 48" aria-hidden="true"><use href="#ic-${k}"/></svg>`;
+  else if (EMOJI[k]) el.innerHTML = `<img src="${EMOJI[k]}" alt="">`;
+});
 
 /* QR decorativo (no es un código real) */
 const qr=document.getElementById('qr'); if (qr){ const on=[0,1,2,6,7,8,9,11,15,17,18,19,20,24,25,26,30,32,34,37,39,40,41,43,46,48,50,54,55,56,58,60,62,63,65,68,70,72,73,74,76,78,79,80];

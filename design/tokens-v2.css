@@ -1,0 +1,115 @@
+/* Bosque en pie — tokens-v2.css
+   Los colores y las letras de la versión 2 (página «v2 · Propuesta» de Figma y carpeta pantallas-v2/).
+   :root es Día. Noche: [data-theme="noche"] o .dark en un ANCESTRO de lo que se pinta.
+   Valores también en tokens-v2.json: si cambiás uno, cambialo en los dos archivos.
+   Letras: Geist (400–800) y Geist Mono (400–500), licencia OFL. */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..500&display=swap");
+
+:root {
+  --v2-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --v2-font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Superficies */
+  --v2-papel: #F4F2EC;          /* fondo de página */
+  --v2-hoja: #FBFAF6;           /* tarjetas y paneles */
+  --v2-franja: #EAE7DE;         /* bandas, celdas apagadas */
+  --v2-linea: #D9D5CA;          /* líneas finas de 1 px y cruces «+» */
+
+  /* Texto */
+  --v2-tinta: #121410;          /* texto principal */
+  --v2-gris: #5E6259;           /* texto secundario */
+
+  /* Portada oscura (en Día también es oscura) */
+  --v2-oscuro: #121410;
+  --v2-oscuro-2: #1A1D18;
+  --v2-oscuro-linea: #2A2F27;
+  --v2-oscuro-texto: #A3A89C;
+  --v2-oscuro-claro: #ECEAE3;
+
+  /* Estado: color pleno (cuadros de cuota, cifra grande, puntos, barras) */
+  --v2-verde: #2E7D4F;          /* en pie · pagada · también la marca */
+  --v2-verde-claro: #6CC58A;    /* verde sobre la portada oscura */
+  --v2-verde-logo: #2E7D4F;     /* lo verde del logo: .logo [data-parte="verde"] */
+  --v2-ambar: #D99A1E;          /* en revisión · no se pagó ese mes */
+  --v2-terra: #C2532F;          /* desmonte · pagos cortados */
+
+  /* Estado: texto chico (menos de 24 px). Pasan 4,5:1 sobre papel, hoja, franja y los fondos tenues */
+  --v2-verde-texto: #2A7349;
+  --v2-ambar-texto: #885E0C;
+  --v2-terra-texto: #A94829;
+  /* Estado: texto chico sobre la portada oscura */
+  --v2-verde-texto-oscuro: #6CC58A;
+  --v2-ambar-texto-oscuro: #E2B04A;
+  --v2-terra-texto-oscuro: #E58A66;
+
+  /* Estado: fondos tenues (avisos con barra de 4 px, tarjeta de la parcela desmontada) */
+  --v2-verde-tenue: #E3EFE4;
+  --v2-ambar-tenue: #F7EBCF;
+  --v2-terra-tenue: #F6E6DE;
+  --v2-terra-borde: #E8CBBE;
+
+  /* Grilla de píxeles: monte ralo */
+  --v2-ralo: #9DBF8F;
+
+  /* Placa sobre imagen satelital: tinta al 85 % */
+  --v2-placa: rgb(18 20 16 / 0.85);
+  --v2-placa-texto: #F4F2EC;
+
+  /* Forma: los radios que usan las pantallas (el más común es 4) */
+  --v2-radio-1: 2px;
+  --v2-radio-2: 3px;
+  --v2-radio-3: 4px;
+  --v2-radio-4: 6px;
+  --v2-radio-5: 8px;
+  --v2-borde: 1px;
+  --v2-barra-aviso: 4px;
+
+  /* Tamaños de letra que usan las pantallas (px). Cifras y títulos en Geist ExtraBold o Bold;
+     cuerpo en Geist Regular o Medium; rótulos en Geist Mono, en mayúsculas («01 / PARCELAS»). */
+  --v2-cifra-xl: 184px;         /* pantalla grande: el porcentaje de cada parcela */
+  --v2-cifra-lg: 96px;
+  --v2-cifra-md: 68px;
+  --v2-titulo-xl: 52px;
+  --v2-titulo-lg: 44px;
+  --v2-titulo-md: 34px;
+  --v2-titulo-sm: 28px;
+  --v2-titulo-xs: 22px;
+  --v2-cuerpo-lg: 17px;
+  --v2-cuerpo-md: 15px;
+  --v2-cuerpo-sm: 14px;
+  --v2-cuerpo-xs: 13px;
+  --v2-mono-md: 13px;
+  --v2-mono-sm: 12px;
+  --v2-mono-xs: 11px;
+  --v2-mono-xxs: 10px;
+}
+
+[data-theme="noche"], .dark {
+  --v2-papel: #11130F;
+  --v2-hoja: #181B16;
+  --v2-franja: #20241E;
+  --v2-linea: #2E332B;
+
+  --v2-tinta: #ECEAE3;
+  --v2-gris: #A3A89C;
+
+  --v2-oscuro: #1A1D18;
+  --v2-oscuro-2: #1A1D18;
+
+  --v2-verde: #5BB37A;
+  --v2-verde-claro: #6CC58A;
+  --v2-verde-logo: #6CC58A;
+  --v2-ambar: #E2A83A;
+  --v2-terra: #D9643C;
+
+  --v2-verde-texto: #6CC58A;
+  --v2-ambar-texto: #E2B04A;
+  --v2-terra-texto: #E58A66;
+
+  --v2-verde-tenue: #18291D;
+  --v2-ambar-tenue: #2B2312;
+  --v2-terra-tenue: #2B1B15;
+  --v2-terra-borde: #4A2B20;
+
+  --v2-ralo: #3F6B46;
+}

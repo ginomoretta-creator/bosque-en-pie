@@ -1,4 +1,1 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M19.5 24H28.5V42H19.5V24ZM6 42H42V45H6V42Z" fill="#1B1813"/>
-<path d="M15 3H33V21H15V3Z" fill="#3F5A2F"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Bosque en pie"><path fill="#2E7D4F" data-parte="verde" d="M40 92L112 20V60L40 132Z"/><path fill="currentColor" d="M40 144L112 72V380H76A36 36 0 0 1 40 344Z"/><circle fill="currentColor" cx="236" cy="254" r="126"/><path fill="#2E7D4F" data-parte="verde" d="M168 322C168 236 220 186 304 186C304 272 254 322 168 322Z"/><path stroke="currentColor" stroke-width="12" stroke-linecap="round" d="M168 322L268 222"/></svg>
