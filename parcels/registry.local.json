@@ -1,0 +1,27 @@
+{
+  "nota": "Solo para la red local (npm run local). Las hectáreas son de prueba para no depender de los GeoJSON reales; en Fuji se usa registry.json.",
+  "parcels": [
+    {
+      "name": "A",
+      "geojson": "parcels/A.geojson",
+      "hectares": 214,
+      "ownerEnv": "OWNER_A",
+      "operatorEnv": "OPERATOR_A",
+      "feeAvax": "0.01",
+      "thresholdBps": 0,
+      "ownerShareBps": 6000,
+      "commitEnd": 0
+    },
+    {
+      "name": "B",
+      "geojson": "parcels/B.geojson",
+      "hectares": 187,
+      "ownerEnv": "OWNER_B",
+      "operatorEnv": "OPERATOR_B",
+      "feeAvax": "0.01",
+      "thresholdBps": 0,
+      "ownerShareBps": 6000,
+      "commitEnd": 0
+    }
+  ]
+}

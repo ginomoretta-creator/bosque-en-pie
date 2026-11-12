@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const { ethers, network } = require("hardhat");
+const { cuenta } = require("./cuentas");
 
 const DAY = 24 * 60 * 60;
 
@@ -17,9 +18,7 @@ const PARAMS = {
 };
 
 function verifierAddresses() {
-  const keys = ["VERIFIER_1_PRIVATE_KEY", "VERIFIER_2_PRIVATE_KEY", "VERIFIER_3_PRIVATE_KEY"].map((k) => process.env[k]);
-  if (keys.some((k) => !k)) throw new Error("Faltan las claves de los verificadores en .env");
-  return keys.map((k) => new ethers.Wallet(k).address);
+  return ["VERIFIER_1", "VERIFIER_2", "VERIFIER_3"].map((n) => cuenta(n, network.name).address);
 }
 
 async function main() {
