@@ -11,11 +11,15 @@
     "abi": "hardhat compile && node scripts/export-abi.js",
     "local": "hardhat run scripts/deploy.js --network localhost && hardhat run scripts/register-parcels.js --network localhost && hardhat run scripts/aportes-demo.js --network localhost",
     "fuji:deploy": "hardhat run scripts/deploy.js --network fuji && hardhat run scripts/register-parcels.js --network fuji",
-    "fuji:aportes": "hardhat run scripts/aportes-demo.js --network fuji"
+    "fuji:aportes": "hardhat run scripts/aportes-demo.js --network fuji",
+    "fuji:verificar": "hardhat run scripts/verificar.js --network fuji",
+    "jurado": "hardhat run scripts/billeteras-jurado.js --network localhost",
+    "fuji:jurado": "hardhat run scripts/billeteras-jurado.js --network fuji"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "5.0.0",
     "dotenv": "16.4.7",
-    "hardhat": "2.29.2"
+    "hardhat": "2.29.2",
+    "qrcode": "1.5.4"
   }
 }
