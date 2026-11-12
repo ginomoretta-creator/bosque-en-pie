@@ -29,7 +29,7 @@ a{color:inherit;text-decoration:none}
 .muted{color:var(--muted)}
 .logo{display:inline-flex;color:var(--ink);--logo-sq:var(--leaf)} .logo svg{height:22px;width:auto}
 .on-dark .logo{color:#fff;--logo-sq:var(--lime);--logo-bg:var(--deep)}
-.vx{display:inline-block;line-height:0} .vx svg{width:100%;height:auto;overflow:visible}
+.vx{display:inline-block;line-height:0} .vx img{width:100%;height:auto;filter:drop-shadow(0 10px 14px #0b2a1a33)}
 
 /* ---------- Tablero ---------- */
 .intro{max-width:1320px;margin:0 auto;padding:44px 24px 12px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
@@ -227,10 +227,10 @@ a{color:inherit;text-decoration:none}
 <header class="intro">
   <div>
     <div class="mono" style="color:var(--leaf)">Mock v4 · base C + toques de A</div>
-    <h1>Bosque en pie — cada píxel cuenta</h1>
-    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Usa el logotipo del Figma: el signo es un árbol con el follaje cuadrado, como un píxel. De ahí salen los íconos: esculturas de cubitos (vóxeles) en lugar de emojis genéricos.</p>
+    <h1>Bosque en pie — v4</h1>
+    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Los íconos son emojis 3D (Fluent Emoji de Microsoft): árbol, brote, satélite, tronco, bolsa de plata, medalla. Amables y reconocibles al toque desde el celular del jurado.</p>
   </div>
-  <div class="icons"><span class="vx" data-m="tree"></span><span class="vx" data-m="satellite"></span><span class="vx" data-m="coins"></span><span class="vx" data-m="sigs"></span><span class="vx" data-m="sprout"></span><span class="vx" data-m="stump"></span></div>
+  <div class="icons"><span class="vx" data-m="tree"></span><span class="vx" data-m="satellite"></span><span class="vx" data-m="coins"></span><span class="vx" data-m="sigs"></span><span class="vx" data-m="sprout"></span><span class="vx" data-m="medal"></span><span class="vx" data-m="stump"></span></div>
 </header>
 <div class="note"><span>Números, fechas, hectáreas y montos de ejemplo (subrayado punteado). La imagen satelital muestra la zona, no las parcelas de la demo.</span></div>
 
@@ -320,7 +320,7 @@ a{color:inherit;text-decoration:none}
       <div class="meta"><span class="pill cut"><i></i>Desmontada</span><div class="big cut"><span class="ph">38,6</span><small>%</small></div><div class="sub">del monte de 2024 sigue en pie</div></div>
       <span class="vx" data-m="stump"></span>
     </div>
-    <div class="notice cut"><span class="vx" data-m="stump"></span><div><b>Dos lecturas malas seguidas. Pagos cortados.</b><span>El saldo nunca va al dueño ni al operador.</span></div></div>
+    <div class="notice cut"><span class="vx" data-m="axe"></span><div><b>Dos lecturas malas seguidas. Pagos cortados.</b><span>El saldo nunca va al dueño ni al operador.</span></div></div>
     <div class="card"><div class="rowx"><span class="lbl">Doce cuotas · 2025</span><span class="pill cut-l"><span class="ph">6 de 12</span></span></div>
       <div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i class="r"></i><i class="c sel"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i></div>
       <div class="mletters"><span>E</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
@@ -360,7 +360,7 @@ a{color:inherit;text-decoration:none}
     <div class="card"><div class="rowx"><b style="font:700 18px var(--display)">Parcela B</b><span class="pill cut-l"><i></i>Desmontada</span></div>
       <div class="bar"><i style="width:14%;background:var(--leaf)"></i><i style="width:86%;background:var(--cut)"></i></div>
       <div class="list"><div class="li"><span>Llegó a quienes cuidan · 6 cuotas</span><span class="r ph">0,1429</span></div><div class="li"><span><b style="color:#c23a17">Para recuperar</b></span><span class="r ph" style="color:#c23a17">0,8571</span></div></div></div>
-    <a class="notice info" href="#"><span class="vx" data-m="sprout"></span><div><b>Certificados de monte en pie</b><span><span class="ph">1.123</span> ha-mes financiadas · ver →</span></div></a>
+    <a class="notice info" href="#"><span class="vx" data-m="medal"></span><div><b>Certificados de monte en pie</b><span><span class="ph">1.123</span> ha-mes financiadas · ver →</span></div></a>
   </div>
   <div class="dock"><span class="btn lime lg block">Recuperar 0,8571 AVAX</span><div class="tabbar"><span>Mapa</span><span>Actividad</span><span class="on">Mi aporte</span><span>Cómo</span></div></div>
 </div></section>
@@ -371,9 +371,9 @@ a{color:inherit;text-decoration:none}
   <div class="ph-top"><span class="l"><span class="back">←</span>Certificados</span><span class="wallet"><i></i>Empresa · prueba</span></div>
   <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
   <div class="body">
-    <div class="cert"><span class="lbl" style="color:#a9c8b4">Monte que tu aporte mantuvo en pie</span><div class="n"><span class="ph">2.406</span> <small>ha-mes</small></div><p>Una ha-mes es una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</p><span class="vx" data-m="sprout"></span></div>
+    <div class="cert"><span class="lbl" style="color:#a9c8b4">Monte que tu aporte mantuvo en pie</span><div class="n"><span class="ph">2.406</span> <small>ha-mes</small></div><p>Una ha-mes es una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</p><span class="vx" data-m="medal"></span></div>
     <div class="card list"><div class="li"><span>Parcela A <span class="muted">· ene–dic 2025</span></span><span class="r ph">1.284</span></div><div class="li"><span>Parcela B <span class="muted">· ene–jun 2025</span></span><span class="r ph">1.122</span></div><div class="li"><span>Retirados a nombre de la empresa</span><span class="r ph">0</span></div></div>
-    <div class="notice info"><span class="vx" data-m="sigs"></span><div><b>No es un bono de carbono.</b><span>Certifica hectáreas-mes de monte en pie, no toneladas de CO₂. Retirarlo lo deja registrado a tu nombre para que nadie más lo use.</span></div></div>
+    <div class="notice info"><span class="vx" data-m="shield"></span><div><b>No es un bono de carbono.</b><span>Certifica hectáreas-mes de monte en pie, no toneladas de CO₂. Retirarlo lo deja registrado a tu nombre para que nadie más lo use.</span></div></div>
   </div>
   <div class="dock"><div class="two"><span class="btn ghost lg block">Transferir</span><span class="btn ink lg block">Retirar</span></div><div class="tabbar"><span>Mapa</span><span>Actividad</span><span class="on">Mi aporte</span><span>Cómo</span></div></div>
 </div></section>
@@ -389,7 +389,7 @@ a{color:inherit;text-decoration:none}
       <div class="meta"><span class="pill review"><i></i>En revisión</span><div class="big review"><span class="ph">71,3</span><small>%</small></div><div class="sub">monte en pie · el umbral es 95 %</div></div>
       <span class="vx" data-m="satellite"></span>
     </div>
-    <div class="notice review"><span class="vx" data-m="sigs"></span><div><b>Primera lectura mala: no paga ni corta.</b><span>Si la próxima también da mal, la parcela queda desmontada.</span></div></div>
+    <div class="notice review"><span class="vx" data-m="warn"></span><div><b>Primera lectura mala: no paga ni corta.</b><span>Si la próxima también da mal, la parcela queda desmontada.</span></div></div>
     <div class="card"><span class="lbl">Firmaron 3 de 3</span><div class="sigs" style="margin-top:10px"><div class="sig ok"><b>✓ VERIF. 1</b><span class="ph">0x12a…9c</span></div><div class="sig ok"><b>✓ VERIF. 2</b><span class="ph">0x4be…07</span></div><div class="sig ok"><b>✓ VERIF. 3</b><span class="ph">0x9d1…3f</span></div></div></div>
     <div class="card list"><div class="li"><span>Parte visible</span><span class="r ph">100 %</span></div><div class="li"><span>Algoritmo</span><span class="r">bosque-v1</span></div><div class="li"><span>Evidencia</span><span class="r ph">0x9f3c…e21a ↗</span></div></div>
   </div>
@@ -427,53 +427,16 @@ a{color:inherit;text-decoration:none}
 
 </div>
 
-<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo: provisorio, redibujado a partir de las pantallas v2 del Figma; se reemplaza por el original. Íconos: dibujados por código en este archivo (vóxeles), sin recursos de terceros. Tipografías: Bricolage Grotesque, Inter y Geist Mono (Google Fonts).</div>
+<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo: provisorio, redibujado a partir de las pantallas v2 del Figma; se reemplaza por el original. Íconos: Fluent Emoji 3D de Microsoft (licencia MIT). Tipografías: Bricolage Grotesque, Inter y Geist Mono (Google Fonts).</div>
 
 <script>
-/* ============ Íconos vóxel: "cada píxel cuenta" ============
-   Cada ícono es una lista de cubos [x, y, z, color]. Se dibujan en isométrica
-   con tres caras sombreadas. Mismo sistema para la web real. */
-const C = { leaf:'#2fb35a', leafD:'#1f8a43', lime:'#d6ff3d', trunk:'#8a5a34', soil:'#b07d4f', soilD:'#946640',
-            coin:'#e9ff6b', coinD:'#c9e23a', steel:'#e4e9e2', panel:'#0f4a2e', cut:'#f0542f', grey:'#d5dbd2', deep:'#0c3b24' };
-const coinStack = (x,y,n) => Array.from({length:n},(_,i)=>[x,y,i*.34,i%2?C.coin:C.coinD,1,1,.28]);
-const M = {
-  tree: (() => { const a=[[1,1,0,C.trunk],[1,1,1,C.trunk]];
-    for (let z=2; z<=3; z++) for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,z, z===3?C.leaf:C.leafD]);
-    a.push([1,1,4,C.lime]); return a; })(),
-  stump: (() => { const a=[]; for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,0,(x+y)%2?C.soil:C.soilD]);
-    a.push([1,1,1,C.trunk,1,1,.7]); a.push([2.15,.15,1,C.cut,.7,.7,.7]); return a; })(),
-  satellite: (() => { const a=[];
-    for (const x of [0,1]) for (const y of [0,1]) a.push([x*.95,y*.95+.1,1.3,(x+y)%2?C.panel:'#1d6b44',.9,.9,.22]);
-    a.push([2,0,.7,C.steel,1,2,1.5]);
-    for (const x of [0,1]) for (const y of [0,1]) a.push([3.15+x*.95,y*.95+.1,1.3,(x+y)%2?C.panel:'#1d6b44',.9,.9,.22]);
-    a.push([2.3,.75,2.2,C.lime,.4,.5,.7]); return a; })(),
-  coins: [...coinStack(0,0,4), ...coinStack(1.25,0,3), ...coinStack(0,1.25,2), ...coinStack(1.25,1.25,1)],
-  coin: [...coinStack(0,0,3), ...coinStack(1.25,.3,1)],
-  sprout: (() => { const a=[]; for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,0,(x+y)%2?C.soil:C.soilD]);
-    a.push([1.3,1.3,1,C.leafD,.4,.4,1.6],[1.6,.6,2.2,C.lime,1,.8,.35],[.4,1.6,1.8,C.leaf,.8,1,.35]); return a; })(),
-  sigs: (() => { const a=[]; [[0,C.lime],[1.3,C.lime],[2.6,C.grey]].forEach(([x,c])=>{ a.push([x,0,0,C.deep,1,1,.9],[x+.1,.1,.9,c,.8,.8,.3]); }); return a; })(),
+/* ============ Íconos: Fluent Emoji 3D (Microsoft, licencia MIT) ============ */
+const EMOJI = {
+  tree:'assets/emoji/tree.png', stump:'assets/emoji/wood.png', axe:'assets/emoji/axe.png', satellite:'assets/emoji/satellite.png',
+  coins:'assets/emoji/moneybag.png', coin:'assets/emoji/coin.png', sprout:'assets/emoji/seedling.png', medal:'assets/emoji/medal.png',
+  sigs:'assets/emoji/check.png', warn:'assets/emoji/warning.png', shield:'assets/emoji/shield.png', pin:'assets/emoji/pin.png'
 };
-function shade(hex, f){ const n=parseInt(hex.slice(1),16); let r=n>>16,g=n>>8&255,b=n&255;
-  const t=f<0?0:255, p=Math.abs(f); r=Math.round(r+(t-r)*p); g=Math.round(g+(t-g)*p); b=Math.round(b+(t-b)*p);
-  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
-function voxel(boxes){
-  const U=10, cx=Math.cos(Math.PI/6);
-  const P=(x,y,z)=>[(x-y)*U*cx,(x+y)*U*.5-z*U];
-  const list=boxes.map(([x,y,z,c,dx=1,dy=1,dz=1])=>({x,y,z,c,dx,dy,dz}))
-    .sort((a,b)=>(a.x+a.dx/2+a.y+a.dy/2+a.z+a.dz/2)-(b.x+b.dx/2+b.y+b.dy/2+b.z+b.dz/2));
-  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9, out='';
-  const poly=(pts,fill)=>{ pts.forEach(([x,y])=>{minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);});
-    out+=`<polygon points="${pts.map(p=>p.map(v=>v.toFixed(2)).join(',')).join(' ')}" fill="${fill}" stroke="${fill}" stroke-width=".6" stroke-linejoin="round"/>`; };
-  for (const {x,y,z,c,dx,dy,dz} of list){
-    const X=x+dx, Y=y+dy, Z=z+dz;
-    poly([P(x,Y,Z),P(X,Y,Z),P(X,Y,z),P(x,Y,z)], shade(c,-0.08));   // cara izquierda
-    poly([P(X,y,Z),P(X,Y,Z),P(X,Y,z),P(X,y,z)], shade(c,-0.28));   // cara derecha
-    poly([P(x,y,Z),P(X,y,Z),P(X,Y,Z),P(x,Y,Z)], shade(c,0.22));    // tapa
-  }
-  const w=maxX-minX, sh=`<ellipse cx="${(minX+maxX)/2}" cy="${maxY+2}" rx="${w*.42}" ry="${w*.11}" fill="#0b2a1a" opacity=".16"/>`;
-  return `<svg viewBox="${minX-3} ${minY-3} ${w+6} ${maxY-minY+10}" xmlns="http://www.w3.org/2000/svg">${sh}${out}</svg>`;
-}
-document.querySelectorAll('.vx[data-m]').forEach(el => { const m=M[el.dataset.m]; if (m) el.innerHTML = voxel(m); });
+document.querySelectorAll('.vx[data-m]').forEach(el => { const src=EMOJI[el.dataset.m]; if (src) el.innerHTML = `<img src="${src}" alt="">`; });
 
 /* QR decorativo (no es un código real) */
 const qr=document.getElementById('qr'); if (qr){ const on=[0,1,2,6,7,8,9,11,15,17,18,19,20,24,25,26,30,32,34,37,39,40,41,43,46,48,50,54,55,56,58,60,62,63,65,68,70,72,73,74,76,78,79,80];
