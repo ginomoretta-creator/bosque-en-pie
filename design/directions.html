@@ -31,6 +31,7 @@ body{background:#e9e7e2;color:#111;font-family:Inter,system-ui,sans-serif;-webki
 @media (max-width:1100px){.stage{grid-template-columns:1fr}.phone{margin:10px auto 20px}.proscons{grid-template-columns:1fr}.dir-head{grid-template-columns:auto 1fr}.dir-head .refs{display:none}}
 @media (max-width:640px){.desk{min-height:auto}.intro h1{font-size:32px}}
 
+
 /* =====================================================
    A · ÓRBITA — satélite cinematográfico + vidrio líquido
    ===================================================== */
@@ -167,6 +168,16 @@ body{background:#e9e7e2;color:#111;font-family:Inter,system-ui,sans-serif;-webki
 .c.phone .mini .v{font-weight:800;font-size:22px;letter-spacing:-.03em}
 .c.phone .mini .k{font-size:12px;color:var(--muted)}
 .c.phone .cta{text-align:center;background:var(--ink);color:var(--lime);font-weight:800;padding:15px;border-radius:18px;font-size:16px}
+@media (max-width:760px){
+  .intro{padding:28px 16px 4px}.dir{padding:0 16px;margin-top:32px}
+  .dir-head{gap:12px}.dir-head .letter{font-size:44px}.dir-head h2{font-size:21px}
+  .phone{width:calc(100vw - 56px);max-width:360px;height:auto;min-height:700px}
+  .a .links,.b .links,.c .links{display:none}
+  .a .nav{margin:12px}.a .hero{grid-template-columns:1fr;padding:28px 20px 56px;gap:20px}.a h3{font-size:42px}.a .poly{display:none}.a .foot{left:20px;right:20px;flex-direction:column;gap:2px}
+  .b .nav{padding:16px 20px}.b .hero{grid-template-columns:1fr;padding:28px 20px 20px;gap:24px}.b h3{font-size:50px}.b .stats{grid-template-columns:1fr;margin:0 20px}.b .stats div{border-right:0;border-bottom:1px solid var(--rule);padding-left:0!important}.b .word{font-size:84px;padding:20px 16px 0}
+  .c .hero{grid-template-columns:1fr;padding:8px 12px 12px}.c .panel{padding:28px 22px;min-height:380px}.c .panel h3{font-size:46px}.c .panel img{width:100px}.c .nav{margin:12px}
+  .a.phone .sheet,.a.phone .tabbar{left:10px;right:10px}
+}
 </style>
 </head>
 <body>
