@@ -1,0 +1,9 @@
+{
+  "origen": "prueba",
+  "aviso": "Valores de prueba: no salen de una imagen satelital",
+  "algoritmo": "bosque-v1",
+  "parcela": "A",
+  "mes": "2025-12",
+  "coverBps": 9959,
+  "validBps": 7740
+}
