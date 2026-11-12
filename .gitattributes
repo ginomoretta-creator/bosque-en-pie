@@ -1,0 +1,2 @@
+# evidenceHash es el keccak256 de los bytes exactos: git no debe tocar los saltos de línea
+reports/** -text
