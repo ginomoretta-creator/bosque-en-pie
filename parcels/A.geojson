@@ -1,0 +1,42 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nombre": "Parcela A",
+        "descripcion": "Monte nativo que sigue en pie durante 2025 (Chaco salteño, departamento Rivadavia).",
+        "hectareas": 101,
+        "tile": "20KNA",
+        "fuente": "Dibujada sobre Sentinel-2 L2A (Earth Search). Dueño y operador: billeteras de prueba."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -62.1198,
+              -22.4511
+            ],
+            [
+              -62.1198,
+              -22.4417
+            ],
+            [
+              -62.1292,
+              -22.4417
+            ],
+            [
+              -62.1292,
+              -22.4511
+            ],
+            [
+              -62.1198,
+              -22.4511
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
