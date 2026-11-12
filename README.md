@@ -4,6 +4,22 @@ Pago por conservar monte, verificado por satélite. Un donante deja AVAX bloquea
 
 Proyecto para la Competencia Argentina Space (Salta), track Avalanche.
 
+> **En una línea:** Bosque en pie paga cada mes que el monte sigue en pie: el satélite es el testigo y un contrato en Avalanche paga.
+
+## La idea
+
+En Salta se desmontaron más de 20.000 hectáreas de monte nativo entre enero y septiembre de 2026, y el fondo de la Ley de Bosques para pagarle a quien conserva nunca se integró completo. Bosque en pie da vuelta esa cuenta:
+
+1. Una **empresa con metas ambientales** (por ejemplo, una minera de la región) deja AVAX por adelantado en un contrato, para una parcela y por un plazo de compromiso.
+2. Cada mes, una imagen **Sentinel-2** compara la parcela con el mismo mes del año anterior. Tres verificadores firman el informe; alcanza con dos.
+3. Si el monte sigue en pie, el contrato paga una cuota al **dueño** (por no desmontar) y al **operador** (cortafuegos, vigilancia), y la empresa recibe un **certificado de monte en pie** por las hectáreas-mes financiadas.
+4. Si aparece un desmonte, dos lecturas malas seguidas cortan los pagos para siempre. El saldo vuelve a la empresa o queda para restaurar. Nadie gana con un desmonte.
+5. La plata y los certificados quedan **bloqueados durante el compromiso**: si desmontan antes, los certificados no sirven.
+
+Cada parcela muestra además un **bono de carbono simulado**: las toneladas de CO₂e que siguen en pie, estimadas con factores públicos. Es una simulación para la demo y no está validada por ningún organismo.
+
+Guion del pitch: [docs/pitch-2min.md](docs/pitch-2min.md).
+
 > En construcción. El plan de trabajo está en las [issues](../../issues) y los [milestones](../../milestones). El contexto completo del proyecto está en [CLAUDE.md](CLAUDE.md).
 
 ## Contrato

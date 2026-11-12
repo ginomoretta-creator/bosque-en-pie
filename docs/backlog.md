@@ -88,6 +88,17 @@ Para empresas con metas ambientales. Cada cuota pagada acuña al donante un cert
 
 **Hecho cuando:** pruebas de acuñado proporcional, transferencia y retiro en verde, y el resto de la suite sigue pasando.
 
+### Compromiso con plazo y quien paga no cobra (reglas 9 y 10)
+- milestone: 1 · Contrato y pruebas
+- labels: contrato
+
+- `commitEnd` por parcela, fijado por el curador al registrarla (0 = sin plazo, como en la demo).
+- Antes de `commitEnd`, el aporte no se retira ni se mueve a otra parcela (no existe función para eso).
+- Pasado `commitEnd` con la parcela en pie, cualquiera cierra el compromiso: se terminan los pagos y cada donante retira el saldo sobrante en proporción a su aporte.
+- `donate` rechaza aportes desde la dirección del dueño o del operador de la parcela.
+
+**Hecho cuando:** pruebas de cierre del compromiso, retiro proporcional del sobrante, informes rechazados después del cierre y aporte del dueño u operador rechazado, en verde.
+
 ### Suite de pruebas del contrato completa
 - milestone: 1 · Contrato y pruebas
 - labels: contrato, no se recorta
@@ -167,6 +178,14 @@ STAC en `https://earth-search.aws.element84.com/v1`, colección `sentinel-2-l2a`
 Correr los 12 meses de 2025 para A y B (base 2024). Ajustar umbrales hasta que A no dé lecturas malas y B las dé desde el mes del desmonte. Congelar y documentar los valores finales.
 
 **Hecho cuando:** tabla real de `coverBps` / `validBps` por mes para A y B en la issue. Si un mes no se pudo calcular, se dice.
+
+### Estimación de carbono en pie por parcela (informativa)
+- milestone: 4 · Algoritmo Sentinel-2
+- labels: oráculo, datos, recorte 1 · certificados
+
+t CO₂e en pie = hectáreas × biomasa por hectárea del tipo de bosque (Yungas o Chaco) × 0,47 × 44/12. Factores tomados de IPCC 2019 o del Inventario Nacional de Bosques Nativos, con la cita en el código. Se guarda en el JSON de evidencia. En la página se muestra como "bono de carbono (simulación)", con t CO₂e estimadas y un valor de ejemplo opcional, siempre con la etiqueta "SIMULACIÓN · no validado".
+
+**Hecho cuando:** la función tiene pruebas, los factores citan su fuente y el valor aparece en la evidencia de A y B.
 
 ### Armar informes con evidencia (`oracle/make_report.py`)
 - milestone: 5 · Informes y envío

@@ -39,10 +39,23 @@ Problema: en Salta se desmontaron 20.122 hectáreas entre enero y septiembre de 
    - parte "restauración": queda bloqueada en el contrato como fondo de restauración de esa parcela. Si pasa `restorationTimeout` sin usarse, esos donantes también pueden retirarla.
 7. **Impugnación:** si `challengeWindow` > 0, el informe queda pendiente ese tiempo. El dueño, el operador o un donante de la parcela pueden impugnarlo, y entonces decide el curador. Si `challengeWindow` es 0, el informe se ejecuta en la misma transacción.
 8. **Nadie gana plata por un desmonte:** el saldo nunca va al dueño ni al operador.
+9. **Compromiso con plazo (time lock):** al registrar la parcela, el curador fija `commitEnd` (0 = sin plazo). Hasta esa fecha el aporte no se retira ni se pasa a otra parcela. Si se cumple el plazo con la parcela en pie, cualquiera puede cerrar el compromiso: se terminan los pagos y cada donante retira el saldo sobrante en proporción a su aporte. Los certificados de esa parcela solo se pueden retirar después de `commitEnd` y si la parcela no fue desmontada; si se desmonta antes, quedan congelados.
+10. **Quien paga no cobra:** el contrato rechaza aportes desde la dirección del dueño o del operador de esa parcela.
 
 Parámetros del constructor: verificadores, quórum, `challengeWindow`, `minInterval`, `maxObsAge` (0 = sin límite), `restorationTimeout`.
 
-En la demo se usa `challengeWindow = 0` y `maxObsAge = 0`, porque se repite el año 2025 en un minuto con imágenes históricas. En un producto real serían 72 horas y 45 días. Esto se dice abiertamente en el pitch.
+En la demo se usa `challengeWindow = 0`, `maxObsAge = 0` y `commitEnd = 0`, porque se repite el año 2025 en un minuto con imágenes históricas. En un producto real serían 72 horas, 45 días y 24 meses. Esto se dice abiertamente en el pitch.
+
+### Quién paga y cuándo
+
+- El cliente típico es una **empresa con metas ambientales** (por ejemplo, una minera de la región). En el código el rol se sigue llamando donante. No nombrar empresas reales: en la demo es "empresa de prueba".
+- La empresa **paga por adelantado** el compromiso (por ejemplo, 24 cuotas). El contrato **paga por informe verificado**, una vez por mes, no por cada pasada del satélite.
+
+### Estimación de carbono (solo informativa)
+
+- Por parcela se estima el carbono que sigue en pie: hectáreas × biomasa por hectárea del tipo de bosque × 0,47 × 44/12 = t CO₂e. Factores de fuentes públicas citadas (IPCC 2019 o Inventario Nacional de Bosques Nativos), nunca inventados.
+- Va en el oráculo y en el JSON de evidencia, no en el contrato. Se muestra siempre como "estimado".
+- En la demo se puede presentar como **"bono de carbono (simulación)"**: t CO₂e estimadas y, si se quiere, un valor de ejemplo por tonelada. Siempre con la etiqueta visible **"SIMULACIÓN · no validado"**, en la página y en el pitch. El token real del contrato sigue siendo el certificado de monte en pie.
 
 ### Firma de informes
 
@@ -71,7 +84,7 @@ Idea para el pitch: el fondo se libera por etapas a un restaurador distinto del 
 - Comparar siempre contra el mismo mes del año anterior: el monte chaqueño pierde hojas en invierno.
 - La evidencia de cada informe (imagen usada, imagen base, versión del algoritmo, resultado) se guarda como JSON en el repo; `evidenceHash` es su keccak256.
 
-Parcelas de la demo (las elige y dibuja Gino, como GeoJSON en `parcels/`): A, monte intacto en 2025; B, un desmonte real de 2025 en el Chaco salteño. No nombrar dueños reales ni opinar sobre la legalidad del desmonte. Los dueños y operadores de la demo son billeteras de prueba con nombres genéricos.
+Parcelas de la demo (las elige y dibuja Gino, como GeoJSON en `parcels/`): A, monte intacto en 2025 (propuesta: Yungas cerca de San Lorenzo, Salta, preferentemente fuera del área protegida; ojo con las nubes y recalibrar umbrales); B, un desmonte real de 2025 en el Chaco salteño. No nombrar dueños reales ni opinar sobre la legalidad del desmonte. Los dueños y operadores de la demo son billeteras de prueba con nombres genéricos.
 
 ## Arquitectura
 
