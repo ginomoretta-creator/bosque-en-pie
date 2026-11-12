@@ -1,0 +1,28 @@
+# Claves: nunca al repo
+.env
+.env.*
+!.env.example
+
+# Node / Hardhat
+node_modules/
+artifacts/
+cache/
+typechain-types/
+coverage/
+coverage.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Web
+web/dist/
+web/node_modules/
+
+# Varios
+.DS_Store
+Thumbs.db
+*.log
