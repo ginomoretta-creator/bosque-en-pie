@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bosque en pie · Mock v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Bosque en pie · v4 · "Cada píxel cuenta"
+   Base C (táctil, claro, lima) + toques de A (satélite real y vidrio)
+   ============================================================ */
+:root{
+  --bg:#f2f4ec; --card:#ffffff; --line:#e3e7dc; --ink:#0e1a12; --muted:#5f6c62; --faint:#8b968d;
+  --deep:#0c3b24; --deep-2:#124a2e; --leaf:#2fb35a; --lime:#d6ff3d; --lime-ink:#0c3b24;
+  --stand:#1f9d4c; --stand-bg:#e3f5e6;
+  --review:#e09a00; --review-bg:#fff3d6;
+  --cut:#f0542f; --cut-bg:#ffe7df;
+  --r-xl:32px; --r-lg:24px; --r-md:16px; --r-sm:12px;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --sans:Inter,system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e8ebe2;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.ph{text-decoration:underline dashed;text-decoration-thickness:1px;text-underline-offset:3px}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.muted{color:var(--muted)}
+.logo{display:inline-flex;color:var(--ink);--logo-sq:var(--leaf)} .logo svg{height:22px;width:auto}
+.on-dark .logo{color:#fff;--logo-sq:var(--lime);--logo-bg:var(--deep)}
+.vx{display:inline-block;line-height:0} .vx svg{width:100%;height:auto;overflow:visible}
+
+/* ---------- Tablero ---------- */
+.intro{max-width:1320px;margin:0 auto;padding:44px 24px 12px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+.intro h1{font:800 44px/1 var(--display);letter-spacing:-.035em}
+.intro p{margin-top:12px;color:var(--muted);max-width:68ch;line-height:1.55}
+.intro .icons{display:flex;gap:6px;align-items:flex-end}
+.intro .icons .vx{width:58px}
+.note{max-width:1320px;margin:8px auto 0;padding:0 24px}
+.note span{display:inline-block;font:500 12px/1.4 var(--mono);background:#fff7d1;border:1px dashed #d7a800;color:#6b5400;padding:8px 12px;border-radius:10px}
+.sec-title{max-width:1320px;margin:44px auto 16px;padding:0 24px;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sec-title h2{font:700 24px/1.1 var(--display);letter-spacing:-.02em}
+.sec-title span{color:var(--muted);font-size:14px}
+
+/* ============================ ESCRITORIO ============================ */
+.desk{max-width:1320px;margin:0 auto;padding:0 24px}
+.site{background:var(--bg);border-radius:28px;overflow:hidden;box-shadow:0 30px 60px -30px #0b2a1a55}
+.nav{display:flex;justify-content:space-between;align-items:center;margin:16px;padding:10px 10px 10px 22px;background:var(--card);border-radius:20px}
+.nav .links{display:flex;gap:4px;font-weight:600;font-size:14px}
+.nav .links span{padding:9px 14px;border-radius:12px}
+.nav .links span.on{background:var(--bg)}
+.nav .right{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:700 15px/1 var(--sans);padding:14px 20px;border-radius:14px;white-space:nowrap}
+.btn.ink{background:var(--ink);color:var(--lime)}
+.btn.lime{background:var(--lime);color:var(--lime-ink)}
+.btn.ghost{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.glass{background:#ffffff1f;color:#fff;box-shadow:inset 0 0 0 1px #ffffff40;backdrop-filter:blur(10px)}
+.btn.block{display:flex;width:100%}
+.btn.lg{padding:17px 22px;font-size:16px;border-radius:16px}
+
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:16px;padding:0 16px 16px}
+.panel{background:var(--deep);color:#fff;border-radius:var(--r-xl);padding:44px 40px;position:relative;overflow:hidden;min-height:520px;display:flex;flex-direction:column}
+.panel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 31px,#ffffff08 31px 32px),repeating-linear-gradient(90deg,transparent 0 31px,#ffffff08 31px 32px)}
+.panel > *{position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;font:500 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--lime);background:#d6ff3d14;border:1px solid #d6ff3d40;padding:7px 12px;border-radius:999px}
+.eyebrow i{width:6px;height:6px;background:var(--lime);border-radius:1px}
+.panel h3{font:800 76px/.9 var(--display);letter-spacing:-.05em;margin-top:22px}
+.panel h3 mark{background:var(--lime);color:var(--deep);padding:0 12px;border-radius:16px;display:inline-block;transform:rotate(-1.5deg)}
+.panel p{margin-top:20px;font-size:17px;line-height:1.55;color:#cfe3d6;max-width:38ch}
+.panel .ctas{display:flex;gap:10px;margin-top:auto;padding-top:28px}
+.panel .float{position:absolute;right:30px;bottom:28px;width:118px}
+
+.satcard{border-radius:var(--r-xl);overflow:hidden;position:relative;min-height:520px;background:url(assets/sat/chaco-z12.jpg) 55% 50%/cover}
+.satcard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#05140c55,transparent 30%,transparent 55%,#05140ccc)}
+.poly{position:absolute;border:2px solid var(--lime);border-radius:6px;box-shadow:0 0 0 1px #0007,0 0 22px #d6ff3d80;z-index:1}
+.poly.cut{border-color:var(--cut);box-shadow:0 0 0 1px #0007,0 0 22px #f0542f80}
+.poly b{position:absolute;left:-2px;top:-30px;font:600 12px var(--sans);background:var(--lime);color:var(--deep);padding:5px 9px;border-radius:8px;white-space:nowrap}
+.poly.cut b{background:var(--cut);color:#fff}
+.glass{background:linear-gradient(180deg,#0c2a1a8c,#0c2a1a66);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border:1px solid #ffffff2e;box-shadow:inset 0 1px 0 #ffffff33;color:#fff}
+.satcard .stats{position:absolute;left:16px;right:16px;bottom:16px;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.satcard .st{border-radius:20px;padding:16px 18px}
+.satcard .st .row{display:flex;justify-content:space-between;align-items:center}
+.satcard .st .n{font:800 46px/1 var(--display);letter-spacing:-.05em;margin-top:8px}
+.satcard .attr{position:absolute;top:14px;right:16px;z-index:2;font:400 10px var(--mono);color:#ffffffb3}
+.pill{display:inline-flex;align-items:center;gap:6px;font:700 12px var(--sans);padding:6px 11px;border-radius:10px}
+.pill i{width:7px;height:7px;border-radius:2px;background:currentColor}
+.pill.stand{background:var(--lime);color:var(--deep)} .pill.review{background:var(--review-bg);color:#8a5d00} .pill.cut{background:var(--cut);color:#fff}
+.pill.stand-l{background:var(--stand-bg);color:var(--stand)} .pill.cut-l{background:var(--cut-bg);color:#c23a17}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:8px 16px 16px}
+.step{background:var(--card);border-radius:var(--r-lg);padding:22px;display:flex;flex-direction:column;gap:10px;min-height:240px}
+.step .vx{width:84px;align-self:flex-start;margin:-4px 0 4px -4px}
+.step .k{font:500 11px var(--mono);letter-spacing:.07em;color:var(--faint)}
+.step h4{font:700 22px/1.1 var(--display);letter-spacing:-.02em}
+.step p{font-size:14px;line-height:1.5;color:var(--muted)}
+.band{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px;padding:0 16px 16px}
+.fact{background:var(--card);border-radius:var(--r-lg);padding:24px}
+.fact .n{font:800 52px/1 var(--display);letter-spacing:-.05em}
+.fact p{margin-top:8px;font-size:14px;color:var(--muted);line-height:1.45}
+.fact.dark{background:var(--ink);color:#fff} .fact.dark p{color:#b9c6bc} .fact.dark .n{color:var(--lime)}
+.cta{margin:0 16px 16px;background:var(--lime);border-radius:var(--r-xl);padding:40px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;position:relative;overflow:hidden}
+.cta h4{font:800 52px/.95 var(--display);letter-spacing:-.045em;color:var(--deep);max-width:16ch}
+.cta p{margin-top:12px;color:#2b4a35;max-width:48ch;line-height:1.5}
+.cta .qr{width:132px;height:132px;background:#fff;border-radius:20px;padding:12px;display:grid;grid-template-columns:repeat(9,1fr);gap:2px}
+.cta .qr i{background:var(--ink);border-radius:2px} .cta .qr i.o{background:transparent}
+.footer{background:var(--deep);color:#fff;padding:36px 40px 0;overflow:hidden}
+.footer .cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:20px;font-size:14px;color:#b9cfc0}
+.footer .cols b{display:block;color:#fff;margin-bottom:8px;font-weight:600}
+.footer .cols div span{display:block;margin-top:6px}
+.footer .big{margin-top:28px;color:#ffffff;opacity:.95;line-height:0}
+.footer .big svg{width:100%;height:auto;display:block;margin-bottom:-1%}
+.footer .big{--logo-sq:var(--lime);--logo-bg:var(--deep)}
+.footer .legal{display:flex;justify-content:space-between;font:400 11px var(--mono);color:#8fb19c;padding:14px 0 18px;border-top:1px solid #ffffff1a;margin-top:0;position:relative;background:var(--deep)}
+
+/* ============================ CELULAR ============================ */
+.phones{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;gap:36px 28px}
+.slot{width:390px;max-width:100%;flex:none}
+.slot-h{display:flex;justify-content:space-between;margin-bottom:10px;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.slot-h .new{color:#5b7a00;background:var(--lime);padding:2px 7px;border-radius:6px}
+.phone{background:var(--bg);border-radius:44px;min-height:844px;overflow:hidden;position:relative;box-shadow:0 0 0 9px var(--ink),0 30px 60px -24px #0b2a1a66;display:flex;flex-direction:column;margin:9px}
+.ph-top{display:flex;justify-content:space-between;align-items:center;padding:52px 18px 10px}
+.ph-top .l{display:flex;align-items:center;gap:10px;font:700 18px var(--display);letter-spacing:-.02em}
+.back{width:40px;height:40px;border-radius:13px;background:var(--card);display:grid;place-items:center;font-size:18px}
+.wallet{display:flex;align-items:center;gap:7px;background:var(--card);font:600 13px var(--sans);padding:9px 12px;border-radius:13px}
+.wallet i{width:8px;height:8px;border-radius:2px;background:var(--leaf)}
+.net{margin:0 18px;display:flex;align-items:center;gap:7px;font:500 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#7a6400;background:#fff7d1;padding:6px 10px;border-radius:9px;align-self:flex-start}
+.net i{width:6px;height:6px;border-radius:2px;background:#e0b100}
+.body{padding:12px 14px 120px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border-radius:var(--r-lg);padding:16px}
+.h-card{background:var(--deep);color:#fff;border-radius:28px;padding:14px;position:relative;overflow:hidden}
+.h-card.cut{background:#3a1a10}
+.h-card.review{background:#3a2a05}
+.h-card .img{height:168px;border-radius:20px;background:url(assets/sat/chaco-z13.jpg) 40% 100%/230% auto;position:relative;overflow:hidden}
+.h-card.cut .img{background-position:60% 25%;background-size:200% auto}
+.h-card .img .chip{position:absolute;left:10px;top:10px;border-radius:11px;padding:7px 10px;font:500 10px var(--mono);letter-spacing:.05em;text-transform:uppercase}
+.h-card .img .chip.r{left:auto;right:10px}
+.h-card .meta{padding:14px 6px 6px}
+.h-card .big{font:800 64px/1 var(--display);letter-spacing:-.055em;margin-top:10px}
+.h-card .big small{font-size:30px;letter-spacing:-.03em}
+.h-card .big.lime{color:var(--lime)} .h-card .big.cut{color:#ff8a6b} .h-card .big.review{color:#ffc53d}
+.h-card .sub{color:#cfe3d6;font-size:13px;margin-top:4px}
+.h-card.cut .sub{color:#f3c9bb} .h-card.review .sub{color:#f2dcaa}
+.h-card .vx{position:absolute;right:8px;bottom:6px;width:104px}
+.months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:10px}
+.months i{height:34px;border-radius:9px;background:var(--leaf)}
+.months i.r{background:var(--review)} .months i.c{background:var(--cut)} .months i.e{background:var(--bg)} .months i.sel{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ink)}
+.mletters{display:grid;grid-template-columns:repeat(12,1fr);text-align:center;font:400 10px var(--mono);color:var(--faint);margin-top:6px}
+.rowx{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lbl{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{background:var(--card);border-radius:var(--r-lg);padding:14px}
+.tile .vx{width:52px;margin:-4px 0 2px -4px}
+.tile .v{font:800 24px/1.1 var(--display);letter-spacing:-.03em}
+.tile .k{font-size:12px;color:var(--muted);margin-top:2px}
+.list .li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:14px}
+.list .li:first-child{border-top:0;padding-top:4px}
+.list .li .r{font:500 13px var(--mono);white-space:nowrap}
+.bar{height:12px;border-radius:999px;background:var(--bg);display:flex;overflow:hidden;margin:12px 0 10px}
+.bar i{display:block;height:100%}
+.key{display:flex;align-items:center;gap:8px}
+.key s{width:10px;height:10px;border-radius:3px;display:inline-block;text-decoration:none}
+.notice{border-radius:var(--r-lg);padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.notice.cut{background:var(--cut-bg);color:#5c1d0b} .notice.review{background:var(--review-bg);color:#5a3d00} .notice.info{background:#eef1ea;color:var(--ink)}
+.notice b{display:block;font:700 15px/1.25 var(--display);letter-spacing:-.01em}
+.notice span{font-size:13px;line-height:1.4;opacity:.85}
+.notice .vx{width:46px}
+.dock{position:absolute;left:0;right:0;bottom:0;padding:14px 14px 16px;background:linear-gradient(180deg,#f2f4ec00,var(--bg) 26%)}
+.tabbar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-radius:20px;padding:6px;margin-top:10px;box-shadow:0 8px 24px -12px #0b2a1a40}
+.tabbar span{text-align:center;font:600 11px var(--sans);color:var(--muted);padding:9px 0;border-radius:14px}
+.tabbar span.on{background:var(--deep);color:var(--lime)}
+.amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.amt{background:var(--card);border-radius:16px;padding:14px 0 11px;text-align:center}
+.amt b{display:block;font:800 26px/1 var(--display);letter-spacing:-.04em}
+.amt span{font:500 10px var(--mono);color:var(--faint);text-transform:uppercase}
+.amt.on{background:var(--deep);color:#fff} .amt.on b{color:var(--lime)} .amt.on span{color:#a9c8b4}
+.choice{background:var(--card);border-radius:var(--r-lg);padding:12px 14px;display:grid;grid-template-columns:52px 1fr 22px;gap:12px;align-items:center;box-shadow:inset 0 0 0 1.5px transparent}
+.choice.on{box-shadow:inset 0 0 0 2px var(--deep)}
+.choice .vx{width:52px}
+.choice b{display:block;font:700 16px var(--display);letter-spacing:-.01em}
+.choice span{font-size:12.5px;line-height:1.35;color:var(--muted)}
+.radio{width:22px;height:22px;border-radius:7px;box-shadow:inset 0 0 0 2px var(--line)}
+.choice.on .radio{background:var(--deep);box-shadow:none;position:relative}
+.choice.on .radio::after{content:"";position:absolute;inset:6px;border-radius:2px;background:var(--lime)}
+.sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sig{border-radius:14px;padding:10px;background:var(--bg);font-size:12px}
+.sig b{display:block;font:500 11px var(--mono);color:var(--faint)}
+.sig.ok{background:var(--stand-bg)} .sig.ok b{color:var(--stand)}
+.cert{background:var(--deep);color:#fff;border-radius:28px;padding:20px;position:relative;overflow:hidden}
+.cert::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 21px,#ffffff0d 21px 22px),repeating-linear-gradient(90deg,transparent 0 21px,#ffffff0d 21px 22px)}
+.cert > *{position:relative}
+.cert .n{font:800 54px/1 var(--display);letter-spacing:-.055em;color:var(--lime);margin-top:8px}
+.cert .n small{font-size:20px;color:#fff;letter-spacing:-.02em}
+.cert p{color:#cfe3d6;font-size:13px;line-height:1.45;margin-top:6px;max-width:28ch}
+.cert .vx{position:absolute;right:8px;top:8px;width:78px}
+.cert .lbl,.cert .n{max-width:calc(100% - 78px)}
+.h1{font:800 30px/1.02 var(--display);letter-spacing:-.04em;padding:4px 4px 2px}
+.foot-note{max-width:1320px;margin:20px auto 0;padding:0 24px 60px;color:var(--muted);font-size:12px;line-height:1.6}
+.foot-note b{color:var(--ink)}
+
+@media (max-width:1100px){.hero{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.band{grid-template-columns:1fr}.cta{grid-template-columns:1fr}.footer .cols{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){
+  .intro{grid-template-columns:1fr;padding:28px 16px 8px}.intro h1{font-size:32px}.intro .icons .vx{width:44px}
+  .note,.desk,.phones,.foot-note,.sec-title{padding-left:16px;padding-right:16px}
+  .nav .links{display:none}.nav .right .ghost{display:none}
+  .panel{padding:28px 22px;min-height:auto}.panel h3{font-size:50px}.panel .float{width:92px;bottom:auto;top:20px;right:14px}
+  .satcard{min-height:460px}.satcard .stats{grid-template-columns:1fr}.satcard .st .n{font-size:38px}.poly{display:none}
+  .steps{grid-template-columns:1fr}.cta{padding:26px}.cta h4{font-size:36px}.footer{padding:28px 20px 0}
+  .phone{margin:9px 0;min-height:800px}.slot{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Logotipo del Figma (componente "Logotipo", Horizontal L y Signo) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo-h" viewBox="0 0 250 48"><!-- PROVISORIO: reemplazar por el logo v2 exportado del Figma -->
+    <circle cx="24" cy="24" r="22" fill="currentColor"/>
+    <path d="M24 37V21" stroke="var(--logo-bg,#fff)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M24 25c0-7.5 5-12 13-12 0 7.5-5 12-13 12z" fill="var(--logo-sq,#2fb35a)"/>
+    <path d="M24 29c0-5.5-4-9-10-9 0 5.5 4 9 10 9z" fill="var(--logo-bg,#fff)"/>
+    <text x="56" y="34" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="27" letter-spacing="-1.1" fill="currentColor">bosque <tspan fill="var(--logo-sq,#2fb35a)">en pie</tspan></text>
+  </symbol>
+  <symbol id="logo-s" viewBox="0 0 48 48"><path fill="currentColor" d="M19.5 24H28.5V42H19.5V24ZM6 42H42V45H6V42Z"/><path fill="var(--logo-sq,#2fb35a)" d="M15 3H33V21H15V3Z"/></symbol>
+</svg>
+
+<header class="intro">
+  <div>
+    <div class="mono" style="color:var(--leaf)">Mock v4 · base C + toques de A</div>
+    <h1>Bosque en pie — cada píxel cuenta</h1>
+    <p>Claro, táctil y con lima, como la opción C. De la A toma la imagen satelital real (Sentinel-2 del Chaco salteño) y los paneles de vidrio sobre ella. Usa el logotipo del Figma: el signo es un árbol con el follaje cuadrado, como un píxel. De ahí salen los íconos: esculturas de cubitos (vóxeles) en lugar de emojis genéricos.</p>
+  </div>
+  <div class="icons"><span class="vx" data-m="tree"></span><span class="vx" data-m="satellite"></span><span class="vx" data-m="coins"></span><span class="vx" data-m="sigs"></span><span class="vx" data-m="sprout"></span><span class="vx" data-m="stump"></span></div>
+</header>
+<div class="note"><span>Números, fechas, hectáreas y montos de ejemplo (subrayado punteado). La imagen satelital muestra la zona, no las parcelas de la demo.</span></div>
+
+<!-- =========================== ESCRITORIO =========================== -->
+<div class="sec-title"><h2>Inicio · escritorio</h2><span>1440 · también es la base de la pantalla grande</span></div>
+<div class="desk"><div class="site">
+  <nav class="nav">
+    <a class="logo" href="#"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></a>
+    <div class="links"><span class="on">Parcelas</span><span>Cómo funciona</span><span>Actividad</span><span>Empresas</span></div>
+    <div class="right"><span class="btn ghost">Mi aporte</span><span class="btn ink">Aportar</span></div>
+  </nav>
+  <section class="hero">
+    <div class="panel on-dark">
+      <span class="eyebrow"><i></i>Verificado por Sentinel-2 · en Avalanche</span>
+      <h3>Tu plata<br><mark>cuida</mark> el monte.</h3>
+      <p>Dejás AVAX en un contrato. Cada mes que una imagen satelital confirma que la parcela sigue en pie, el contrato paga a quienes la cuidan. Si aparece un desmonte, los pagos se cortan.</p>
+      <div class="ctas"><span class="btn lime lg">Elegir una parcela →</span><span class="btn glass lg">Cómo funciona</span></div>
+      <span class="vx float" data-m="tree"></span>
+    </div>
+    <div class="satcard">
+      <span class="attr">Sentinel-2 cloudless 2023 · EOX</span>
+      <div class="poly cut" style="left:20%;top:18%;width:22%;height:20%"><b>Parcela B · desmontada</b></div>
+      <div class="poly" style="left:52%;top:36%;width:18%;height:17%"><b>Parcela A · en pie</b></div>
+      <div class="stats">
+        <div class="st glass"><div class="row"><b>Parcela A</b><span class="pill stand"><i></i>En pie</span></div><div class="n" style="color:var(--lime)"><span class="ph">99,3</span>%</div><div class="months" style="gap:3px"><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i></div></div>
+        <div class="st glass"><div class="row"><b>Parcela B</b><span class="pill cut"><i></i>Desmontada</span></div><div class="n" style="color:#ff8a6b"><span class="ph">38,6</span>%</div><div class="months" style="gap:3px"><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i style="height:16px;background:var(--lime)"></i><i class="r" style="height:16px"></i><i class="c" style="height:16px"></i><i style="height:16px;background:#ffffff26"></i><i style="height:16px;background:#ffffff26"></i><i style="height:16px;background:#ffffff26"></i><i style="height:16px;background:#ffffff26"></i></div></div>
+      </div>
+    </div>
+  </section>
+  <section class="steps">
+    <div class="step"><span class="vx" data-m="coins"></span><span class="k">01 · APORTÁS</span><h4>Tu AVAX queda en el contrato</h4><p>Elegís una parcela y qué pasa con tu saldo si hay desmonte: vuelve a vos o va a restaurar.</p></div>
+    <div class="step"><span class="vx" data-m="satellite"></span><span class="k">02 · EL SATÉLITE MIRA</span><h4>Una imagen por mes</h4><p>Sentinel-2 compara la parcela con el mismo mes del año anterior. Cualquiera puede rehacer la cuenta.</p></div>
+    <div class="step"><span class="vx" data-m="sigs"></span><span class="k">03 · FIRMAN 2 DE 3</span><h4>Tres verificadores</h4><p>El informe vale con dos firmas de tres. Hacen falta dos lecturas malas seguidas para cortar.</p></div>
+    <div class="step"><span class="vx" data-m="tree"></span><span class="k">04 · PAGO O CORTE</span><h4>El monte paga a quien lo cuida</h4><p>En pie: cuota para el dueño y el operador. Desmonte: se corta para siempre y nadie cobra por eso.</p></div>
+  </section>
+  <section class="band">
+    <div class="fact dark"><div class="n">20.122 ha</div><p>desmontadas en Salta entre enero y septiembre de 2026, según el relevamiento satelital de Greenpeace.</p></div>
+    <div class="fact"><div class="n">2 de 3</div><p>verificadores firman cada informe. La imagen es pública: cualquiera la puede revisar.</p></div>
+    <div class="fact"><div class="n">0 AVAX</div><p>van al dueño o al operador si hay desmonte. El saldo vuelve o restaura.</p></div>
+  </section>
+  <section class="cta">
+    <div><h4>Escaneá y aportá desde tu celular.</h4><p>Cada código abre una billetera de prueba ya cargada en la red Fuji. No instalás nada y no es plata real.</p><div style="display:flex;gap:10px;margin-top:20px"><span class="btn ink lg">Ver las billeteras de prueba</span></div></div>
+    <div class="qr" id="qr"></div>
+  </section>
+  <footer class="footer">
+    <div class="cols"><div><b>Bosque en pie</b><span>Pago por conservar monte, verificado por satélite.</span><span>Competencia Argentina Space · Salta</span></div><div><b>Producto</b><span>Parcelas</span><span>Cómo funciona</span><span>Para empresas</span></div><div><b>Datos</b><span>Informes y evidencia</span><span>Contrato en Fuji ↗</span><span>Algoritmo bosque-v1</span></div><div><b>Código</b><span>GitHub ↗</span><span>README</span></div></div>
+    <div class="big"><svg viewBox="0 0 250 48"><use href="#logo-h"/></svg></div>
+    <div class="legal"><span>Contiene datos Copernicus Sentinel modificados, 2024 y 2025</span><span>Red de prueba Avalanche Fuji</span></div>
+  </footer>
+</div></div>
+
+<!-- =========================== CELULAR =========================== -->
+<div class="sec-title"><h2>Celular · 390</h2><span>Ocho pantallas · la barra inferior y los botones quedan fijos abajo</span></div>
+<div class="phones">
+
+<!-- Parcela en pie -->
+<section class="slot"><div class="slot-h"><span>01 · Parcela · en pie</span></div>
+<div class="phone">
+  <div class="ph-top"><span class="l"><span class="back">←</span>Parcela A</span><span class="wallet"><i></i><span class="ph">2,00</span> AVAX</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="h-card">
+      <div class="img"><span class="chip glass">Sentinel-2 · <span class="ph">10 dic 2025</span></span><span class="chip glass r"><span class="ph">214</span> ha</span></div>
+      <div class="meta"><span class="pill stand"><i></i>En pie</span><div class="big lime"><span class="ph">99,3</span><small>%</small></div><div class="sub">del monte de 2024 sigue en pie</div></div>
+      <span class="vx" data-m="tree"></span>
+    </div>
+    <div class="card"><div class="rowx"><span class="lbl">Doce cuotas · 2025</span><span class="pill stand-l"><span class="ph">12 de 12</span></span></div>
+      <div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sel"></i></div>
+      <div class="mletters"><span>E</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
+    <div class="two">
+      <div class="tile"><span class="vx" data-m="coins"></span><div class="v"><span class="ph">3,20</span> AVAX</div><div class="k">en el pozo · cuota <span class="ph">0,10</span></div></div>
+      <div class="tile"><span class="vx" data-m="sigs"></span><div class="v">2 de 3</div><div class="k">firmas del último informe</div></div>
+    </div>
+    <div class="card list"><div class="li"><span>Dueño de prueba A <span class="muted">· no desmontar</span></span><span class="r ph">60 %</span></div><div class="li"><span>Operador de prueba A <span class="muted">· cortafuegos</span></span><span class="r ph">40 %</span></div><div class="li"><span>Certificados por cuota</span><span class="r ph">214 ha-mes</span></div></div>
+  </div>
+  <div class="dock"><span class="btn ink lg block">Aportar a esta parcela</span><div class="tabbar"><span class="on">Mapa</span><span>Actividad</span><span>Mi aporte</span><span>Cómo</span></div></div>
+</div></section>
+
+<!-- Parcela desmontada -->
+<section class="slot"><div class="slot-h"><span>02 · Parcela · desmontada</span></div>
+<div class="phone">
+  <div class="ph-top"><span class="l"><span class="back">←</span>Parcela B</span><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="h-card cut">
+      <div class="img"><span class="chip glass"><span class="ph">ago 2025</span> · corte</span><span class="chip glass r"><span class="ph">187</span> ha</span></div>
+      <div class="meta"><span class="pill cut"><i></i>Desmontada</span><div class="big cut"><span class="ph">38,6</span><small>%</small></div><div class="sub">del monte de 2024 sigue en pie</div></div>
+      <span class="vx" data-m="stump"></span>
+    </div>
+    <div class="notice cut"><span class="vx" data-m="stump"></span><div><b>Dos lecturas malas seguidas. Pagos cortados.</b><span>El saldo nunca va al dueño ni al operador.</span></div></div>
+    <div class="card"><div class="rowx"><span class="lbl">Doce cuotas · 2025</span><span class="pill cut-l"><span class="ph">6 de 12</span></span></div>
+      <div class="months"><i></i><i></i><i></i><i></i><i></i><i></i><i class="r"></i><i class="c sel"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i></div>
+      <div class="mletters"><span>E</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div></div>
+    <div class="card"><div class="rowx"><span class="lbl">Pozo al corte</span><b style="font:800 22px var(--display);letter-spacing:-.03em"><span class="ph">4,20</span> AVAX</b></div>
+      <div class="bar"><i style="width:14%;background:var(--leaf)"></i><i style="width:52%;background:var(--cut)"></i><i style="width:34%;background:var(--review)"></i></div>
+      <div class="list"><div class="li"><span class="key"><s style="background:var(--leaf)"></s>Pagado antes del corte</span><span class="r ph">0,60</span></div><div class="li"><span class="key"><s style="background:var(--cut)"></s><b>Vuelve a los donantes</b></span><span class="r ph">2,16</span></div><div class="li"><span class="key"><s style="background:var(--review)"></s><b>Fondo de restauración</b></span><span class="r ph">1,44</span></div></div></div>
+  </div>
+  <div class="dock"><span class="btn ink lg block">Ver mi parte</span><div class="tabbar"><span class="on">Mapa</span><span>Actividad</span><span>Mi aporte</span><span>Cómo</span></div></div>
+</div></section>
+
+<!-- Aportar -->
+<section class="slot"><div class="slot-h"><span>03 · Aportar · una pantalla</span></div>
+<div class="phone">
+  <div class="ph-top"><span class="l"><span class="back">←</span>Aportar</span><span class="wallet"><i></i><span class="ph">2,00</span> AVAX</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="h1">¿Cuánto querés aportar a la Parcela A?</div>
+    <div class="amounts"><div class="amt"><b>0,1</b><span>1 cuota</span></div><div class="amt"><b>0,5</b><span>5 cuotas</span></div><div class="amt on"><b>1</b><span>10 cuotas</span></div><div class="amt"><b>2</b><span>20 cuotas</span></div></div>
+    <span class="lbl" style="padding:6px 4px 0">Si hay desmonte, tu saldo…</span>
+    <div class="choice on"><span class="vx" data-m="coin"></span><div><b>Vuelve a mí</b><span>Lo retirás en proporción a lo que aportaste.</span></div><span class="radio"></span></div>
+    <div class="choice"><span class="vx" data-m="sprout"></span><div><b>Va a restaurar la parcela</b><span>Queda como fondo de restauración. Si en <span class="ph">12 meses</span> no se usa, lo retirás.</span></div><span class="radio"></span></div>
+    <div class="card list"><div class="li"><span>Cubre</span><span class="r">10 cuotas · <span class="ph">0,10</span></span></div><div class="li"><span>Certificados estimados</span><span class="r ph">≈ 2.140 ha-mes</span></div><div class="li"><span>Red</span><span class="r">Avalanche Fuji · prueba</span></div></div>
+  </div>
+  <div class="dock"><span class="btn lime lg block" style="background:var(--deep);color:var(--lime)">Aportar 1 AVAX de prueba</span><p style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px">Firmás con tu billetera de prueba. No sale plata real.</p></div>
+</div></section>
+
+<!-- Mi aporte -->
+<section class="slot"><div class="slot-h"><span>04 · Mi aporte</span></div>
+<div class="phone">
+  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i><span class="ph">0,99</span> AVAX</span></div>
+  <span class="net"><i></i>Billetera de prueba 3 · <span class="ph">0x7a3f…c41e</span></span>
+  <div class="body">
+    <div class="h1">Aportaste en dos parcelas.</div>
+    <div class="card"><div class="rowx"><b style="font:700 18px var(--display)">Parcela A</b><span class="pill stand-l"><i></i>En pie</span></div>
+      <div class="bar"><i style="width:40%;background:var(--leaf)"></i></div>
+      <div class="list"><div class="li"><span>Aportaste · vuelve a vos si hay desmonte</span><span class="r ph">1,00</span></div><div class="li"><span>Ya pagó a quienes cuidan</span><span class="r ph">0,40</span></div></div></div>
+    <div class="card"><div class="rowx"><b style="font:700 18px var(--display)">Parcela B</b><span class="pill cut-l"><i></i>Desmontada</span></div>
+      <div class="bar"><i style="width:14%;background:var(--leaf)"></i><i style="width:86%;background:var(--cut)"></i></div>
+      <div class="list"><div class="li"><span>Llegó a quienes cuidan · 6 cuotas</span><span class="r ph">0,1429</span></div><div class="li"><span><b style="color:#c23a17">Para recuperar</b></span><span class="r ph" style="color:#c23a17">0,8571</span></div></div></div>
+    <a class="notice info" href="#"><span class="vx" data-m="sprout"></span><div><b>Certificados de monte en pie</b><span><span class="ph">1.123</span> ha-mes financiadas · ver →</span></div></a>
+  </div>
+  <div class="dock"><span class="btn lime lg block">Recuperar 0,8571 AVAX</span><div class="tabbar"><span>Mapa</span><span>Actividad</span><span class="on">Mi aporte</span><span>Cómo</span></div></div>
+</div></section>
+
+<!-- Certificados -->
+<section class="slot"><div class="slot-h"><span>05 · Certificados</span><span class="new">nueva</span></div>
+<div class="phone">
+  <div class="ph-top"><span class="l"><span class="back">←</span>Certificados</span><span class="wallet"><i></i>Empresa · prueba</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="cert"><span class="lbl" style="color:#a9c8b4">Monte que tu aporte mantuvo en pie</span><div class="n"><span class="ph">2.406</span> <small>ha-mes</small></div><p>Una ha-mes es una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</p><span class="vx" data-m="sprout"></span></div>
+    <div class="card list"><div class="li"><span>Parcela A <span class="muted">· ene–dic 2025</span></span><span class="r ph">1.284</span></div><div class="li"><span>Parcela B <span class="muted">· ene–jun 2025</span></span><span class="r ph">1.122</span></div><div class="li"><span>Retirados a nombre de la empresa</span><span class="r ph">0</span></div></div>
+    <div class="notice info"><span class="vx" data-m="sigs"></span><div><b>No es un bono de carbono.</b><span>Certifica hectáreas-mes de monte en pie, no toneladas de CO₂. Retirarlo lo deja registrado a tu nombre para que nadie más lo use.</span></div></div>
+  </div>
+  <div class="dock"><div class="two"><span class="btn ghost lg block">Transferir</span><span class="btn ink lg block">Retirar</span></div><div class="tabbar"><span>Mapa</span><span>Actividad</span><span class="on">Mi aporte</span><span>Cómo</span></div></div>
+</div></section>
+
+<!-- Informe del mes -->
+<section class="slot"><div class="slot-h"><span>06 · Informe del mes</span></div>
+<div class="phone">
+  <div class="ph-top"><span class="l"><span class="back">←</span><span class="ph">Julio 2025</span></span><span class="wallet"><i></i>Parcela B</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="h-card review">
+      <div class="img" style="background-position:60% 30%;background-size:200% auto"><span class="chip glass">Base <span class="ph">jul 2024</span> → <span class="ph">jul 2025</span></span></div>
+      <div class="meta"><span class="pill review"><i></i>En revisión</span><div class="big review"><span class="ph">71,3</span><small>%</small></div><div class="sub">monte en pie · el umbral es 95 %</div></div>
+      <span class="vx" data-m="satellite"></span>
+    </div>
+    <div class="notice review"><span class="vx" data-m="sigs"></span><div><b>Primera lectura mala: no paga ni corta.</b><span>Si la próxima también da mal, la parcela queda desmontada.</span></div></div>
+    <div class="card"><span class="lbl">Firmaron 3 de 3</span><div class="sigs" style="margin-top:10px"><div class="sig ok"><b>✓ VERIF. 1</b><span class="ph">0x12a…9c</span></div><div class="sig ok"><b>✓ VERIF. 2</b><span class="ph">0x4be…07</span></div><div class="sig ok"><b>✓ VERIF. 3</b><span class="ph">0x9d1…3f</span></div></div></div>
+    <div class="card list"><div class="li"><span>Parte visible</span><span class="r ph">100 %</span></div><div class="li"><span>Algoritmo</span><span class="r">bosque-v1</span></div><div class="li"><span>Evidencia</span><span class="r ph">0x9f3c…e21a ↗</span></div></div>
+  </div>
+  <div class="dock"><span class="btn ghost lg block">Ver en el explorador ↗</span><div class="tabbar"><span class="on">Mapa</span><span>Actividad</span><span>Mi aporte</span><span>Cómo</span></div></div>
+</div></section>
+
+<!-- Quienes cuidan -->
+<section class="slot"><div class="slot-h"><span>07 · Quienes cuidan</span><span class="new">nueva</span></div>
+<div class="phone">
+  <div class="ph-top"><a class="logo"><svg viewBox="0 0 261 61" style="height:20px"><use href="#logo-h"/></svg></a><span class="wallet"><i></i>Operador A</span></div>
+  <span class="net"><i></i>Red de prueba Fuji · no es plata real</span>
+  <div class="body">
+    <div class="h-card"><div class="meta" style="padding:8px 8px 10px"><span class="lbl" style="color:#a9c8b4">Cobraste por cuidar la Parcela A</span><div class="big lime"><span class="ph">0,48</span><small> AVAX</small></div><div class="sub">en <span class="ph">12</span> cuotas de 2025</div></div><span class="vx" data-m="tree"></span></div>
+    <div class="card"><span class="lbl">Reparto de cada cuota</span><div class="bar"><i style="width:60%;background:#b9e6c6"></i><i style="width:40%;background:var(--leaf)"></i></div>
+      <div class="list"><div class="li"><span class="key"><s style="background:#b9e6c6"></s>Dueño · no desmontar</span><span class="r ph">60 % · 0,06</span></div><div class="li"><span class="key"><s style="background:var(--leaf)"></s><b>Vos · cortafuegos y vigilancia</b></span><span class="r ph">40 % · 0,04</span></div></div></div>
+    <div class="card list"><div class="li"><span><span class="ph">Dic 2025</span> <span class="muted">· 2 de 3 firmas</span></span><span class="r ph" style="color:var(--stand)">+0,04</span></div><div class="li"><span><span class="ph">Nov 2025</span> <span class="muted">· 3 de 3 firmas</span></span><span class="r ph" style="color:var(--stand)">+0,04</span></div><div class="li"><span>El pozo alcanza para</span><span class="r ph">20 cuotas</span></div></div>
+  </div>
+  <div class="dock"><span class="btn ghost lg block">Impugnar un informe</span><p style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px">En la demo la ventana de impugnación está apagada.</p></div>
+</div></section>
+
+<!-- Entrada con QR -->
+<section class="slot"><div class="slot-h"><span>08 · Entrada desde el QR</span></div>
+<div class="phone" style="background:var(--deep);color:#fff">
+  <div class="ph-top on-dark"><a class="logo"><svg viewBox="0 0 261 61" style="height:22px"><use href="#logo-h"/></svg></a><span class="wallet" style="background:#ffffff1a;color:#fff"><i style="background:var(--lime)"></i>Billetera 3</span></div>
+  <div class="body" style="padding-top:8px">
+    <div style="border-radius:28px;height:300px;background:url(assets/sat/chaco-z12.jpg) 60% 50%/cover;position:relative;overflow:hidden">
+      <div class="glass" style="position:absolute;left:12px;right:12px;bottom:12px;border-radius:20px;padding:14px 16px"><span class="mono" style="color:var(--lime)">Tu billetera de prueba está lista</span><div style="font:800 34px/1 var(--display);letter-spacing:-.04em;margin-top:6px"><span class="ph">2,00</span> AVAX</div><div style="font-size:12px;color:#cfe3d6;margin-top:4px">en la red Fuji · no es plata real</div></div>
+    </div>
+    <div style="font:800 40px/.95 var(--display);letter-spacing:-.05em;padding:10px 4px 0">Elegí qué monte<br>querés <mark style="background:var(--lime);color:var(--deep);padding:0 8px;border-radius:12px">cuidar.</mark></div>
+    <p style="color:#cfe3d6;font-size:15px;line-height:1.5;padding:0 4px">Cada mes que el satélite confirma que sigue en pie, tu aporte paga a quienes lo cuidan.</p>
+    <div style="display:flex;gap:6px;padding:4px"><span class="vx" data-m="coins" style="width:56px"></span><span class="vx" data-m="satellite" style="width:56px"></span><span class="vx" data-m="tree" style="width:56px"></span></div>
+  </div>
+  <div class="dock" style="background:linear-gradient(180deg,#0c3b2400,var(--deep) 26%)"><span class="btn lime lg block">Ver las parcelas →</span></div>
+</div></section>
+
+</div>
+
+<div class="foot-note"><b>Atribución.</b> Imagen: Sentinel-2 cloudless 2023 de EOX IT Services GmbH (contiene datos Copernicus Sentinel modificados, 2023; licencia CC BY-NC-SA 4.0). Logotipo: provisorio, redibujado a partir de las pantallas v2 del Figma; se reemplaza por el original. Íconos: dibujados por código en este archivo (vóxeles), sin recursos de terceros. Tipografías: Bricolage Grotesque, Inter y Geist Mono (Google Fonts).</div>
+
+<script>
+/* ============ Íconos vóxel: "cada píxel cuenta" ============
+   Cada ícono es una lista de cubos [x, y, z, color]. Se dibujan en isométrica
+   con tres caras sombreadas. Mismo sistema para la web real. */
+const C = { leaf:'#2fb35a', leafD:'#1f8a43', lime:'#d6ff3d', trunk:'#8a5a34', soil:'#b07d4f', soilD:'#946640',
+            coin:'#e9ff6b', coinD:'#c9e23a', steel:'#e4e9e2', panel:'#0f4a2e', cut:'#f0542f', grey:'#d5dbd2', deep:'#0c3b24' };
+const coinStack = (x,y,n) => Array.from({length:n},(_,i)=>[x,y,i*.34,i%2?C.coin:C.coinD,1,1,.28]);
+const M = {
+  tree: (() => { const a=[[1,1,0,C.trunk],[1,1,1,C.trunk]];
+    for (let z=2; z<=3; z++) for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,z, z===3?C.leaf:C.leafD]);
+    a.push([1,1,4,C.lime]); return a; })(),
+  stump: (() => { const a=[]; for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,0,(x+y)%2?C.soil:C.soilD]);
+    a.push([1,1,1,C.trunk,1,1,.7]); a.push([2.15,.15,1,C.cut,.7,.7,.7]); return a; })(),
+  satellite: (() => { const a=[];
+    for (const x of [0,1]) for (const y of [0,1]) a.push([x*.95,y*.95+.1,1.3,(x+y)%2?C.panel:'#1d6b44',.9,.9,.22]);
+    a.push([2,0,.7,C.steel,1,2,1.5]);
+    for (const x of [0,1]) for (const y of [0,1]) a.push([3.15+x*.95,y*.95+.1,1.3,(x+y)%2?C.panel:'#1d6b44',.9,.9,.22]);
+    a.push([2.3,.75,2.2,C.lime,.4,.5,.7]); return a; })(),
+  coins: [...coinStack(0,0,4), ...coinStack(1.25,0,3), ...coinStack(0,1.25,2), ...coinStack(1.25,1.25,1)],
+  coin: [...coinStack(0,0,3), ...coinStack(1.25,.3,1)],
+  sprout: (() => { const a=[]; for (let x=0;x<3;x++) for (let y=0;y<3;y++) a.push([x,y,0,(x+y)%2?C.soil:C.soilD]);
+    a.push([1.3,1.3,1,C.leafD,.4,.4,1.6],[1.6,.6,2.2,C.lime,1,.8,.35],[.4,1.6,1.8,C.leaf,.8,1,.35]); return a; })(),
+  sigs: (() => { const a=[]; [[0,C.lime],[1.3,C.lime],[2.6,C.grey]].forEach(([x,c])=>{ a.push([x,0,0,C.deep,1,1,.9],[x+.1,.1,.9,c,.8,.8,.3]); }); return a; })(),
+};
+function shade(hex, f){ const n=parseInt(hex.slice(1),16); let r=n>>16,g=n>>8&255,b=n&255;
+  const t=f<0?0:255, p=Math.abs(f); r=Math.round(r+(t-r)*p); g=Math.round(g+(t-g)*p); b=Math.round(b+(t-b)*p);
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+function voxel(boxes){
+  const U=10, cx=Math.cos(Math.PI/6);
+  const P=(x,y,z)=>[(x-y)*U*cx,(x+y)*U*.5-z*U];
+  const list=boxes.map(([x,y,z,c,dx=1,dy=1,dz=1])=>({x,y,z,c,dx,dy,dz}))
+    .sort((a,b)=>(a.x+a.dx/2+a.y+a.dy/2+a.z+a.dz/2)-(b.x+b.dx/2+b.y+b.dy/2+b.z+b.dz/2));
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9, out='';
+  const poly=(pts,fill)=>{ pts.forEach(([x,y])=>{minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);});
+    out+=`<polygon points="${pts.map(p=>p.map(v=>v.toFixed(2)).join(',')).join(' ')}" fill="${fill}" stroke="${fill}" stroke-width=".6" stroke-linejoin="round"/>`; };
+  for (const {x,y,z,c,dx,dy,dz} of list){
+    const X=x+dx, Y=y+dy, Z=z+dz;
+    poly([P(x,Y,Z),P(X,Y,Z),P(X,Y,z),P(x,Y,z)], shade(c,-0.08));   // cara izquierda
+    poly([P(X,y,Z),P(X,Y,Z),P(X,Y,z),P(X,y,z)], shade(c,-0.28));   // cara derecha
+    poly([P(x,y,Z),P(X,y,Z),P(X,Y,Z),P(x,Y,Z)], shade(c,0.22));    // tapa
+  }
+  const w=maxX-minX, sh=`<ellipse cx="${(minX+maxX)/2}" cy="${maxY+2}" rx="${w*.42}" ry="${w*.11}" fill="#0b2a1a" opacity=".16"/>`;
+  return `<svg viewBox="${minX-3} ${minY-3} ${w+6} ${maxY-minY+10}" xmlns="http://www.w3.org/2000/svg">${sh}${out}</svg>`;
+}
+document.querySelectorAll('.vx[data-m]').forEach(el => { const m=M[el.dataset.m]; if (m) el.innerHTML = voxel(m); });
+
+/* QR decorativo (no es un código real) */
+const qr=document.getElementById('qr'); if (qr){ const on=[0,1,2,6,7,8,9,11,15,17,18,19,20,24,25,26,30,32,34,37,39,40,41,43,46,48,50,54,55,56,58,60,62,63,65,68,70,72,73,74,76,78,79,80];
+  for (let i=0;i<81;i++){ const s=document.createElement('i'); if(!on.includes(i)) s.className='o'; qr.appendChild(s);} }
+</script>
+</body>
+</html>
