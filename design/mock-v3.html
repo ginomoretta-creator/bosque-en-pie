@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bosque en pie · Mock v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens "Noche" (base para web/) ---------- */
+:root{
+  --bg:#0b110d; --surface:#111a14; --surface-2:#16211a; --line:#223027; --line-2:#2c3b31;
+  --text:#e9efe7; --muted:#8c9a8f; --faint:#5d6b61;
+  --green:#5fd38a; --green-dim:#1f3a29; --amber:#f2b53a; --amber-dim:#3a2f14; --red:#ef6a4a; --red-dim:#3b1d16;
+  --cream:#efeadf; --ink:#121512;
+  --sans:"Inter Tight",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#070b08;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:40px 24px 80px}
+.board-head{max-width:1500px;margin:0 auto 32px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:end}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+h1{font-size:40px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin-top:8px}
+.board-head p{color:var(--muted);font-size:15px;line-height:1.5;margin-top:10px;max-width:60ch}
+.changes{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;font-size:13px;line-height:1.55;color:var(--muted)}
+.changes b{color:var(--text);font-weight:600}
+.changes li{margin-left:16px}
+.warn{max-width:1500px;margin:0 auto 28px;border:1px dashed var(--amber);color:var(--amber);border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:12px}
+.ph{border-bottom:1px dashed var(--amber);cursor:help}
+
+.board{max-width:1500px;margin:0 auto;display:flex;flex-wrap:wrap;gap:28px;justify-content:flex-start}
+.slot{width:360px}
+.slot-label{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:8px;display:flex;justify-content:space-between}
+.slot-label em{color:var(--green);font-style:normal}
+
+/* ---------- Teléfono ---------- */
+.phone{background:var(--bg);border:1px solid var(--line);border-radius:28px;overflow:hidden;min-height:740px;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.logo{display:flex;gap:8px;align-items:center;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.logo i{width:18px;height:18px;border-radius:50%;background:var(--green);display:inline-block;position:relative}
+.logo i::after{content:"";position:absolute;inset:5px 7px 3px;background:var(--bg);border-radius:2px}
+.logo span{color:var(--green)}
+.wallet{font-family:var(--mono);font-size:11px;border:1px solid var(--line-2);border-radius:999px;padding:5px 10px;color:var(--muted)}
+.wallet::before{content:"● ";color:var(--green)}
+.content{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1}
+.back{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+h2{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:6px;white-space:nowrap;border:1px solid}
+.chip.ok{color:var(--green);border-color:var(--green-dim);background:#0f2016}
+.chip.rev{color:var(--amber);border-color:var(--amber-dim);background:#1d180c}
+.chip.cut{color:var(--red);border-color:var(--red-dim);background:#1e110d}
+.label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card.tight{padding:10px 12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
+.row + .row{margin-top:8px}
+.row .v{font-family:var(--mono);font-size:12px}
+.muted{color:var(--muted)}
+
+/* Estado grande */
+.hero{display:flex;align-items:flex-end;justify-content:space-between}
+.big{font-size:54px;font-weight:800;letter-spacing:-.04em;line-height:.9}
+.big small{font-size:26px;letter-spacing:-.02em}
+.big.ok{color:var(--green)} .big.rev{color:var(--amber)} .big.cut{color:var(--red)}
+.hero-note{font-size:11px;color:var(--muted);text-align:right;line-height:1.4;max-width:130px}
+
+/* Línea de 12 meses */
+.months{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.m{display:flex;flex-direction:column;gap:4px;align-items:center}
+.m .t{width:100%;aspect-ratio:1;border-radius:4px;border:1px solid var(--line-2);background:
+  repeating-linear-gradient(135deg,#1a2a1f 0 3px,#15211a 3px 6px)}
+.m.ok .t{border-color:var(--green);box-shadow:inset 0 -3px 0 var(--green)}
+.m.rev .t{border-color:var(--amber);box-shadow:inset 0 -3px 0 var(--amber)}
+.m.cut .t{border-color:var(--red);box-shadow:inset 0 -3px 0 var(--red)}
+.m.off .t{background:transparent;border-style:dashed;opacity:.5}
+.m.sel .t{outline:2px solid var(--text);outline-offset:1px}
+.m b{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--faint)}
+.legend{display:flex;gap:12px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.legend .lg::before{background:var(--green)} .legend .la::before{background:var(--amber)} .legend .lr::before{background:var(--red)}
+
+/* Imagen satelital (pendiente) */
+.sat{height:150px;border-radius:var(--r);border:1px solid var(--line-2);position:relative;overflow:hidden;
+  background:radial-gradient(circle at 30% 40%,#2c4a31 0 18%,transparent 19%),radial-gradient(circle at 70% 65%,#2a452e 0 22%,transparent 23%),
+  repeating-linear-gradient(45deg,#16251b 0 6px,#1a2c20 6px 12px)}
+.sat svg{position:absolute;inset:0;width:100%;height:100%}
+.sat .tag{position:absolute;left:8px;bottom:8px;font-family:var(--mono);font-size:10px;background:#0b110dcc;padding:4px 6px;border-radius:4px;color:var(--muted)}
+.sat .tag.r{left:auto;right:8px}
+
+/* Firmas */
+.sigs{display:flex;gap:6px}
+.sig{flex:1;border:1px solid var(--line-2);border-radius:8px;padding:7px 8px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.sig.on{border-color:var(--green-dim);color:var(--text)}
+.sig.on::before{content:"✓ ";color:var(--green)}
+.sig.offs::before{content:"– ";color:var(--faint)}
+
+/* Barra de pozo */
+.meter{height:6px;border-radius:999px;background:var(--line);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+
+/* Botones */
+.btn{display:block;text-align:center;text-decoration:none;font-family:var(--sans);font-weight:700;font-size:15px;border-radius:10px;padding:13px;border:1px solid transparent}
+.btn.pri{background:var(--green);color:#06210f}
+.btn.sec{border-color:var(--line-2);color:var(--text)}
+.btn.warn{background:var(--amber);color:#2a1d00}
+.btn.dis{background:var(--line);color:var(--faint)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Banner */
+.banner{border-radius:var(--r);padding:12px;font-size:13px;line-height:1.45}
+.banner.rev{background:#1d180c;border:1px solid var(--amber-dim);color:#f6d58e}
+.banner.cut{background:#1e110d;border:1px solid var(--red-dim);color:#f6b2a1}
+.banner b{display:block;margin-bottom:2px;color:var(--text)}
+
+/* Aportar */
+.amounts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.amt{border:1px solid var(--line-2);border-radius:8px;padding:12px 0;text-align:center;font-weight:700;font-size:18px}
+.amt small{display:block;font-family:var(--mono);font-size:9px;font-weight:400;color:var(--faint);margin-top:2px}
+.amt.on{border-color:var(--green);background:#0f2016;color:var(--green)}
+.choice{border:1px solid var(--line-2);border-radius:var(--r);padding:12px;display:grid;grid-template-columns:18px 1fr;gap:10px;font-size:13px;line-height:1.4}
+.choice .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--line-2);margin-top:2px}
+.choice.on{border-color:var(--green)}
+.choice.on .dot{border-color:var(--green);background:radial-gradient(circle,var(--green) 0 4px,transparent 5px)}
+.choice b{display:block;font-size:14px}
+
+/* Navegación inferior */
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:auto}
+.tabs a{padding:10px 0 12px;text-align:center;font-size:10px;color:var(--faint);font-family:var(--mono);text-decoration:none}
+.tabs a::before{content:"";display:block;width:18px;height:18px;margin:0 auto 4px;border-radius:5px;border:1.5px solid currentColor}
+.tabs a.on{color:var(--green)}
+
+/* Certificados */
+.cert{border-radius:var(--r);padding:16px;background:linear-gradient(160deg,#13241a,#0e1712);border:1px solid #2a4a34;position:relative;overflow:hidden}
+.cert::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;border:1px solid #2a4a34}
+.cert .n{font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--green)}
+.cert .n small{font-size:16px;color:var(--text);font-weight:600}
+.fine{font-size:11px;color:var(--faint);line-height:1.45}
+
+/* Hash */
+.hash{font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-all}
+a.ext{color:var(--green);text-decoration:none;font-family:var(--mono);font-size:11px}
+</style>
+</head>
+<body>
+
+<header class="board-head">
+  <div>
+    <div class="kicker">Mock v3 · dirección A · pulido del v2 "Noche"</div>
+    <h1>Bosque en pie<br>pantallas del celular</h1>
+    <p>Misma estética que el Figma v2 Noche. Cambia la jerarquía: el estado de la parcela y los 12 meses van primero, el aporte entra en una sola pantalla y se suman los certificados de monte en pie y la vista de quienes cuidan. Es la base de estilos para <code>web/</code>.</p>
+  </div>
+  <div class="changes">
+    <b>Qué cambia respecto del v2</b>
+    <ul>
+      <li><b>Línea de 12 meses</b> con miniatura por mes y color de estado, tocable para abrir el informe.</li>
+      <li><b>Aportar en 1 pantalla:</b> monto + qué pasa con tu saldo si hay desmonte, con el resumen al lado del botón.</li>
+      <li><b>Firmas visibles</b> (2 de 3) en cada informe, con link al explorer.</li>
+      <li><b>Certificados de monte en pie</b> (ERC-1155): pantalla propia, transferir y retirar.</li>
+      <li><b>Vista de quienes cuidan</b> (dueño y operador): qué cobró cada uno por mes.</li>
+      <li><b>Estados con texto,</b> no solo color: "en pie", "en revisión", "desmontada".</li>
+    </ul>
+  </div>
+</header>
+
+<div class="warn">⚠ Todos los números, fechas, montos y nombres de este mock son DE RELLENO (subrayado punteado). La web real muestra solo datos leídos del contrato y de los informes Sentinel-2.</div>
+
+<main class="board">
+
+<!-- 1 · Parcela en pie -->
+<section class="slot">
+  <div class="slot-label"><span>01 · Parcela · en pie</span><em>reemplaza C03</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
+    <div class="content">
+      <div class="back">← Mapa</div>
+      <div class="title-row">
+        <div><h2>Parcela A</h2><div class="sub">Chaco salteño · <span class="ph">120 ha</span></div></div>
+        <span class="chip ok">● En pie</span>
+      </div>
+      <div class="hero">
+        <div class="big ok"><span class="ph">99,3</span><small> %</small></div>
+        <div class="hero-note">del monte de 2024 sigue en pie según la imagen de <span class="ph">oct 2025</span></div>
+      </div>
+      <div class="card">
+        <div class="row" style="margin-bottom:10px"><span class="label">2025 · un informe por mes</span><span class="legend"><span class="lg">pagó</span><span class="la">revisión</span></span></div>
+        <div class="months">
+          <div class="m ok"><div class="t"></div><b>E</b></div><div class="m ok"><div class="t"></div><b>F</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>S</b></div><div class="m ok sel"><div class="t"></div><b>O</b></div><div class="m off"><div class="t"></div><b>N</b></div><div class="m off"><div class="t"></div><b>D</b></div>
+        </div>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="label">Último informe</span><a class="ext" href="#">ver en explorer ↗</a></div>
+        <div class="row"><span class="muted">Imagen Sentinel-2</span><span class="v ph">12 oct 2025</span></div>
+        <div class="row"><span class="muted">Parte visible</span><span class="v ph">96 %</span></div>
+        <div class="sigs" style="margin-top:10px"><div class="sig on">Verif. 1</div><div class="sig on">Verif. 2</div><div class="sig offs">Verif. 3</div></div>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="label">Pozo</span><span class="v"><span class="ph">2,20</span> AVAX</span></div>
+        <div class="meter" style="margin-top:8px"><i style="width:55%;background:var(--green)"></i><i style="width:45%;background:var(--line-2)"></i></div>
+        <div class="row" style="margin-top:8px"><span class="muted">Cuota mensual</span><span class="v"><span class="ph">0,10</span> AVAX · alcanza <span class="ph">22</span> meses</span></div>
+      </div>
+      <a class="btn pri" href="#">Aportar a esta parcela</a>
+    </div>
+    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 2 · Parcela desmontada -->
+<section class="slot">
+  <div class="slot-label"><span>02 · Parcela · desmontada</span><em>reemplaza C04 + C05</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
+    <div class="content">
+      <div class="back">← Mapa</div>
+      <div class="title-row">
+        <div><h2>Parcela B</h2><div class="sub">Chaco salteño · <span class="ph">95 ha</span></div></div>
+        <span class="chip cut">✕ Desmontada</span>
+      </div>
+      <div class="banner cut"><b>Pagos cortados para siempre.</b>Dos lecturas malas seguidas (<span class="ph">jul</span> y <span class="ph">ago</span>). El saldo no va al dueño ni al operador: vuelve a los donantes o queda para restaurar.</div>
+      <div class="sat">
+        <svg viewBox="0 0 320 150" preserveAspectRatio="none"><polygon points="70,30 250,22 270,120 60,128" fill="none" stroke="#ef6a4a" stroke-width="1.5" stroke-dasharray="4 3"/><rect x="120" y="50" width="90" height="55" fill="#ef6a4a33" stroke="#ef6a4a"/></svg>
+        <span class="tag">imagen Sentinel-2 · pendiente</span><span class="tag r">ago 2025</span>
+      </div>
+      <div class="hero">
+        <div class="big cut"><span class="ph">38,6</span><small> %</small></div>
+        <div class="hero-note">del monte de 2024 sigue en pie</div>
+      </div>
+      <div class="card">
+        <div class="row" style="margin-bottom:10px"><span class="label">2025</span><span class="legend"><span class="lg">pagó</span><span class="la">revisión</span><span class="lr">corte</span></span></div>
+        <div class="months">
+          <div class="m ok"><div class="t"></div><b>E</b></div><div class="m ok"><div class="t"></div><b>F</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>A</b></div><div class="m ok"><div class="t"></div><b>M</b></div><div class="m ok"><div class="t"></div><b>J</b></div><div class="m rev"><div class="t"></div><b>J</b></div><div class="m cut sel"><div class="t"></div><b>A</b></div><div class="m off"><div class="t"></div><b>S</b></div><div class="m off"><div class="t"></div><b>O</b></div><div class="m off"><div class="t"></div><b>N</b></div><div class="m off"><div class="t"></div><b>D</b></div>
+        </div>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="label">Saldo al corte</span><span class="v"><span class="ph">3,60</span> AVAX</span></div>
+        <div class="meter" style="margin-top:8px"><i style="width:60%;background:var(--green)"></i><i style="width:40%;background:var(--amber)"></i></div>
+        <div class="row" style="margin-top:8px"><span class="muted">● Devolución a donantes</span><span class="v ph">2,16 AVAX</span></div>
+        <div class="row"><span class="muted">● Fondo de restauración</span><span class="v ph">1,44 AVAX</span></div>
+      </div>
+      <a class="btn sec" href="#">Ver mi parte →</a>
+    </div>
+    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 3 · Aportar -->
+<section class="slot">
+  <div class="slot-label"><span>03 · Aportar · una pantalla</span><em>reemplaza C06–C08</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
+    <div class="content">
+      <div class="back">← Parcela A</div>
+      <h2>¿Cuánto querés aportar?</h2>
+      <div class="amounts">
+        <div class="amt">0,1<small>1 mes</small></div><div class="amt">0,5<small>5 meses</small></div><div class="amt on">1<small>10 meses</small></div><div class="amt">2<small>20 meses</small></div>
+      </div>
+      <div class="label" style="margin-top:4px">Si hay desmonte, tu saldo…</div>
+      <div class="choice on"><div class="dot"></div><div><b>Vuelve a mí</b><span class="muted">Lo retirás en proporción a tu aporte.</span></div></div>
+      <div class="choice"><div class="dot"></div><div><b>Va a restaurar esta parcela</b><span class="muted">Queda bloqueado para restauración. Si no se usa en <span class="ph">12 meses</span>, también lo podés retirar.</span></div></div>
+      <div class="card tight">
+        <div class="row"><span class="muted">Aporte</span><span class="v">1,00 AVAX</span></div>
+        <div class="row"><span class="muted">Cubre</span><span class="v">10 cuotas · <span class="ph">0,10</span> c/u</span></div>
+        <div class="row"><span class="muted">Certificados estimados</span><span class="v ph">≈ 120 ha-mes</span></div>
+        <div class="row"><span class="muted">Red</span><span class="v">Avalanche Fuji · prueba</span></div>
+      </div>
+      <p class="fine">Billetera de prueba sin valor real. La clave está solo en este celular (fragmento de la URL) y nunca se envía a ningún servidor.</p>
+      <a class="btn pri" href="#">Aportar 1 AVAX</a>
+    </div>
+    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 4 · Mi aporte -->
+<section class="slot">
+  <div class="slot-label"><span>04 · Mi aporte</span><em>reemplaza C09–C11</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
+    <div class="content">
+      <h2>Mi aporte</h2>
+      <div class="sub" style="margin-top:-8px">Total aportado: <span class="ph">2,00</span> AVAX en 2 parcelas</div>
+      <div class="card">
+        <div class="title-row"><div><b>Parcela A</b><div class="sub">Si hay desmonte: vuelve a mí</div></div><span class="chip ok">● En pie</span></div>
+        <div class="meter" style="margin:12px 0 8px"><i style="width:40%;background:var(--green)"></i><i style="width:60%;background:var(--line-2)"></i></div>
+        <div class="row"><span class="muted">Pagado a quienes cuidan</span><span class="v ph">0,40 AVAX</span></div>
+        <div class="row"><span class="muted">Todavía en el pozo</span><span class="v ph">0,60 AVAX</span></div>
+        <div class="row"><span class="muted">Meses financiados</span><span class="v ph">4 de 10</span></div>
+      </div>
+      <div class="card" style="border-color:var(--red-dim)">
+        <div class="title-row"><div><b>Parcela B</b><div class="sub">Si hay desmonte: vuelve a mí</div></div><span class="chip cut">✕ Desmontada</span></div>
+        <div class="row" style="margin-top:12px"><span class="muted">Pagado antes del corte</span><span class="v ph">0,60 AVAX</span></div>
+        <div class="row"><span class="muted">Te corresponde recuperar</span><span class="v ph" style="color:var(--green)">0,40 AVAX</span></div>
+        <a class="btn warn" href="#" style="margin-top:12px">Recuperar 0,40 AVAX</a>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="muted">Certificados de monte en pie</span><a class="ext" href="#"><span class="ph">460</span> ha-mes →</a></div>
+      </div>
+    </div>
+    <nav class="tabs"><a href="#">Mapa</a><a class="on" href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 5 · Certificados -->
+<section class="slot">
+  <div class="slot-label"><span>05 · Certificados de monte en pie</span><em>nueva</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Empresa · prueba</div></div>
+    <div class="content">
+      <h2>Certificados</h2>
+      <div class="cert">
+        <div class="label">Total financiado</div>
+        <div class="n"><span class="ph">460</span> <small>ha-mes de monte en pie</small></div>
+        <div class="fine" style="margin-top:6px">1 ha-mes = una hectárea que una imagen satelital confirmó en pie durante un mes, con tu aporte pagando la cuota.</div>
+      </div>
+      <div class="card">
+        <div class="row"><b>Parcela A</b><span class="v ph">400 ha-mes</span></div>
+        <div class="row"><span class="muted">Meses confirmados</span><span class="v ph">ene–oct 2025</span></div>
+        <div class="row"><span class="muted">Retirados</span><span class="v ph">0</span></div>
+      </div>
+      <div class="card">
+        <div class="row"><b>Parcela B</b><span class="v ph">60 ha-mes</span></div>
+        <div class="row"><span class="muted">Meses confirmados</span><span class="v ph">ene–jun 2025</span></div>
+        <div class="row"><span class="muted">Retirados</span><span class="v ph">60</span></div>
+      </div>
+      <div class="btns"><a class="btn sec" href="#">Transferir</a><a class="btn pri" href="#">Retirar</a></div>
+      <p class="fine">Retirar quema el certificado y lo deja registrado a tu nombre, para que nadie más lo use en un reporte. <b style="color:var(--text)">No es un bono de carbono:</b> certifica hectáreas-mes de monte que siguieron en pie, no toneladas de CO₂.</p>
+    </div>
+    <nav class="tabs"><a href="#">Mapa</a><a href="#">Mi aporte</a><a class="on" href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 6 · Informe del mes -->
+<section class="slot">
+  <div class="slot-label"><span>06 · Informe del mes</span><em>reemplaza C14</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Billetera 3</div></div>
+    <div class="content">
+      <div class="back">← Parcela B</div>
+      <div class="title-row"><div><h2>Julio 2025</h2><div class="sub">Parcela B · lectura mala, primera</div></div><span class="chip rev">◐ Revisión</span></div>
+      <div class="btns">
+        <div class="sat" style="height:120px"><span class="tag">base · jul 2024</span></div>
+        <div class="sat" style="height:120px"><svg viewBox="0 0 160 120" preserveAspectRatio="none"><rect x="50" y="35" width="55" height="40" fill="#f2b53a33" stroke="#f2b53a"/></svg><span class="tag">jul 2025</span></div>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="muted">Monte en pie (coverBps)</span><span class="v ph" style="color:var(--amber)">71,3 %</span></div>
+        <div class="row"><span class="muted">Umbral de la parcela</span><span class="v">95,0 %</span></div>
+        <div class="row"><span class="muted">Parte visible (validBps)</span><span class="v ph">100 %</span></div>
+        <div class="row"><span class="muted">Algoritmo</span><span class="v">bosque-v1</span></div>
+      </div>
+      <div class="card tight">
+        <div class="label" style="margin-bottom:8px">Firmas · 3 de 3</div>
+        <div class="sigs"><div class="sig on">Verif. 1</div><div class="sig on">Verif. 2</div><div class="sig on">Verif. 3</div></div>
+      </div>
+      <div class="card tight">
+        <div class="label" style="margin-bottom:6px">Evidencia</div>
+        <div class="hash ph">0x9f3c…e21a</div>
+        <div class="row" style="margin-top:8px"><a class="ext" href="#">JSON de evidencia ↗</a><a class="ext" href="#">transacción ↗</a></div>
+      </div>
+      <p class="fine">Qué pasa ahora: no paga ni corta. Si la próxima imagen también da mal, la parcela queda desmontada.</p>
+    </div>
+    <nav class="tabs"><a class="on" href="#">Mapa</a><a href="#">Mi aporte</a><a href="#">Certificados</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+<!-- 7 · Quienes cuidan -->
+<section class="slot">
+  <div class="slot-label"><span>07 · Quienes cuidan</span><em>nueva</em></div>
+  <div class="phone">
+    <div class="bar"><div class="logo"><i></i>bosque <span>en pie</span></div><div class="wallet">Operador A · prueba</div></div>
+    <div class="content">
+      <h2>Lo que cobraste</h2>
+      <div class="sub" style="margin-top:-8px">Parcela A · sos el operador</div>
+      <div class="hero">
+        <div class="big ok"><span class="ph">0,40</span><small> AVAX</small></div>
+        <div class="hero-note">en <span class="ph">10</span> cuotas de 2025</div>
+      </div>
+      <div class="card tight">
+        <div class="label" style="margin-bottom:8px">Reparto de cada cuota</div>
+        <div class="meter"><i style="width:60%;background:var(--green)"></i><i style="width:40%;background:#3f8f5f"></i></div>
+        <div class="row" style="margin-top:8px"><span class="muted">Dueño · no desmontar</span><span class="v ph">60 %</span></div>
+        <div class="row"><span class="muted">Operador · cortafuegos y vigilancia</span><span class="v ph">40 %</span></div>
+      </div>
+      <div class="card tight">
+        <div class="label" style="margin-bottom:8px">Últimos cobros</div>
+        <div class="row"><span class="muted">oct 2025</span><span class="v ph">+0,04 AVAX</span></div>
+        <div class="row"><span class="muted">sep 2025</span><span class="v ph">+0,04 AVAX</span></div>
+        <div class="row"><span class="muted">ago 2025</span><span class="v ph">+0,04 AVAX</span></div>
+      </div>
+      <div class="card tight">
+        <div class="row"><span class="muted">Próximo informe</span><span class="v">≥ 20 días después del último</span></div>
+        <div class="row"><span class="muted">Pozo alcanza para</span><span class="v ph">22 meses</span></div>
+      </div>
+      <a class="btn sec" href="#">Impugnar un informe</a>
+    </div>
+    <nav class="tabs"><a class="on" href="#">Parcela</a><a href="#">Cobros</a><a href="#">Informes</a><a href="#">Actividad</a></nav>
+  </div>
+</section>
+
+</main>
+</body>
+</html>
