@@ -25,6 +25,9 @@ deployments/hardhat.json
 reports/**/envio-localhost.json
 reports-prueba/**/envio-localhost.json
 
+# Hoja de QR del jurado: tiene claves de prueba
+jurado/
+
 # Web
 web/dist/
 web/node_modules/
