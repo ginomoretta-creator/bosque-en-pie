@@ -1,6 +1,6 @@
 # Pitch de 2 minutos · Bosque en pie
 
-Unas 300 palabras, a ritmo tranquilo (~150 por minuto). Entre corchetes, qué se muestra en pantalla.
+Unas 310 palabras, a ritmo tranquilo (~150 por minuto). Entre corchetes, qué se muestra en pantalla.
 
 ---
 
@@ -14,9 +14,9 @@ Bosque en pie da vuelta esa cuenta: pagamos por cada mes que el monte sigue en p
 
 **[0:30 · Cómo funciona — los cuatro pasos]**
 
-Un donante, una persona o una empresa, deja AVAX en un contrato en Avalanche para una parcela. Cada mes tomamos la imagen Sentinel-2 de esa parcela y la comparamos con el mismo mes del año anterior. Si el monte sigue, los verificadores firman el informe —alcanza con dos de tres— y el contrato paga la cuota: una parte al dueño por no desmontar y otra al operador que hace cortafuegos y vigila.
+Un donante deja AVAX en un contrato en Avalanche, para una parcela. Cada mes, una imagen Sentinel-2 compara esa parcela con el mismo mes del año anterior. Si el monte sigue, los verificadores firman el informe —alcanza con dos de tres— y el contrato paga la cuota: una parte al dueño por no desmontar y otra al operador que hace cortafuegos y vigila.
 
-Si aparece un desmonte, la primera lectura mala pone la parcela en revisión. La segunda corta los pagos para siempre. Y nadie gana con un desmonte: el saldo vuelve al donante o queda para restaurar esa parcela, según lo que eligió al aportar.
+Si aparece un desmonte, la primera lectura mala pone la parcela en revisión. La segunda corta los pagos para siempre. Y nadie gana con un desmonte: el saldo vuelve al donante o queda para restaurar.
 
 **[1:05 · Demo — replay de 2025]**
 
@@ -28,7 +28,7 @@ En la demo repetimos el 2025 de dos parcelas reales en un minuto: una cobra todo
 
 **[1:40 · Límites honestos]**
 
-En la demo, los tres verificadores somos del equipo y la ventana para impugnar está en cero, para mostrar un año en un minuto. En producción serían verificadores independientes y 72 horas para impugnar.
+En la demo los verificadores somos del equipo y no hay ventana para impugnar, para mostrar un año en un minuto. En producción: verificadores independientes y 72 horas para impugnar.
 
 **[1:50 · Cierre]**
 
