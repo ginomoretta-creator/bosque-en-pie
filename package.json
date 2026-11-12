@@ -7,7 +7,11 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "node": "hardhat node"
+    "node": "hardhat node",
+    "abi": "hardhat compile && node scripts/export-abi.js",
+    "local": "hardhat run scripts/deploy.js --network localhost && hardhat run scripts/register-parcels.js --network localhost && hardhat run scripts/aportes-demo.js --network localhost",
+    "fuji:deploy": "hardhat run scripts/deploy.js --network fuji && hardhat run scripts/register-parcels.js --network fuji",
+    "fuji:aportes": "hardhat run scripts/aportes-demo.js --network fuji"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "5.0.0",

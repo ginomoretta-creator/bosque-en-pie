@@ -1,20 +1,20 @@
 // Registra las parcelas de parcels/registry.json en el contrato desplegado.
-// Uso: npx hardhat run scripts/register-parcels.js --network fuji
+// Uso: npx hardhat run scripts/register-parcels.js --network fuji   (en local: npm run local)
 // Las hectáreas salen de los GeoJSON reales: no se registra una parcela con hectáreas sin completar.
 const fs = require("fs");
 const path = require("path");
 const { ethers, network } = require("hardhat");
 
-function addressFromEnv(name) {
-  const key = process.env[`${name}_PRIVATE_KEY`];
-  if (!key) throw new Error(`Falta ${name}_PRIVATE_KEY en .env`);
-  return new ethers.Wallet(key).address;
-}
+const { cuenta, esLocal } = require("./cuentas");
+
+const addressFromEnv = (name) => cuenta(name, network.name).address;
 
 async function main() {
   const root = path.join(__dirname, "..");
   const deployment = JSON.parse(fs.readFileSync(path.join(root, "deployments", `${network.name}.json`), "utf8"));
-  const registryPath = process.env.PARCEL_REGISTRY || path.join(root, "parcels", "registry.json");
+  // En la red local se usa registry.local.json (hectáreas de prueba) salvo que se pida otro.
+  const registryPath = process.env.PARCEL_REGISTRY
+    || path.join(root, "parcels", esLocal(network.name) ? "registry.local.json" : "registry.json");
   const registry = JSON.parse(fs.readFileSync(registryPath, "utf8"));
   const [curator] = await ethers.getSigners();
   const c = await ethers.getContractAt("BosqueEnPie", deployment.address, curator);

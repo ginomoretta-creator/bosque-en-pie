@@ -18,6 +18,13 @@ __pycache__/
 venv/
 .pytest_cache/
 
+# Despliegues locales: cambian cada vez que se reinicia el nodo (fuji.json sí se commitea)
+deployments/localhost.json
+deployments/hardhat.json
+# Envíos a la red local (los de Fuji sí se commitean)
+reports/**/envio-localhost.json
+reports-prueba/**/envio-localhost.json
+
 # Web
 web/dist/
 web/node_modules/
