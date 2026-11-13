@@ -41,3 +41,25 @@ jobs:
 
       - name: Pruebas del oráculo
         run: pytest oracle/tests
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 22 (con caché de npm)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Dependencias de la web
+        working-directory: web
+        run: npm ci
+
+      - name: Armar la web contra Fuji
+        working-directory: web
+        run: npm run build
+        env:
+          VITE_NETWORK: fuji
