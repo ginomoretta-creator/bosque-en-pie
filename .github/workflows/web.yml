@@ -1,0 +1,54 @@
+# Publica la web en GitHub Pages (#30): https://ginomoretta-creator.github.io/bosque-en-pie/
+# Se arma contra Fuji, con la foto de eventos del contrato (web/scripts/snapshot.mjs).
+# Requisito, una sola vez (admin del repo): Settings → Pages → Build and deployment → Source: GitHub Actions.
+name: Web
+
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "deployments/**", "reports/**", "parcels/**", "design/**", ".github/workflows/web.yml"]
+  workflow_dispatch: # botón «Run workflow» en la pestaña Actions, para refrescar la foto de eventos
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Instalar
+        working-directory: web
+        run: npm ci
+      - name: Foto de eventos de Fuji
+        working-directory: web
+        run: node scripts/snapshot.mjs fuji
+      - name: Armar la web
+        working-directory: web
+        run: npm run build
+        env:
+          VITE_NETWORK: fuji
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
