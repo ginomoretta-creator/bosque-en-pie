@@ -1,0 +1,76 @@
+/* Carril 4: aportar y mi aporte. Solo tokens de la marca v2 (design/tokens-v2.css). */
+
+.ap-wallet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 12px 0 20px;
+  padding: 10px 12px;
+  background: var(--v2-hoja);
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-4);
+}
+.ap-wallet .mono-sm { color: var(--v2-gris); }
+.ap-bal { margin-left: auto; font-weight: 600; }
+
+.ap-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0 20px; }
+.ap-amt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 4px 10px;
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-4);
+  background: var(--v2-hoja);
+  color: var(--v2-tinta);
+  font: inherit;
+  cursor: pointer;
+}
+.ap-amt b { font-size: var(--v2-titulo-sm); }
+.ap-amt span { font-family: var(--v2-font-mono); font-size: var(--v2-mono-xs); color: var(--v2-gris); text-transform: uppercase; }
+.ap-amt.on { background: var(--v2-oscuro); border-color: var(--v2-oscuro); color: var(--v2-oscuro-texto); }
+.ap-amt.on span { color: var(--v2-verde-claro); }
+
+.ap-choices { display: grid; gap: 8px; margin: 8px 0 20px; }
+.ap-choice {
+  display: grid;
+  grid-template-columns: 40px 1fr 22px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  text-align: left;
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-4);
+  background: var(--v2-hoja);
+  color: var(--v2-tinta);
+  font: inherit;
+  cursor: pointer;
+}
+.ap-choice .ic { width: 36px; height: 36px; }
+.ap-choice p { margin: 2px 0 0; font-size: var(--v2-cuerpo-sm); }
+.ap-choice > i { width: 20px; height: 20px; border-radius: var(--v2-radio-2); box-shadow: inset 0 0 0 2px var(--v2-linea); }
+.ap-choice.on { border-color: var(--v2-tinta); box-shadow: inset 0 0 0 1px var(--v2-tinta); }
+.ap-choice.on > i { background: var(--v2-oscuro); box-shadow: inset 0 0 0 5px var(--v2-oscuro), inset 0 0 0 20px var(--v2-verde-claro); }
+
+.ap-list { display: grid; gap: 10px; }
+.ap-pick { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+.ap-pick .ic { width: 36px; height: 36px; }
+.ap-pick p { margin: 2px 0 0; }
+.ap-off { opacity: 0.55; pointer-events: none; }
+
+.ap-mine { display: grid; gap: 12px; margin-bottom: 12px; }
+.ap-terra { color: var(--v2-terra-texto); }
+.ap-empty { display: flex; gap: 12px; align-items: center; margin: 12px 0 20px; }
+.ap-empty .ic { width: 40px; height: 40px; flex: none; }
+.ap-center { text-align: center; }
+
+.notice-verde { background: var(--v2-verde-tenue); border-color: var(--v2-verde); color: var(--v2-verde-texto); }
+
+[data-result] { display: grid; gap: 10px; margin: 12px 0; }
+[data-result]:empty { display: none; }
+
+@media (max-width: 420px) {
+  .ap-amounts { grid-template-columns: repeat(2, 1fr); }
+}
