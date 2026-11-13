@@ -4,7 +4,7 @@
 // firma withdrawRefund, withdrawRestoration y withdrawLeftover con viem.
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { CHOICE, NET, abi, client, deployment, explorerTx } from "../chain.js";
+import { CHOICE, NET, WITHDRAW_KIND, abi, client, deployment, explorerTx } from "../chain.js";
 import { avax, esc, int, short } from "../format.js";
 import { icon, statusChip, txLink } from "../ui.js";
 import { judgeKey } from "../wallet.js";
@@ -21,56 +21,58 @@ async function loadMyStake(account, parcels) {
   const now = Math.floor(Date.now() / 1000);
   const out = [];
   for (const p of parcels) {
-    const [refund, restore, refundDone, restoreDone, leftoverDone, certs] = await Promise.all([
+    const [refund, restore, refundDone, restoreDone, leftoverDone, pending, held, retired] = await Promise.all([
       read("refundStake", [BigInt(p.id), account.address]),
       read("restoreStake", [BigInt(p.id), account.address]),
       read("refundClaimed", [BigInt(p.id), account.address]),
       read("restoreClaimed", [BigInt(p.id), account.address]),
       read("leftoverClaimed", [BigInt(p.id), account.address]),
       read("pendingCertificates", [BigInt(p.id), account.address]),
+      read("balanceOf", [account.address, BigInt(p.id)]),
+      read("certRetiredBy", [BigInt(p.id), account.address]),
     ]);
     const stake = refund + restore;
     if (stake === 0n && !refundDone && !restoreDone && !leftoverDone) continue;
+    // Lo ganado no desaparece al acuñarlo o retirarlo: suma pendiente + en billetera + retirado.
+    const certs = pending + held + retired;
 
     // Monto recuperable, con la misma proporción que calcula el contrato.
-    const acciones = [];
+    const actions = [];
     if (p.status === STATUS_CLEARED) {
       if (refund > 0n && !refundDone && p.totalRefundStake > 0n) {
-        acciones.push({ fn: "withdrawRefund", label: "devolución", amount: (p.refundPool * refund) / p.totalRefundStake });
+        actions.push({ fn: "withdrawRefund", label: "devolución", amount: (p.refundPool * refund) / p.totalRefundStake });
       }
-      const vence = Number(p.endedAt) + timeout;
+      const unlockAt = Number(p.endedAt) + timeout;
       if (restore > 0n && !restoreDone && p.totalRestoreStake > 0n) {
-        if (now >= vence) {
-          acciones.push({ fn: "withdrawRestoration", label: "restauración", amount: (p.restorePool * restore) / p.totalRestoreStake });
+        if (now >= unlockAt) {
+          actions.push({ fn: "withdrawRestoration", label: "restauración", amount: (p.restorePool * restore) / p.totalRestoreStake });
         } else {
-          acciones.push({ fn: null, label: `restauración bloqueada hasta ${new Date(vence * 1000).toLocaleDateString("es-AR")}` });
+          actions.push({ fn: null, label: `restauración bloqueada hasta ${new Date(unlockAt * 1000).toLocaleDateString("es-AR")}` });
         }
       }
     }
     if (p.status === STATUS_CLOSED && stake > 0n && !leftoverDone) {
       const total = p.totalRefundStake + p.totalRestoreStake;
-      if (total > 0n) acciones.push({ fn: "withdrawLeftover", label: "sobrante", amount: (p.leftoverPool * stake) / total });
+      if (total > 0n) actions.push({ fn: "withdrawLeftover", label: "sobrante", amount: (p.leftoverPool * stake) / total });
     }
 
-    // Retiros ya hechos por esta billetera en esta parcela (eventos Withdrawn).
-    const retiros = []; // se completan con los eventos del store al pintar
-    out.push({ p, refund, restore, refundDone, restoreDone, leftoverDone, certs, acciones, retiros });
+    out.push({ p, refund, restore, refundDone, restoreDone, leftoverDone, certs, actions });
   }
   return out;
 }
 
-function card(mine, retiros) {
-  const { p, refund, restore, certs, acciones } = mine;
-  const eleccion = refund > 0n && restore > 0n
+function card(mine, withdrawals) {
+  const { p, refund, restore, certs, actions } = mine;
+  const choice = refund > 0n && restore > 0n
     ? `parte ${CHOICE[0].toLowerCase()}, parte ${CHOICE[1].toLowerCase()}`
     : CHOICE[refund > 0n ? 0 : 1].toLowerCase();
-  const retirosTxt = retiros.length
-    ? `<div><span>Ya retiraste</span><span class="num">${retiros
-        .map((r) => `${avax(r.args.amount)} (${["devolución", "restauración", "sobrante"][Number(r.args.kind)]})`)
+  const withdrawnRow = withdrawals.length
+    ? `<div><span>Ya retiraste</span><span class="num">${withdrawals
+        .map((r) => `${avax(r.args.amount)} (${WITHDRAW_KIND[Number(r.args.kind)]})`)
         .join(" + ")} AVAX</span></div>`
     : "";
-  const botones = acciones.length
-    ? acciones
+  const buttons = actions.length
+    ? actions
         .map((a) =>
           a.fn
             ? `<button class="btn btn-lima btn-block" data-fn="${a.fn}" data-parcel="${p.id}">Recuperar ${avax(a.amount)} AVAX · ${a.label}</button>`
@@ -85,17 +87,17 @@ function card(mine, retiros) {
   return `<div class="card">
     <div class="card-h"><strong>${esc(p.name)}</strong>${statusChip(p.status)}</div>
     <div class="rows">
-      <div><span>Aportaste</span><span class="num">${avax(refund + restore)} AVAX · ${esc(eleccion)}</span></div>
+      <div><span>Aportaste</span><span class="num">${avax(refund + restore)} AVAX · ${esc(choice)}</span></div>
       ${cert}
       <div><span>El pozo ya pagó a quienes cuidan</span><span class="num">${avax(p.totalPaid)} AVAX · ${int(p.reports.filter((r) => r.standing).length)} cuotas</span></div>
-      ${retirosTxt}
+      ${withdrawnRow}
     </div>
-    ${botones}
+    ${buttons}
     <p class="mono-sm tx-result" data-parcel="${p.id}"></p>
   </div>`;
 }
 
-export function miAporte(_params, s) {
+export function miAporteScreen(_params, s) {
   const html = `<section class="page narrow">
     <p class="eyebrow">Mi aporte</p>
     <h1 class="h1">Lo que tu billetera aportó</h1>
@@ -127,14 +129,14 @@ export function miAporte(_params, s) {
           <p><a class="btn" href="#/">Ver las parcelas</a></p>`;
         return;
       }
-      const retirosDe = (pid) =>
+      const withdrawalsOf = (pid) =>
         s.events.filter(
           (e) => e.eventName === "Withdrawn" && Number(e.args.parcelId) === pid &&
             e.args.donor?.toLowerCase() === account.address.toLowerCase(),
         );
       box.innerHTML =
         `<p class="muted mono-sm">Billetera <span class="mono">${short(account.address)}</span> · ${esc(NET.label)}</p>` +
-        mine.map((m) => card(m, retirosDe(m.p.id))).join("");
+        mine.map((m) => card(m, withdrawalsOf(m.p.id))).join("");
 
       // Botones de retiro: firman con la clave de prueba y esperan el recibo.
       const wallet = createWalletClient({ account, chain: NET.chain, transport: http(NET.rpc) });

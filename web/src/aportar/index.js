@@ -3,7 +3,7 @@
 // Con route(path, render, { live: false }) la pantalla no se repinta sola mientras alguien completa un formulario.
 // La clave del QR está en judgeKey() de ../wallet.js; la lectura del contrato, en ../chain.js.
 import { route } from "../router.js";
-import { miAporte } from "./mi-aporte.js";
+import { miAporteScreen } from "./mi-aporte.js";
 
 const pending = (title, issue) => () => `
   <section class="page narrow">
@@ -15,5 +15,5 @@ const pending = (title, issue) => () => `
 
 route("/aportar", pending("Aportar", "#26"));
 route("/aportar/:id", pending("Aportar", "#26"));
-route("/mi-aporte", miAporte, { live: false });
+route("/mi-aporte", miAporteScreen, { live: false });
 route("/certificados", pending("Certificados", "#28"));
