@@ -1,7 +1,10 @@
 // Aportar (#26): elegir parcela, monto y qué pasa con el saldo si hay desmonte; firmar con la billetera de prueba.
 import { parseEther } from "viem";
+import { formatEther } from "viem";
 import { NET } from "../chain.js";
 import { avax, esc, int } from "../format.js";
+import { drawMap, latestImage } from "../map.js";
+import { reports } from "../reports.js";
 import { icon, statusChip } from "../ui.js";
 import { account, bindLogin, fillBalance, loginScreen, txDone, walletBar, withBusy } from "./comun.js";
 import { read, send } from "./billetera.js";
@@ -9,7 +12,69 @@ import { read, send } from "./billetera.js";
 const OPEN = (p) => p.status === 1 || p.status === 2; // el contrato acepta aportes en pie o en revisión
 const GAS = parseEther("0.002"); // reserva para el gas (en Fuji hoy cuesta mucho menos)
 
+const letterOf = (p) => p.name.replace("Parcela ", "");
+
+/** Qué financia una parcela, con lo que dicen el contrato y el último informe aplicado. */
+function parcelInfo(p) {
+  const open = OPEN(p);
+  const ha = Number(p.hectares);
+  const fee = Number(formatEther(p.fee ?? 0n));
+  const cuotas = p.fee > 0n ? Number(p.balance / p.fee) : 0;
+  const img = latestImage(letterOf(p), p);
+  const carb = img ? reports[letterOf(p)]?.[img.month]?.carbono : null;
+  const rows = [
+    ["Cada cuota pagada", `${int(ha)} certificados <span class="muted">(1 por hectárea en pie)</span>`],
+    fee > 0 ? ["Por cada AVAX que aportás", `hasta ${int(ha / fee)} certificados`] : null,
+    ["Cuota", `${avax(p.fee)} AVAX por mes · 60 % dueño, 40 % operador`],
+    ["El pozo alcanza para", `${int(cuotas)} ${cuotas === 1 ? "cuota" : "cuotas"} más`],
+    carb ? ["Carbono que sigue en pie", `≈ ${int(carb.tco2e)} t CO₂e <span class="tag-sim">SIMULACIÓN · no validado</span>`] : null,
+  ].filter(Boolean);
+  return `
+    <div class="card-h"><b class="pick-n">${esc(p.name)}</b>${statusChip(p.status)}</div>
+    <p class="muted">${int(ha)} ha de monte nativo · Chaco salteño</p>
+    ${
+      open
+        ? `<dl class="pick-rows">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+    <p class="muted mono-sm">Los certificados se reparten entre quienes aportaron, según cuánto puso cada uno, y solo con la parcela verificada en pie.</p>
+    <a class="btn btn-dark btn-block" href="#/aportar/${p.id}">Aportar a la ${esc(p.name)} →</a>`
+        : `<p><b>Desmontada: no recibe aportes y sus certificados quedaron congelados.</b></p>
+    <a class="btn btn-block" href="#/parcela/${p.id}">Ver qué pasó →</a>`
+    }`;
+}
+
+const fechaCorta = (iso) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
+
+/** " (A: 17 dic 2025 · B: 15 sept 2025)" con la fecha de la imagen que muestra el mapa en cada parcela. */
+function fechas(s) {
+  const f = s.parcels
+    .map((p) => [letterOf(p), latestImage(letterOf(p), p)?.fecha])
+    .filter(([, iso]) => iso)
+    .map(([l, iso]) => `${l}: ${fechaCorta(iso)}`);
+  return f.length ? ` (${esc(f.join(" · "))})` : "";
+}
+
 function pickParcel(s) {
+  if (!s.parcels.length) return pickList(s);
+  const first = s.parcels.find(OPEN) || s.parcels[0];
+  return {
+    html: pickList(s, `
+    <div class="pick-explore">
+      <div class="pick-map" data-pick-map role="application" aria-label="Mapa de las parcelas"></div>
+      <div class="card pick-info" data-pick-info aria-live="polite">${parcelInfo(first)}</div>
+    </div>
+    <p class="muted mono-sm pick-hint">Pasá el mouse o tocá una parcela en el mapa para ver qué financiás.
+      Adentro de cada parcela, la imagen Sentinel-2 de su último informe${fechas(s)}; alrededor, mosaico 2023.</p>`),
+    mount(el) {
+      const info = el.querySelector("[data-pick-info]");
+      const show = (p) => (info.innerHTML = parcelInfo(p));
+      const map = drawMap(el.querySelector("[data-pick-map]"), s.parcels, { onSelect: show, onHover: show, dateNote: false });
+      return () => map.remove();
+    },
+  };
+}
+
+function pickList(s, explore = "") {
   const cards = s.parcels
     .map((p) => {
       const open = OPEN(p);
@@ -20,10 +85,11 @@ function pickParcel(s) {
       </a>`;
     })
     .join("");
-  return `<section class="page narrow">
+  return `<section class="page ${explore ? "pick-page" : "narrow"}">
     <a class="back" href="#/">← Parcelas</a>
     <h1 class="h1">¿A qué parcela querés aportar?</h1>
-    ${cards || `<p class="muted">${s.loading ? "Leyendo el contrato…" : "No hay parcelas registradas."}</p>`}
+    ${explore}
+    ${cards ? `<div class="pick-cards">${cards}</div>` : `<p class="muted">${s.loading ? "Leyendo el contrato…" : "No hay parcelas registradas."}</p>`}
   </section>`;
 }
 

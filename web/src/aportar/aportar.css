@@ -126,3 +126,25 @@
   .wbar { flex-wrap: wrap; }
 }
 .cert-row .sub { display: block; margin-top: 2px; }
+
+/* Elegir parcela con el mapa: al pasar el mouse o tocar, el panel dice qué financia cada una. */
+.pick-page { max-width: 980px; }
+.pick-cards { display: grid; gap: 12px; }
+.pick-page .pick-cards { grid-template-columns: 1fr 1fr; }
+.pick-explore { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin: 8px 0 6px; }
+.pick-map { min-height: 420px; border-radius: var(--v2-radio-3); overflow: hidden; }
+.pick-map .leaflet-interactive { cursor: pointer; }
+.pick-info { display: flex; flex-direction: column; gap: 10px; }
+.pick-info .card-h { margin-bottom: 0; }
+.pick-info p { margin: 0; }
+.pick-rows { margin: 0; display: grid; gap: 8px; }
+.pick-rows div { display: grid; gap: 2px; }
+.pick-rows dt { font-size: 12px; color: var(--v2-gris); }
+.pick-rows dd { margin: 0; font-weight: 600; }
+.pick-hint { margin: 0 0 20px; }
+.tag-sim { display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; background: #e2b04a; color: #1c1f17; vertical-align: middle; }
+@media (max-width: 760px) {
+  .pick-explore { grid-template-columns: 1fr; }
+  .pick-map { min-height: 300px; }
+  .pick-page .pick-cards { grid-template-columns: 1fr; }
+}
