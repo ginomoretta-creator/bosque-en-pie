@@ -1,7 +1,7 @@
 """Cuentas de la demo (mismo reparto que scripts/cuentas.js: si cambiás uno, cambiá el otro).
 
 - En Fuji salen del .env (<NOMBRE>_PRIVATE_KEY): claves de prueba que maneja el equipo.
-- En la red local, si no están en el .env, salen de las cuentas públicas de Hardhat.
+- En la red local salen siempre de las cuentas públicas de Hardhat (el .env es para Fuji).
 """
 from __future__ import annotations
 
@@ -24,10 +24,12 @@ def es_local(red: str) -> bool:
 
 
 def cuenta(nombre: str, red: str) -> LocalAccount:
-    clave = os.environ.get(f"{nombre}_PRIVATE_KEY")
-    if clave:
-        return Account.from_key(clave)
+    # En la red local siempre las cuentas públicas de Hardhat: las claves del .env son de Fuji
+    # y no tienen saldo en el nodo local (si se usaran, fallaría todo lo local a quien tenga .env).
     if es_local(red) and nombre in INDICE_LOCAL:
         Account.enable_unaudited_hdwallet_features()
         return Account.from_mnemonic(MNEMONIC, account_path=f"m/44'/60'/0'/0/{INDICE_LOCAL[nombre]}")
+    clave = os.environ.get(f"{nombre}_PRIVATE_KEY")
+    if clave:
+        return Account.from_key(clave)
     raise RuntimeError(f"Falta {nombre}_PRIVATE_KEY en .env")

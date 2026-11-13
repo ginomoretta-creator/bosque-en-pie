@@ -1,7 +1,7 @@
 // Cuentas de la demo.
 // - En Fuji salen del .env (<NOMBRE>_PRIVATE_KEY): claves de prueba que maneja el equipo.
-// - En la red local (localhost / hardhat), si no están en el .env, salen de las cuentas públicas
-//   de Hardhat. Así cualquiera del equipo despliega y prueba sin pedir claves.
+// - En la red local (localhost / hardhat) salen siempre de las cuentas públicas de Hardhat
+//   (el .env es para Fuji). Así cualquiera del equipo despliega y prueba sin pedir claves.
 // El mismo reparto está en oracle/cuentas.py: si cambiás uno, cambiá el otro.
 const { ethers } = require("hardhat");
 
@@ -28,11 +28,13 @@ const esLocal = (red) => red === "localhost" || red === "hardhat";
 
 /** Billetera (ethers v6) de una cuenta de la demo, sin conectar a un proveedor. */
 function cuenta(nombre, red) {
-  const clave = process.env[`${nombre}_PRIVATE_KEY`];
-  if (clave) return new ethers.Wallet(clave);
+  // En la red local siempre las cuentas públicas de Hardhat: las claves del .env son de Fuji y
+  // no tienen saldo en el nodo local.
   if (esLocal(red) && nombre in INDICE_LOCAL) {
     return ethers.HDNodeWallet.fromPhrase(MNEMONIC, undefined, `m/44'/60'/0'/0/${INDICE_LOCAL[nombre]}`);
   }
+  const clave = process.env[`${nombre}_PRIVATE_KEY`];
+  if (clave) return new ethers.Wallet(clave);
   throw new Error(`Falta ${nombre}_PRIVATE_KEY en .env`);
 }
 
