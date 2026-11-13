@@ -87,4 +87,4 @@
 
 **Imagen:** `reports/A/2025-10/rgb.png` (el monte de A siguiendo en pie al final del año) con la frase de cierre.
 
-**Notas:** cerrar con la frase, no con más datos. Pie en todas las slides con imágenes: "Contiene datos Copernicus Sentinel modificados, 2024 y 2025". Máscara de árboles: ESA WorldCover 2021 (CC BY 4.0).
+**Notas:** cerrar con la frase, no con más datos. Pie en todas las slides con imágenes: "Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026". Máscara de árboles: ESA WorldCover 2021 (CC BY 4.0).

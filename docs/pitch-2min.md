@@ -42,4 +42,4 @@ El monte que queda no se salva con promesas. Se salva si cuidarlo paga más que 
 - **¿Para empresas?** Cada cuota pagada genera un certificado de monte en pie por las hectáreas-mes financiadas. No es un bono de carbono.
 - **¿Qué es real en la demo?** Las imágenes Sentinel-2, el cálculo y el contrato en Avalanche Fuji. Las billeteras y montos son de prueba.
 
-Atribución en la slide: "Contiene datos Copernicus Sentinel modificados, 2024 y 2025".
+Atribución en la slide: "Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026".

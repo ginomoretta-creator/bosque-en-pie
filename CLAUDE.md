@@ -139,7 +139,7 @@ Para el cliente "empresa con metas ambientales": cada cuota pagada le da al dona
 - Identificadores del código en inglés; comentarios, mensajes de error e interfaz en español.
 - No inventar datos: las imágenes y los resultados de la demo tienen que ser reales. Si algo no se pudo calcular, decilo.
 - Antes de decir que algo funciona, corrélo.
-- Atribución obligatoria en el README y las slides: "Contiene datos Copernicus Sentinel modificados, 2024 y 2025".
+- Atribución obligatoria en el README y las slides: "Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026".
 - Commits chicos y con mensajes claros: somos 3 o 4 personas en el mismo repo.
 
 ## Respuestas para el pitch

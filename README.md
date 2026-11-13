@@ -79,8 +79,12 @@ npx hardhat run scripts/register-parcels.js --network fuji
 ## Contrato en Fuji
 
 - Red: Avalanche Fuji C-Chain (chain ID 43113)
-- Dirección: <!-- DIRECCIÓN_FUJI -->
-- Explorer: <!-- DIRECCIÓN_FUJI -->
+- Dirección: `0x5A963552011bDA9EB20305f7EfdE3F7E932801be`
+- Explorer (código verificado): https://testnet.snowtrace.io/address/0x5A963552011bDA9EB20305f7EfdE3F7E932801be
+- Transacción de despliegue: https://testnet.snowtrace.io/tx/0xdd26c960a444cfc94914c4d496d6cc15cb7f539c1c743c739cf74f1a5279e4d5 (bloque 60976293)
+- Web de la demo: https://ginomoretta-creator.github.io/bosque-en-pie/
+- RPC: `https://avalanche-fuji-c-chain-rpc.publicnode.com` (el RPC oficial de Fuji corta con error 1015 cuando recibe muchas consultas; queda como respaldo)
+- Datos completos del despliegue: [deployments/fuji.json](deployments/fuji.json)
 
 ## Parámetros de la demo y su valor en producción
 
@@ -119,10 +123,10 @@ El proyecto se construyó con asistentes de IA: **Claude Code** y **Devin**. La 
 
 ## Atribución y licencias
 
-- Contiene datos Copernicus Sentinel modificados, 2024 y 2025.
+- Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026.
 - Máscara de árboles: ESA WorldCover 2021, licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - Código: MIT (ver `package.json`).
 
 ## Estado
 
-En construcción para la entrega del viernes 13/11/2026, 09:00 (Argentina). El plan de trabajo está en las [issues](../../issues) y los [milestones](../../milestones).
+Contrato desplegado en Fuji y web publicada; entrega del viernes 13/11/2026 (Argentina). El resumen del estado está en [docs/estado.md](docs/estado.md) y el plan de trabajo en las [issues](../../issues).
