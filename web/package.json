@@ -1,0 +1,20 @@
+{
+  "name": "bosque-en-pie-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Página de Bosque en pie: lee el contrato en Avalanche (Fuji o nodo local)",
+  "scripts": {
+    "dev": "vite",
+    "dev:fuji": "VITE_NETWORK=fuji vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4",
+    "viem": "2.37.5"
+  },
+  "devDependencies": {
+    "vite": "7.1.5"
+  }
+}
