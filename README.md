@@ -6,6 +6,22 @@ Pago por conservar monte, verificado por satélite: un donante deja AVAX bloquea
 
 Proyecto para la Competencia Argentina Space (Salta), track Avalanche. El contexto completo está en [CLAUDE.md](CLAUDE.md) y el guion del pitch en [docs/pitch-2min.md](docs/pitch-2min.md).
 
+## Entrega
+
+Competencia Argentina Space (Salta, 11 al 13 de noviembre de 2026), track **Avalanche**. Categoría principal: Geoespacial (un dato del espacio decide un pago), cruzada con RWA.
+
+| | |
+|---|---|
+| Video de la demo (2:50) | Se publica antes del cierre del 13/11 |
+| Contrato en Fuji (código verificado) | [0x7eC244B5Baf9079AE21E721B1c507D493649b8c6](https://testnet.snowtrace.io/address/0x7eC244B5Baf9079AE21E721B1c507D493649b8c6) |
+| Web de la demo | https://ginomoretta-creator.github.io/bosque-en-pie/ |
+| Pitch (7 diapositivas) | [docs/pitch.pdf](docs/pitch.pdf) |
+| Guion del video y del pitch | [docs/pitch-2min.md](docs/pitch-2min.md) |
+
+**Equipo:** Gino Luciano Moretta, Valentino Galfré y Valentino Donayo.
+
+El paso a paso de la entrega está en [docs/ENTREGA.md](docs/ENTREGA.md).
+
 ## La idea
 
 En Salta se desmontaron más de 20.000 hectáreas de monte nativo entre enero y septiembre de 2026 (relevamiento satelital de Greenpeace), y el fondo de la Ley de Bosques para pagarle a quien conserva nunca se integró completo. Bosque en pie da vuelta esa cuenta:
@@ -129,4 +145,4 @@ El proyecto se construyó con asistentes de IA: **Claude Code** y **Devin**. La 
 
 ## Estado
 
-Contrato desplegado en Fuji y web publicada; entrega del viernes 13/11/2026 (Argentina). El resumen del estado está en [docs/estado.md](docs/estado.md) y el plan de trabajo en las [issues](../../issues).
+Contrato desplegado en Fuji, web publicada y pitch listo; entrega del viernes 13/11/2026 a las 13:00 (Argentina), en Hacki. El resumen del estado está en [docs/estado.md](docs/estado.md) y el plan de trabajo en las [issues](../../issues).

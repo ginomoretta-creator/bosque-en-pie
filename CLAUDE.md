@@ -4,7 +4,7 @@ Proyecto de hackatón (Competencia Argentina Space, Salta, track Avalanche). Est
 
 ## Fecha límite y entregables
 
-- **Cierre: viernes 13/11/2026 a las 09:00** (hora de Argentina). La meta es entregar el jueves 12 a la noche.
+- **Cierre: viernes 13/11/2026 a las 13:00** (hora de Argentina), en Hacki. El sitio de ayuda del track decía 09:00; manda Hacki, que es donde se entrega. Paso a paso en [docs/ENTREGA.md](docs/ENTREGA.md).
 - Obligatorio: un contrato desplegado en **Avalanche Fuji** con link al explorer, un video de demo de 1 a 3 minutos con una acción en el contrato, y un pitch de 5 a 7 slides con una dedicada a "por qué blockchain".
 - El repositorio es opcional, pero lo vamos a entregar.
 - Criterios del jurado, con el mismo peso: impacto (un problema real del NOA suma), creatividad, validez (contrato desplegado, acción demostrable, datos reales), justificación de blockchain, presentación.
