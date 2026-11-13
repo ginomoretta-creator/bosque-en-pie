@@ -2,10 +2,12 @@
 // que recorre los doce meses. Usa las imágenes de reports/ (rgb.png y perdida.png) que ya publica la web.
 import { esc, pct } from "./format.js";
 import { statusChip } from "./ui.js";
+import { parcelMap } from "./map.js";
 
 const MES = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 const MES_LARGO = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 const STEP_MS = 1100;
+const TONE = { ok: "#6CC58A", review: "#E2B04A", cut: "#E58A66", off: "#E58A66", cloud: "#F4F2EC", empty: "#F4F2EC", ready: "#6CC58A" };
 
 // Lo que eligió cada quien por parcela (mes y marca de pérdida): sobrevive a los repintados por bloques nuevos.
 const memo = new Map();
@@ -48,7 +50,7 @@ function frame(p, key, folder, byMonth) {
  * Arma el visor. Devuelve null si la parcela no tiene imágenes en reports/.
  * `year` es el año de la tira de doce meses; los meses de otros años con imagen van al final.
  */
-export function visor(p, folders, year) {
+export function visor(p, folders, year, letter) {
   const keys = Object.keys(folders || {}).filter((k) => folders[k].rgb).sort();
   if (!keys.length) return null;
   const byMonth = new Map(p.reports.map((r) => [monthOf(r.tObs), r]));
@@ -76,11 +78,10 @@ export function visor(p, folders, year) {
         <span class="mono-sm" data-v-date></span>
       </div>
       <div class="visor-img">
-        <img data-v-rgb alt="" decoding="async">
-        <img data-v-loss class="visor-loss" alt="" decoding="async">
-        <div class="visor-badge"><b data-v-pct></b><span data-v-what></span></div>
+        <div class="visor-map" data-v-map></div>
         <span class="visor-play-ind" data-v-ind aria-hidden="true"></span>
       </div>
+      <div class="visor-badge"><b data-v-pct></b><span data-v-what></span></div>
       <ol class="months visor-months" role="list">${buttons}</ol>
       <div class="visor-ctl">
         <button type="button" class="btn btn-lima btn-sm" data-v-play>▶ Ver el año</button>
@@ -93,8 +94,7 @@ export function visor(p, folders, year) {
   function mount(root) {
     const el = root.querySelector("[data-visor]");
     if (!el) return null;
-    const rgb = el.querySelector("[data-v-rgb]");
-    const loss = el.querySelector("[data-v-loss]");
+    const sat = parcelMap(el.querySelector("[data-v-map]"), letter);
     const pctEl = el.querySelector("[data-v-pct]");
     const whatEl = el.querySelector("[data-v-what]");
     const dateEl = el.querySelector("[data-v-date]");
@@ -112,11 +112,10 @@ export function visor(p, folders, year) {
     function show(n, { anim = true } = {}) {
       i = n;
       const f = frames[i];
-      rgb.src = f.rgb;
-      rgb.alt = `Imagen Sentinel-2 en color real de ${p.name}, ${longKey(f.key)}`;
-      if (f.loss) (loss.src = f.loss), (loss.alt = `Mapa de pérdida de ${p.name}, ${longKey(f.key)}`);
-      box.classList.toggle("show-loss", tgl.checked && !!f.loss);
+      sat.show(f.rgb, { alt: `Imagen Sentinel-2 en color real de ${p.name}, ${longKey(f.key)}`, lossUrl: f.loss, lossOn: tgl.checked });
+      sat.color(TONE[f.cls] || TONE.empty);
       box.dataset.tone = f.cls;
+      el.dataset.tone = f.cls;
       pctEl.textContent = f.cover === null ? (f.cls === "cloud" ? "nubes" : "—") : `${pct(f.cover)} %`;
       whatEl.textContent = `${longKey(f.key)} · ${f.what}`;
       dateEl.textContent = f.date ? `imagen del ${isoDay(f.date)}` : "";
@@ -125,11 +124,6 @@ export function visor(p, folders, year) {
         const on = b.dataset.k === f.key;
         b.setAttribute("aria-pressed", String(on));
         b.parentElement.classList.toggle("on", on);
-      }
-      if (anim && !reduce) {
-        box.classList.remove("flash");
-        void box.offsetWidth; // reinicia la animación
-        box.classList.add("flash");
       }
       memo.set(p.id, { key: f.key, loss: tgl.checked });
     }
@@ -181,6 +175,7 @@ export function visor(p, folders, year) {
 
     return () => {
       stop();
+      sat.destroy();
       el.removeEventListener("click", onClick);
       el.removeEventListener("keydown", onKey);
       tgl.removeEventListener("change", onTgl);

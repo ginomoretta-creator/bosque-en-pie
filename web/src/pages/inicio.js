@@ -68,7 +68,7 @@ export function inicio(_params, s) {
       <p class="lead">Dejás AVAX en un contrato. Cada mes que una imagen satelital confirma que la parcela sigue en pie, el contrato paga a quienes la cuidan. Si aparece un desmonte, los pagos se cortan.</p>
       <div class="hero-cta">
         <a class="btn btn-lima" href="#/" data-scroll="parcelas">Elegir una parcela →</a>
-        <a class="btn btn-ghost" href="#/actividad">Ver la actividad</a>
+        <a class="btn btn-ghost" href="#/como-funciona">Cómo funciona</a>
       </div>
     </div>
     <div class="hero-ic">${icon("tree")}</div>

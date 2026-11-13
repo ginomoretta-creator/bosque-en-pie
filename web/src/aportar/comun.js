@@ -41,8 +41,20 @@ export function loginScreen(title) {
   return `<section class="page narrow">
     <p class="eyebrow">${esc(NET.label)} · no es plata real</p>
     <h1 class="h1">${esc(title)}</h1>
-    <div class="notice notice-verde">${icon("medal")}<div><strong>Escaneá un QR del jurado con la cámara del celular.</strong>
-      <p>La página se abre con una billetera de prueba ya cargada. La clave queda solo en esta pestaña.</p></div></div>
+    <div class="card qrhelp">
+      <div class="qrhelp-ic">${icon("coins")}</div>
+      <div>
+        <p class="eyebrow">Para aportar necesitás un QR de prueba</p>
+        <h2>Escaneá el QR con la cámara del celular.</h2>
+        <ol class="qrhelp-steps">
+          <li>Se abre esta página con una billetera de prueba ya cargada (0,03 AVAX de la red Fuji, no es plata real).</li>
+          <li>Elegís la parcela, el monto y qué pasa con tu saldo si hay desmonte.</li>
+          <li>Tocás «Aportar»: la transacción queda en la blockchain y la ves en vivo.</li>
+        </ol>
+        <p class="muted">Los QR los repartimos impresos en la presentación. No están en la web a propósito: cada uno lleva la clave de su billetera.</p>
+      </div>
+    </div>
+    <a class="btn btn-block" href="#/como-funciona">Sin QR: ver cómo funciona la demo →</a>
     ${local}
     <details class="card paste"><summary>Tengo una clave de prueba</summary>
       <form data-pegar class="paste-f">

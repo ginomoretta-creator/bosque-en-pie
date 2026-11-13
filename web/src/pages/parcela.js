@@ -23,10 +23,10 @@ export function parcela({ id }, s) {
 
   const letter = letterOf(s.deployment, p.id);
   const strip = monthStrip(p, { folders: reports[letter] || {} });
-  const sat = visor(p, reports[letter] || {}, strip.year);
+  const sat = visor(p, reports[letter] || {}, strip.year, letter);
   const r = p.lastReport;
   const lastFolder = r ? folderFor(letter, r) : null;
-  const bg = lastFolder?.rgb ? ` style="--bg:url('${esc(lastFolder.rgb)}')"` : "";
+  const bg = ""; // la imagen del mes ahora va en el visor, en contexto (antes se estiraba de fondo y se veía pixelada)
   const ownerPct = p.ownerShareBps / 100;
   const cleared = p.status === 3;
   const rows = [...p.reports].reverse().map((x) => `
