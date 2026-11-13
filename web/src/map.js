@@ -116,11 +116,16 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
  * así que se ve como una foto satelital y no como bloques estirados.
  * Devuelve { map, show(url, { loss }), destroy() }.
  */
-export function parcelMap(el, letter, { color = "#F4F2EC", padding = 0.55 } = {}) {
+export function parcelMap(el, letter, { color = "#F4F2EC", padding = 0.55, still = false } = {}) {
+  // `still`: una foto fija (portada): sin zoom ni arrastre, para que no robe el scroll en el celular.
   const map = L.map(el, {
-    zoomControl: true,
+    zoomControl: !still,
     scrollWheelZoom: false,
-    dragging: true,
+    dragging: !still,
+    touchZoom: !still,
+    doubleClickZoom: !still,
+    boxZoom: !still,
+    keyboard: !still,
     attributionControl: true,
     zoomSnap: 0.25,
   });
@@ -134,7 +139,9 @@ export function parcelMap(el, letter, { color = "#F4F2EC", padding = 0.55 } = {}
   if (target) map.fitBounds(target.pad(padding));
   else map.setView([-22.45, -62.12], 14);
   // El contenedor puede cambiar de tamaño al entrar (animación o grilla): recalcular una vez listo.
+  let alive = true;
   requestAnimationFrame(() => {
+    if (!alive) return; // la página se repintó antes de este cuadro: el mapa ya no existe
     map.invalidateSize();
     if (target) map.fitBounds(target.pad(padding));
   });
@@ -159,6 +166,7 @@ export function parcelMap(el, letter, { color = "#F4F2EC", padding = 0.55 } = {}
       outline?.setStyle({ color: c });
     },
     destroy() {
+      alive = false;
       map.remove();
     },
   };
