@@ -5,8 +5,8 @@ Funciones puras sobre matrices numpy (sin red). La lectura de Sentinel-2 está e
 Pasos (CLAUDE.md):
   1. Píxeles válidos: SCL en {4, 5, 6, 7} (vegetación, suelo desnudo, agua, sin clasificar).
   2. NDVI del mes y NDVI del mismo mes del año base.
-  3. Monte del año base: NDVI base ≥ 0,45.
-  4. Píxel perdido: era monte, bajó 0,25 o más y quedó en 0,35 o menos.
+  3. Monte del año base: NDVI base ≥ 0,25 (calibrado; partida 0,45).
+  4. Píxel perdido: era monte, bajó 0,08 o más y quedó en 0,28 o menos (calibrado; partida 0,25 y 0,35).
   5. Limpieza: apertura morfológica 3×3 y descarte de manchas de menos de 100 píxeles (1 ha a 10 m).
   6. coverBps = 10000 × (1 − perdidos / monte base); validBps = 10000 × válidos / total de la parcela.
 
@@ -31,9 +31,13 @@ VALID_SCL = (4, 5, 6, 7)
 
 @dataclass(frozen=True)
 class Thresholds:
-    base_forest_ndvi: float = 0.45   # monte en el año base
-    loss_drop: float = 0.25          # caída mínima de NDVI para contar pérdida
-    loss_max_ndvi: float = 0.35      # NDVI máximo después de la pérdida
+    # Calibrados y congelados con 2025 (issue #18, ver parcels/LEEME.md). Valores de partida: 0,45 / 0,25 / 0,35.
+    # El monte chaqueño pierde hojas en la estación seca (NDVI ~0,30 en agosto), así que el monte base
+    # baja a 0,25. La pérdida exige terminar en NDVI ≤ 0,28: el monte intacto no baja de ~0,36 ni en
+    # septiembre, por eso alcanza con una caída de 0,08 sin dar falsos positivos.
+    base_forest_ndvi: float = 0.25   # monte en el año base
+    loss_drop: float = 0.08          # caída mínima de NDVI para contar pérdida
+    loss_max_ndvi: float = 0.28      # NDVI máximo después de la pérdida
     opening_size: int = 3            # apertura morfológica (lado del cuadrado)
     min_patch_px: int = 100          # mancha mínima: 100 px de 10 m = 1 ha
     min_base_forest_frac: float = 0.05  # monte base visible mínimo, sobre el total de la parcela

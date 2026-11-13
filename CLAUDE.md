@@ -81,6 +81,7 @@ Idea para el pitch: el fondo se libera por etapas a un restaurador distinto del 
   6. Limpiar: apertura morfológica 3×3 y descartar manchas de menos de 100 píxeles (1 ha).
   7. `coverBps = 10000 × (1 − perdidos / monte base)`, `validBps = 10000 × válidos / total de la parcela`.
 - Los umbrales son valores de partida. Se calibran hasta que la parcela A no dé lecturas malas en 12 meses y la B las dé desde el mes del desmonte. Después se congelan.
+- **Congelados (issue #18):** monte base NDVI ≥ 0,25; pérdida = bajó ≥ 0,08 y quedó ≤ 0,28. Con eso A da 100 % todo 2025 y B entra en revisión en agosto y se corta en septiembre. Ojo: los COG de Earth Search ya traen el offset BOA aplicado; no restar el −0,1 de `raster:bands` (ver `oracle/s2.py`).
 - Comparar siempre contra el mismo mes del año anterior: el monte chaqueño pierde hojas en invierno.
 - La evidencia de cada informe (imagen usada, imagen base, versión del algoritmo, resultado) se guarda como JSON en el repo; `evidenceHash` es su keccak256.
 

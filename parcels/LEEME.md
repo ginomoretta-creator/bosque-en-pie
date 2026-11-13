@@ -13,25 +13,31 @@ Dos parcelas de monte nativo del Chaco salteño (departamento Rivadavia), a ~1,5
 2. **A:** bloque de monte nativo cercano, revisado a ojo (textura de copas, picada) y con la serie mensual completa.
 3. Se descartaron: lotes agrícolas y pasturas (no son monte), desmontes anteriores a 2025, un falso positivo por nubes en otro tile y un bloque de Yungas en San Lorenzo (5 meses nublados y una lectura mala falsa en marzo por sombras o nubes).
 
-## Serie mensual con bosque-v1 (umbrales por defecto, año base 2024)
+## Serie mensual con bosque-v1 (umbrales congelados, año base 2024)
 
-Mejor imagen de cada mes contra el mismo mes de 2024. Menos de 60 % visible = sin informe.
+Mejor imagen de cada mes contra el mismo mes de 2024. Menos de 60 % visible = sin informe. Es la salida real de `python -m oracle.make_report <A|B> --year 2025` (archivos en `reports/`).
 
 | Mes 2025 | A: visible · en pie | B: visible · en pie |
 |---|---|---|
 | Ene | 100 % · 100 % | 100 % · 100 % |
 | Feb | 100 % · 100 % | 100 % · 100 % |
-| Mar | 8 % · sin informe (nubes) | 44 % · sin informe (nubes) |
-| Abr | 99,9 % · 100 % | 100 % · 100 % |
-| May | 96 % · 100 % | 95,7 % · 100 % |
-| Jun | 99,8 % · 100 % | 99,7 % · 100 % |
-| Jul | 98,7 % · 100 % | 98 % · 100 % |
-| Ago | 93,8 % · 100 % | 100 % · 100 % |
-| Sep | 100 % · 100 % | 100 % · **47,4 %** → en revisión |
-| Oct | 100 % · 100 % | 100 % · **59,4 %** → **desmontada** |
-| Nov | 100 % · 100 % | 100 % · 2,2 % |
-| Dic | 99,8 % · 100 % | 100 % · 40,1 % |
+| Mar | 53,8 % · sin informe (nubes) | 45,5 % · sin informe (nubes) |
+| Abr | 100 % · 100 % | 100 % · 100 % |
+| May | 100 % · 100 % | 100 % · 100 % |
+| Jun | 100 % · 100 % | 100 % · 100 % |
+| Jul | 100 % · 100 % | 100 % · 100 % |
+| Ago | 100 % · 100 % | 100 % · **86,3 %** → en revisión |
+| Sep | 100 % · 100 % | 100 % · **1,4 %** → **desmontada** |
+| Oct | 100 % · 100 % | 100 % · 3,4 % |
+| Nov | 100 % · 100 % | 100 % · 1,4 % |
+| Dic | 100 % · 100 % | 100 % · 13,3 % |
 
-Con esto se cumple la calibración de la issue #18 sin tocar los umbrales: A no da lecturas malas en el año y B las da desde el mes del desmonte. B cobra 7 cuotas (ene, feb, abr a ago), entra en revisión en septiembre y se corta en octubre.
+B cobra 6 cuotas (enero, febrero y abril a julio), entra en revisión en agosto y se corta en septiembre.
+
+## Calibración (issue #18)
+
+- **Bug corregido:** los COG de Earth Search ya traen aplicado el offset BOA, aunque `raster:bands` anuncie −0,1 (y aunque la bandera `earthsearch:boa_offset_applied` a veces diga False). Restarlo de nuevo daba reflectancias negativas y NDVI > 1. Ahora no se resta (`oracle/s2.py`, con prueba de regresión).
+- **Con los datos corregidos,** los umbrales de partida (monte base 0,45; caída 0,25; NDVI final 0,35) detectaban el desmonte de B recién en noviembre: en la estación seca el monte chaqueño baja a NDVI ~0,30 y la caída no alcanzaba.
+- **Umbrales congelados:** monte base NDVI ≥ 0,25; pérdida = bajó ≥ 0,08 y quedó ≤ 0,28. Se probaron 480 combinaciones; con esta, A da 100 % todos los meses y B se detecta en agosto, cuando la imagen ya lo muestra talado. El monte intacto no baja de NDVI ~0,36 ni en septiembre, por eso el umbral final de 0,28 evita falsos positivos aun con una caída mínima chica.
 
 Contiene datos Copernicus Sentinel modificados, 2024 y 2025. Máscara de árboles: ESA WorldCover 2021 (CC BY 4.0).
