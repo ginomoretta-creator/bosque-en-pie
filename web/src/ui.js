@@ -71,8 +71,20 @@ export function monthStrip(p, { labels = true, folders = null } = {}) {
       ? `<li class="m m-${cls}"><a href="#/parcela/${p.id}/${key}" title="${label}" aria-label="${label}">${inner}</a></li>`
       : `<li class="m m-${cls}" title="${label}">${inner}</li>`;
   });
-  const paid = p.reports.filter((r) => r.standing).length;
+  const inYear = (t) => new Date(t * 1000).getUTCFullYear() === year;
+  const paid = p.reports.filter((r) => r.standing && inYear(r.tObs)).length;
+  // Informes de otro año (por ejemplo el que se manda en vivo en la demo): van aparte, debajo de la tira.
+  const fmt = (key) => { const [y, mm] = key.split("-"); return `${MES_LARGO[Number(mm) - 1].toLowerCase()} ${y}`; };
+  const later = new Map();
+  for (const r of p.reports) if (!inYear(r.tObs)) later.set(new Date(r.tObs * 1000).toISOString().slice(0, 7), r);
+  for (const k of Object.keys(folders || {})) if (!k.startsWith(`${year}-`) && !later.has(k) && folders[k].report) later.set(k, null);
+  const extra = [...later.keys()].sort().map((k) => {
+    const r = later.get(k);
+    const t = !r ? "listo para enviar en vivo" : r.standing ? "en pie · pagó la cuota" : r.status === 3 ? "corte" : "lectura mala · en revisión";
+    const cls = !r ? "empty" : r.standing ? "ok" : r.status === 3 ? "cut" : "review";
+    return `<li class="m-${cls}"><i></i><a href="#/parcela/${p.id}/${k}">${fmt(k)}</a> · ${t}</li>`;
+  }).join("");
   const used = [...new Set(cells.map((c) => c.match(/m-(\w+)/)[1]))];
   const legend = `<ul class="mlegend">${LEYENDA.filter(([k]) => used.includes(k)).map(([k, t]) => `<li class="m-${k}"><i></i>${t}</li>`).join("")}</ul>`;
-  return { html: `<ol class="months">${cells.join("")}</ol>`, year, paid, legend };
+  return { html: `<ol class="months">${cells.join("")}</ol>`, year, paid, legend, extra: extra ? `<ul class="mlegend mlater">${extra}</ul>` : "" };
 }

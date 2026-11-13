@@ -470,4 +470,7 @@ a.tx:hover { color: var(--v2-tinta); }
 /* leyenda de los doce meses */
 .mlegend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 12px 0 0; padding: 0; list-style: none; font-size: var(--v2-cuerpo-xs); color: var(--v2-gris); }
 .mlegend li { display: flex; align-items: center; gap: 6px; }
-.mlegend i { display: block; width: 12px; height: 12px; border-radius: 2px; background: var(--v2-franja); flex: none; }
+.mlater { margin-top: 10px; padding-top: 10px; border-top: var(--v2-borde) solid var(--v2-linea); color: var(--v2-tinta); }
+.mlater a { font-weight: 600; }
+.mlegend i { display: block; width: 12px; height: 12px; border-radius: 2px; flex: none; }
+.mlegend .m-empty i { background: var(--v2-franja); }
