@@ -1,15 +1,15 @@
 {
   "network": "fuji",
   "chainId": 43113,
-  "contract": "0x5A963552011bDA9EB20305f7EfdE3F7E932801be",
+  "contract": "0x7eC244B5Baf9079AE21E721B1c507D493649b8c6",
   "parcel": "B",
   "parcelId": 2,
   "month": "2025-08",
-  "tx": "0x39111fc63d69dc72460609e6edd868d92bcbbbf62085957ab46df6afca9bc6bb",
-  "block": 60976764,
+  "tx": "0xd10910da4b01ceacc55b5ec40764535db7ab18bff0710cbf750204b0e2b609f3",
+  "block": 61004048,
   "firmas": 3,
   "aplicado": true,
   "pagadoWei": "0",
   "estado": "en revisión",
-  "explorer": "https://testnet.snowtrace.io/tx/0x39111fc63d69dc72460609e6edd868d92bcbbbf62085957ab46df6afca9bc6bb"
+  "explorer": "https://testnet.snowtrace.io/tx/0xd10910da4b01ceacc55b5ec40764535db7ab18bff0710cbf750204b0e2b609f3"
 }

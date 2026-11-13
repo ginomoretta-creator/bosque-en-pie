@@ -13,7 +13,9 @@ Por cada mes escribe en reports/<parcela>/<AAAA-MM>/ (formato de la issue #38):
 Si un mes no tiene imagen utilizable (nubes, poco monte base), escribe skip.json con el motivo.
 
 Las imágenes se eligen en secuencia: la de cada mes tiene que ser al menos `--min-interval-days`
-posterior a la del último informe, como exige el contrato.
+posterior a la del último informe, como exige el contrato. Entre las que dejan ver al menos el 60 %
+de la parcela se usa la más cercana al día 15 del mes, no la más limpia: así una imagen de fin de
+mes no deja al mes siguiente sin imágenes posibles.
 """
 from __future__ import annotations
 
@@ -34,6 +36,7 @@ from oracle.signing import Report, evidence_hash, sign_report
 
 ROOT = Path(__file__).resolve().parents[1]
 MIN_VALID_BPS = 6000
+TARGET_DAY = 15   # fecha fijada de cada informe: se usa la imagen utilizable más cercana a este día
 ATTRIBUTION = "Contiene datos Copernicus Sentinel modificados, 2024 y 2025"
 
 
@@ -74,7 +77,8 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
                 forest_type: str | None = None):
     start, end = month_range(year, month)
     bstart, bend = month_range(year - 1, month)
-    now = best_scene(geom, start, end, tile=tile, min_datetime=min_dt)
+    target = datetime(year, month, TARGET_DAY, tzinfo=timezone.utc)
+    now = best_scene(geom, start, end, tile=tile, min_datetime=min_dt, target=target)
     base = best_scene(geom, bstart, bend, tile=tile)
     out_dir.mkdir(parents=True, exist_ok=True)
     if not now or not base:

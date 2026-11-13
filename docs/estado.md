@@ -10,7 +10,7 @@ Bosque en pie paga cada mes que el monte sigue en pie: el satélite es el testig
 
 | Pieza | Estado | Dónde verlo |
 |---|---|---|
-| Contrato | ✅ Desplegado en Fuji, código verificado en el explorer | `0x5A963552011bDA9EB20305f7EfdE3F7E932801be` · https://testnet.snowtrace.io/address/0x5A963552011bDA9EB20305f7EfdE3F7E932801be |
+| Contrato | ✅ Desplegado en Fuji, código verificado en el explorer | `0x7eC244B5Baf9079AE21E721B1c507D493649b8c6` · https://testnet.snowtrace.io/address/0x7eC244B5Baf9079AE21E721B1c507D493649b8c6 |
 | Pruebas | ✅ CI verde en `main` (contrato con Hardhat, oráculo con pytest, build de la web) | pestaña *Actions* |
 | Oráculo | ✅ bosque-v1 sobre Sentinel-2 L2A (Earth Search), firma 2 de 3, envío y repetición del año | `oracle/` |
 | Informes | ✅ 2025 completo de A y B aplicado en el contrato; noviembre 2026 de A listo para enviar en vivo (sin firmar) | `reports/A`, `reports/B` |
@@ -20,8 +20,8 @@ Bosque en pie paga cada mes que el monte sigue en pie: el satélite es el testig
 
 ## Qué muestra la demo
 
-- **Parcela A (101 ha):** en pie todo 2025. 11 de 12 cuotas pagadas; marzo sin informe por nubes (menos de 60 % visible).
-- **Parcela B (84 ha):** en pie hasta julio, en revisión en agosto (86,3 %), desmontada en septiembre (1,4 %). Pagos cortados desde ahí; el saldo vuelve a los donantes o queda para restaurar, según lo que eligió cada uno.
+- **Parcela A (101 ha):** en pie todo 2025. 12 de 12 cuotas pagadas (imagen utilizable más cercana al día 15 de cada mes).
+- **Parcela B (84 ha):** en pie hasta julio, en revisión en agosto (48,7 % el 16/08), desmontada en septiembre (1,4 %). Pagos cortados desde ahí; el saldo vuelve a los donantes o queda para restaurar, según lo que eligió cada uno.
 - **Evidencia:** cada informe muestra la imagen, las firmas y el keccak256 de `evidence.json` calculado en el navegador, que coincide con el que guarda el contrato.
 - **Acción en vivo:** aportar con una billetera del QR y ver la transacción en Snowtrace. Opcional: enviar el informe de noviembre 2026 de A.
 
