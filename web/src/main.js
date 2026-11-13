@@ -1,12 +1,12 @@
 import "./styles.css";
 import { captureKeyFromHash } from "./wallet.js";
-import { NET, NETWORK, deployment, explorerAddress, store } from "./chain.js";
+import { NET, NETWORK, deployment, explorerAddress, explorerTx, store } from "./chain.js";
 import { currentPath, match, route } from "./router.js";
 import { esc, short } from "./format.js";
-import { logo } from "./ui.js";
+import { icon, logo, txLink } from "./ui.js";
 import { inicio } from "./pages/inicio.js";
 import { parcela } from "./pages/parcela.js";
-import { actividad } from "./pages/actividad.js";
+import { actividad, describe } from "./pages/actividad.js";
 import { informe } from "./pages/informe.js";
 import "./aportar/index.js"; // carril 4
 
@@ -36,6 +36,7 @@ app.innerHTML = `
   <div class="netbar"><span class="netpill net-${NETWORK}"><i></i>${esc(NET.label)} · no es plata real</span></div>
   <div id="status" role="status" aria-live="polite"></div>
   <main id="view"></main>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
   <footer class="foot">
     <div class="foot-cols">
       <div><strong>Bosque en pie</strong><p>Pago por conservar monte, verificado por satélite.<br>Competencia Argentina Space · Salta</p></div>
@@ -81,6 +82,7 @@ function render(force = false) {
   // Pantallas con formulario (live: false): se pintan al entrar y con la primera lectura, no con cada bloque.
   if (!force && path === lastPath && m && !m.route.live && hadData) return;
   lastSig = sig;
+  const firstData = !hadData && s.lastBlock !== null;
   hadData = s.lastBlock !== null;
   if (cleanup) cleanup();
   cleanup = null;
@@ -93,7 +95,84 @@ function render(force = false) {
     a.classList.toggle("on", p === "/" ? path === "/" || path.startsWith("/parcela") : path.startsWith(p));
   }
   if (path !== lastPath) window.scrollTo(0, 0);
+  if (path !== lastPath || firstData) enter();
   lastPath = path;
+}
+
+// ------------------------------------------------------------------ movimiento
+// Solo al entrar a una pantalla (no con cada bloque nuevo) y nunca con «reducir movimiento».
+const calm = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+let enterTimer = null;
+
+function enter() {
+  if (calm()) return;
+  view.classList.remove("enter");
+  void view.offsetWidth;
+  view.classList.add("enter");
+  clearTimeout(enterTimer);
+  enterTimer = setTimeout(() => view.classList.remove("enter"), 1600);
+  for (const el of view.querySelectorAll(".big, .pcard-cover")) countUp(el);
+}
+
+/** «100,0» sube desde 0 con el mismo formato (coma decimal); el resto del contenido (el % chico) no se toca. */
+function countUp(el) {
+  const node = el.firstChild;
+  if (!node || node.nodeType !== Node.TEXT_NODE) return;
+  const m = node.textContent.trim().match(/^(\d{1,3}(?:\.\d{3})*),(\d)$/);
+  if (!m) return;
+  const target = Number(m[1].replaceAll(".", "") + "." + m[2]);
+  const final = node.textContent;
+  const t0 = performance.now();
+  const dur = 900;
+  const fmt = (v) => v.toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const step = (now) => {
+    if (!node.isConnected) return;
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    node.textContent = k < 1 ? fmt(target * e) : final;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ------------------------------------------------------------------ en vivo
+// Cuando llega un evento nuevo del contrato (por ejemplo, el aporte del jurado con el QR), se avisa en pantalla.
+const toasts = document.getElementById("toasts");
+const evKey = (e) => `${e.transactionHash}:${e.logIndex}`;
+let seen = null;
+
+function toast(d, e) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = `${icon(d.ic)}
+    <div class="toast-body"><p class="toast-k mono-sm"><i></i>En vivo · recién en el contrato</p><p>${d.text}</p>
+    <p class="toast-tx">${txLink(explorerTx(e.transactionHash), "ver la transacción")}</p></div>
+    <button type="button" class="toast-x" aria-label="Cerrar">×</button>`;
+  el.querySelector(".toast-x").addEventListener("click", () => close());
+  const close = () => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 300);
+  };
+  toasts.prepend(el);
+  while (toasts.children.length > 3) toasts.lastElementChild.remove();
+  setTimeout(close, 10_000);
+}
+
+function watchLive(s) {
+  if (s.lastBlock === null) return;
+  if (!seen) {
+    seen = new Set(s.events.map(evKey));
+    return;
+  }
+  const fresh = s.events.filter((e) => !seen.has(evKey(e)));
+  if (!fresh.length) return;
+  for (const e of fresh) seen.add(evKey(e));
+  const byTx = new Map();
+  for (const e of s.events) byTx.set(e.transactionHash, [...(byTx.get(e.transactionHash) || []), e]);
+  for (const e of fresh) {
+    const d = describe(e, byTx.get(e.transactionHash));
+    if (d) toast(d, e);
+  }
 }
 
 window.addEventListener("hashchange", () => render(true));
@@ -104,6 +183,17 @@ document.addEventListener("click", (e) => {
   document.getElementById(a.dataset.scroll)?.scrollIntoView({ behavior: "smooth" });
 });
 
-store.subscribe(() => render());
+// Solo en desarrollo: __olvidar(n) hace como si los últimos n eventos fueran nuevos, para probar los avisos.
+if (import.meta.env.DEV) {
+  window.__olvidar = (n = 1) => {
+    for (const e of store.state.events.slice(-n)) seen?.delete(evKey(e));
+    watchLive(store.state);
+  };
+}
+
+store.subscribe((s) => {
+  render();
+  watchLive(s);
+});
 render(true);
 store.start();

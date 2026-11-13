@@ -4,6 +4,7 @@ import { avax, esc, int, month, pct } from "../format.js";
 import { drawMap } from "../map.js";
 import { go } from "../router.js";
 import { icon, monthStrip, statusChip } from "../ui.js";
+import { describe } from "./actividad.js";
 
 function parcelCard(p) {
   const strip = monthStrip(p, { labels: false });
@@ -25,9 +26,38 @@ function parcelCard(p) {
   </a>`;
 }
 
+/** Hace cuánto, en criollo: «hace 3 min», «hace 2 h», «hace 5 días». */
+function ago(ts) {
+  const d = Math.max(0, Date.now() / 1000 - Number(ts));
+  if (d < 60) return "recién";
+  if (d < 3600) return `hace ${Math.floor(d / 60)} min`;
+  if (d < 86400) return `hace ${Math.floor(d / 3600)} h`;
+  const n = Math.floor(d / 86400);
+  return `hace ${n} ${n === 1 ? "día" : "días"}`;
+}
+
+/** Tarjeta «En vivo»: los últimos movimientos del contrato. Un aporte nuevo aparece acá a los pocos segundos. */
+function liveCard(s) {
+  const byTx = new Map();
+  for (const e of s.events) byTx.set(e.transactionHash, [...(byTx.get(e.transactionHash) || []), e]);
+  const items = [];
+  for (const e of [...s.events].reverse()) {
+    const d = describe(e, byTx.get(e.transactionHash));
+    if (d) items.push(`<li>${icon(d.ic)}<div><p>${d.text}</p><p class="muted mono-sm">${ago(e.timestamp)}</p></div></li>`);
+    if (items.length === 2) break;
+  }
+  return `
+  <a class="pcard pcard-live" href="#/actividad">
+    <div class="pcard-h"><h3>En vivo</h3><span class="live-dot"><i></i>${s.lastBlock !== null ? `bloque ${s.lastBlock}` : "conectando"}</span></div>
+    <p class="pcard-sub">Lo último en el contrato. Un aporte nuevo aparece acá solo.</p>
+    ${items.length ? `<ul class="live-list">${items.join("")}</ul>` : `<p class="muted">Todavía no hay movimientos.</p>`}
+    <p class="live-more">Ver toda la actividad →</p>
+  </a>`;
+}
+
 export function inicio(_params, s) {
   const parcels = s.parcels.length
-    ? s.parcels.map(parcelCard).join("")
+    ? s.parcels.map(parcelCard).join("") + liveCard(s)
     : `<p class="muted">${s.loading ? "Leyendo el contrato…" : "Todavía no hay parcelas registradas."}</p>`;
   const html = `
   <div class="hero-grid">
