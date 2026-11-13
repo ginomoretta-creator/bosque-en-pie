@@ -47,22 +47,30 @@ FACTORS: dict[str, ForestFactors] = {
 }
 
 
-def estimate_tco2e(hectares: float, forest_type: str = DEFAULT_FOREST_TYPE) -> float:
+def estimate_tco2e(hectares: float, forest_type: str | None = DEFAULT_FOREST_TYPE) -> float:
     """Toneladas de CO₂e en pie en `hectares` de `forest_type`, con factores IPCC Tier 1."""
-    f = FACTORS.get(forest_type)
+    f = FACTORS.get(forest_type or DEFAULT_FOREST_TYPE)
     if f is None:
         raise ValueError(f"tipo de bosque sin factores: {forest_type!r} (hay {sorted(FACTORS)})")
     return hectares * f.agb_tdm_ha * (1 + f.root_shoot) * CARBON_FRACTION * CO2_PER_C
 
 
-def carbono_estimado(hectares: float, forest_type: str = DEFAULT_FOREST_TYPE) -> dict:
-    """Bloque `carbono_estimado` para la evidencia de un informe, con la etiqueta de simulación."""
+def carbono_estimado(hectares: float, forest_type: str | None = DEFAULT_FOREST_TYPE,
+                     cover_bps: int | None = None) -> dict:
+    """Bloque `carbono_estimado` para la evidencia de un informe, con la etiqueta de simulación.
+
+    `cover_bps` es la parte de la parcela que sigue en pie (en puntos base); si se da,
+    la estimación se calcula solo sobre esa superficie.
+    """
+    forest_type = forest_type or DEFAULT_FOREST_TYPE
     f = FACTORS.get(forest_type)
     if f is None:
         raise ValueError(f"tipo de bosque sin factores: {forest_type!r} (hay {sorted(FACTORS)})")
+    en_pie = hectares if cover_bps is None else hectares * cover_bps / 10_000
     return {
-        "tco2e": round(estimate_tco2e(hectares, forest_type), 1),
+        "tco2e": round(estimate_tco2e(en_pie, forest_type), 1),
         "hectareas": hectares,
+        "hectareas_en_pie": round(en_pie, 1),
         "tipo_bosque": forest_type,
         "biomasa_aerea_tms_ha": f.agb_tdm_ha,
         "raiz_tallo": f.root_shoot,

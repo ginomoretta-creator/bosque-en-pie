@@ -102,7 +102,7 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
         "imagen": s_now.describe(),
         "imagen_base": s_base.describe(),
         "resultado": res.as_dict(),
-        "carbono_estimado": carbono_estimado(round(hectares(geom), 1), forest_type),
+        "carbono_estimado": carbono_estimado(round(hectares(geom), 1), forest_type, res.cover_bps),
         "atribucion": ATTRIBUTION,
     }
     if not usable:
