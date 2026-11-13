@@ -6,6 +6,20 @@ pragma solidity 0.8.24;
 ///         Un donante (por ejemplo, una empresa) deja AVAX en el pozo de una parcela. Cada informe
 ///         firmado que confirma el monte en pie paga una cuota al dueño y al operador. Dos lecturas
 ///         malas seguidas cortan los pagos para siempre. Reglas completas en CLAUDE.md (1 a 10).
+interface IERC1155Receiver {
+    function onERC1155Received(address operator, address from, uint256 id, uint256 value, bytes calldata data)
+        external
+        returns (bytes4);
+
+    function onERC1155BatchReceived(
+        address operator,
+        address from,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external returns (bytes4);
+}
+
 contract BosqueEnPie {
     // ---------------------------------------------------------------- tipos
 
@@ -79,6 +93,25 @@ contract BosqueEnPie {
 
     bool private _locked;
 
+    // ---------------------------------------------------------------- certificados de monte en pie (ERC-1155)
+    // 1 unidad = 1 hectárea-mes financiada. El id del token es el id de la parcela.
+    // Cada cuota pagada suma hectáreas × (pagado / cuota) hectáreas-mes a la parcela, repartidas entre los
+    // donantes en proporción a su aporte. Se lleva con un acumulador por parcela (sin recorrer donantes) y
+    // cada donante acuña lo suyo con claimCertificates. No certifica carbono ni compensa emisiones.
+
+    string public constant name = "Bosque en pie - certificado de monte en pie";
+    string public constant symbol = "MONTE";
+    uint256 private constant CERT_SCALE = 1e36;
+
+    mapping(uint256 => uint256) public certPerStake;                       // hectáreas-mes por wei aportado × 1e36
+    mapping(uint256 => mapping(address => uint256)) private _certDebt;     // lo ya contabilizado de cada donante
+    mapping(uint256 => mapping(address => uint256)) private _certOwed;     // ganado y todavía sin acuñar
+    mapping(uint256 => mapping(address => uint256)) private _balances;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+    mapping(uint256 => uint256) public certSupply;                         // en circulación (acuñado − retirado)
+    mapping(uint256 => uint256) public certRetired;                        // retirado en total por parcela
+    mapping(uint256 => mapping(address => uint256)) public certRetiredBy;  // retirado a nombre de cada cuenta
+
     // ---------------------------------------------------------------- eventos
 
     event ParcelRegistered(
@@ -93,6 +126,10 @@ contract BosqueEnPie {
     event Paid(uint256 indexed parcelId, address indexed owner, uint256 ownerAmount, address indexed operator, uint256 operatorAmount);
     event StatusChanged(uint256 indexed parcelId, Status status);
     event Withdrawn(uint256 indexed parcelId, address indexed donor, uint8 kind, uint256 amount); // 0 devolución, 1 restauración, 2 sobrante
+    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
+    event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values);
+    event ApprovalForAll(address indexed account, address indexed operator, bool approved);
+    event CertificatesRetired(uint256 indexed parcelId, address indexed account, uint256 amount);
 
     // ---------------------------------------------------------------- modificadores
 
@@ -175,6 +212,7 @@ contract BosqueEnPie {
         require(msg.value > 0, "aporte en cero");
         require(msg.sender != p.owner && msg.sender != p.operator, "quien cobra no puede aportar");
 
+        _settleCert(parcelId, msg.sender);
         p.balance += msg.value;
         if (choice == Choice.Refund) {
             refundStake[parcelId][msg.sender] += msg.value;
@@ -183,6 +221,7 @@ contract BosqueEnPie {
             restoreStake[parcelId][msg.sender] += msg.value;
             p.totalRestoreStake += msg.value;
         }
+        _certDebt[parcelId][msg.sender] = (_stakeOf(parcelId, msg.sender) * certPerStake[parcelId]) / CERT_SCALE;
         emit Donated(parcelId, msg.sender, msg.value, choice);
     }
 
@@ -320,6 +359,96 @@ contract BosqueEnPie {
         _send(msg.sender, amount);
     }
 
+    // ---------------------------------------------------------------- certificados
+
+    /// @notice Hectáreas-mes ganadas y todavía sin acuñar.
+    function pendingCertificates(uint256 parcelId, address account) public view returns (uint256) {
+        uint256 accrued = (_stakeOf(parcelId, account) * certPerStake[parcelId]) / CERT_SCALE;
+        return _certOwed[parcelId][account] + accrued - _certDebt[parcelId][account];
+    }
+
+    /// @notice Acuña a tu nombre los certificados ganados en una parcela.
+    function claimCertificates(uint256 parcelId) external nonReentrant returns (uint256 amount) {
+        _settleCert(parcelId, msg.sender);
+        amount = _certOwed[parcelId][msg.sender];
+        require(amount > 0, "no hay certificados para acunar");
+        _certOwed[parcelId][msg.sender] = 0;
+        _balances[parcelId][msg.sender] += amount;
+        certSupply[parcelId] += amount;
+        emit TransferSingle(msg.sender, address(0), msg.sender, parcelId, amount);
+        _checkReceiver(msg.sender, address(0), msg.sender, parcelId, amount, "");
+    }
+
+    /// @notice Retira certificados: se queman y quedan registrados a tu nombre (regla 9: solo pasado
+    ///         commitEnd y si la parcela no fue desmontada; con commitEnd = 0 no hay plazo).
+    function retireCertificates(uint256 parcelId, uint256 amount) external {
+        Parcel storage p = _parcels[parcelId];
+        require(p.status != Status.Cleared, "certificados congelados por desmonte");
+        require(p.commitEnd == 0 || block.timestamp >= p.commitEnd, "bloqueados hasta el fin del compromiso");
+        require(amount > 0, "cantidad en cero");
+        require(_balances[parcelId][msg.sender] >= amount, "saldo de certificados insuficiente");
+        _balances[parcelId][msg.sender] -= amount;
+        certSupply[parcelId] -= amount;
+        certRetired[parcelId] += amount;
+        certRetiredBy[parcelId][msg.sender] += amount;
+        emit TransferSingle(msg.sender, msg.sender, address(0), parcelId, amount);
+        emit CertificatesRetired(parcelId, msg.sender, amount);
+    }
+
+    // ERC-1155 mínimo
+
+    function balanceOf(address account, uint256 id) public view returns (uint256) {
+        require(account != address(0), "cuenta vacia");
+        return _balances[id][account];
+    }
+
+    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids) external view returns (uint256[] memory out) {
+        require(accounts.length == ids.length, "largos distintos");
+        out = new uint256[](accounts.length);
+        for (uint256 i = 0; i < accounts.length; i++) out[i] = balanceOf(accounts[i], ids[i]);
+    }
+
+    function setApprovalForAll(address operator, bool approved) external {
+        require(operator != msg.sender, "no podes aprobarte a vos");
+        _operatorApprovals[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+
+    function isApprovedForAll(address account, address operator) public view returns (bool) {
+        return _operatorApprovals[account][operator];
+    }
+
+    function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes calldata data) external {
+        require(from == msg.sender || isApprovedForAll(from, msg.sender), "sin permiso para transferir");
+        _moveCert(from, to, id, value);
+        emit TransferSingle(msg.sender, from, to, id, value);
+        _checkReceiver(msg.sender, from, to, id, value, data);
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata values,
+        bytes calldata data
+    ) external {
+        require(from == msg.sender || isApprovedForAll(from, msg.sender), "sin permiso para transferir");
+        require(ids.length == values.length, "largos distintos");
+        for (uint256 i = 0; i < ids.length; i++) _moveCert(from, to, ids[i], values[i]);
+        emit TransferBatch(msg.sender, from, to, ids, values);
+        if (to.code.length > 0) {
+            require(
+                IERC1155Receiver(to).onERC1155BatchReceived(msg.sender, from, ids, values, data) ==
+                    IERC1155Receiver.onERC1155BatchReceived.selector,
+                "el destino no acepta certificados"
+            );
+        }
+    }
+
+    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+        return interfaceId == 0x01ffc9a7 || interfaceId == 0xd9b67a26; // ERC-165 y ERC-1155
+    }
+
     // ---------------------------------------------------------------- lectura
 
     function getParcel(uint256 parcelId) external view returns (Parcel memory) {
@@ -361,6 +490,13 @@ contract BosqueEnPie {
         amount = p.fee < p.balance ? p.fee : p.balance; // regla 2: si no alcanza, paga lo que queda
         if (amount == 0) return 0;
         p.balance -= amount;
+        uint256 stakes = p.totalRefundStake + p.totalRestoreStake;
+        if (stakes > 0) {
+            // Redondeo hacia arriba: con truncado, 12 cuotas de 100 ha daban 1199 en vez de 1200 a un donante
+            // único. El exceso por donante es < aporte × cuotas / 1e36 unidades (despreciable).
+            uint256 den = p.fee * stakes;
+            certPerStake[parcelId] += (uint256(p.hectares) * amount * CERT_SCALE + den - 1) / den;
+        }
         uint256 ownerAmount = (amount * p.ownerShareBps) / BPS;
         uint256 operatorAmount = amount - ownerAmount;
         emit Paid(parcelId, p.owner, ownerAmount, p.operator, operatorAmount);
@@ -409,6 +545,33 @@ contract BosqueEnPie {
         require(uint256(s) <= HALF_N, "firma maleable");
         signer = ecrecover(hash, v, r, s);
         require(signer != address(0), "firma invalida");
+    }
+
+    function _stakeOf(uint256 parcelId, address account) private view returns (uint256) {
+        return refundStake[parcelId][account] + restoreStake[parcelId][account];
+    }
+
+    function _settleCert(uint256 parcelId, address account) private {
+        uint256 accrued = (_stakeOf(parcelId, account) * certPerStake[parcelId]) / CERT_SCALE;
+        _certOwed[parcelId][account] += accrued - _certDebt[parcelId][account];
+        _certDebt[parcelId][account] = accrued;
+    }
+
+    function _moveCert(address from, address to, uint256 id, uint256 value) private {
+        require(to != address(0), "destino vacio");
+        require(_parcels[id].status != Status.Cleared, "certificados congelados por desmonte");
+        require(_balances[id][from] >= value, "saldo de certificados insuficiente");
+        _balances[id][from] -= value;
+        _balances[id][to] += value;
+    }
+
+    function _checkReceiver(address operator, address from, address to, uint256 id, uint256 value, bytes memory data) private {
+        if (to.code.length == 0) return;
+        require(
+            IERC1155Receiver(to).onERC1155Received(operator, from, id, value, data) ==
+                IERC1155Receiver.onERC1155Received.selector,
+            "el destino no acepta certificados"
+        );
     }
 
     function _send(address to, uint256 amount) private {

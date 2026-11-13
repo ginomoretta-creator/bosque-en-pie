@@ -141,3 +141,19 @@ def test_tras_el_corte_la_empresa_recupera_su_devolucion(red):
     rc = enviar(red, empresa, red.contrato.functions.withdrawRefund(2))
     retiro = red.contrato.events.Withdrawn().process_receipt(rc)[0]["args"]
     assert retiro["kind"] == 0 and retiro["amount"] > 0
+
+
+def test_la_empresa_tiene_un_certificado_por_hectarea_mes_financiada(red):
+    """#8: 12 cuotas en pie de A (100 ha) = 1200; B cobró 6 antes del corte = 600 y quedan congelados."""
+    empresa = cuenta("EMPRESA", "localhost")
+    c = red.contrato.functions
+    assert c.pendingCertificates(1, empresa.address).call() == 12 * 100
+    assert c.pendingCertificates(2, empresa.address).call() == 6 * 100
+    enviar(red, empresa, c.claimCertificates(1))
+    enviar(red, empresa, c.claimCertificates(2))
+    assert c.balanceOf(empresa.address, 1).call() == 1200
+    assert c.balanceOf(empresa.address, 2).call() == 600
+    enviar(red, empresa, c.retireCertificates(1, 1200))
+    assert c.certRetiredBy(1, empresa.address).call() == 1200
+    with pytest.raises(Exception, match="congelados"):
+        c.retireCertificates(2, 1).call({"from": empresa.address})

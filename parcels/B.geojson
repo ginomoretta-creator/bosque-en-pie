@@ -1,0 +1,42 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nombre": "Parcela B",
+        "descripcion": "Monte nativo desmontado entre agosto y septiembre de 2025 (Chaco salteño, departamento Rivadavia).",
+        "hectareas": 84,
+        "tile": "20KNA",
+        "fuente": "Dibujada sobre Sentinel-2 L2A (Earth Search). Dueño y operador: billeteras de prueba."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -62.09942,
+              -22.46731
+            ],
+            [
+              -62.09942,
+              -22.45795
+            ],
+            [
+              -62.10726,
+              -22.45795
+            ],
+            [
+              -62.10726,
+              -22.46731
+            ],
+            [
+              -62.09942,
+              -22.46731
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

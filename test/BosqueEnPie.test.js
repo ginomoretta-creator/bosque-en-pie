@@ -364,6 +364,137 @@ describe("BosqueEnPie", function () {
     });
   });
 
+  describe("certificados de monte en pie (#8)", function () {
+    // 1 unidad = 1 hectárea-mes financiada; el id del token es el id de la parcela.
+    async function claimed() {
+      const f = await baseFixture();
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E(3) });
+      await f.c.connect(f.d2).donate(1, Choice.Restoration, { value: E(1) });
+      await report(f, 1, 9900);
+      await report(f, 1, 9900); // 2 cuotas × 214 ha = 428 hectáreas-mes
+      await f.c.connect(f.d1).claimCertificates(1);
+      await f.c.connect(f.d2).claimCertificates(1);
+      return f;
+    }
+
+    it("reparte las hectáreas-mes de cada cuota en proporción al aporte y se acuñan a pedido", async function () {
+      const f = await loadFixture(baseFixture);
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E(3) });
+      await f.c.connect(f.d2).donate(1, Choice.Restoration, { value: E(1) });
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(0);
+      await report(f, 1, 9900);
+      await report(f, 1, 9900);
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(321);
+      expect(await f.c.pendingCertificates(1, f.d2.address)).to.equal(107);
+      await expect(f.c.connect(f.d1).claimCertificates(1))
+        .to.emit(f.c, "TransferSingle").withArgs(f.d1.address, ethers.ZeroAddress, f.d1.address, 1, 321);
+      expect(await f.c.balanceOf(f.d1.address, 1)).to.equal(321);
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(0);
+      expect(await f.c.certSupply(1)).to.equal(321);
+      await expect(f.c.connect(f.d1).claimCertificates(1)).to.be.revertedWith("no hay certificados para acunar");
+      await expect(f.c.connect(f.d3).claimCertificates(1)).to.be.revertedWith("no hay certificados para acunar");
+    });
+
+    it("quien llega después no cobra cuotas viejas y quien suma aporte conserva lo ganado", async function () {
+      const f = await loadFixture(baseFixture);
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E(1) });
+      await report(f, 1, 9900); // todo para d1: 214
+      await f.c.connect(f.d2).donate(1, Choice.Refund, { value: E(1) });
+      await report(f, 1, 9900); // mitad y mitad: 107 y 107
+      await f.c.connect(f.d1).donate(1, Choice.Restoration, { value: E(2) }); // ahora d1 tiene 3 de 4
+      await report(f, 1, 9900); // 160,5 y 53,5
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(214 + 107 + 160);
+      expect(await f.c.pendingCertificates(1, f.d2.address)).to.equal(107 + 53);
+    });
+
+    it("si el pozo paga solo parte de la cuota, se certifica solo esa parte", async function () {
+      const f = await loadFixture(baseFixture);
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E("0.05") });
+      await report(f, 1, 9900); // paga 0,05 de 0,1
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(107);
+      await report(f, 1, 9900); // pozo vacío: no suma
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(107);
+    });
+
+    it("una lectura mala no certifica nada", async function () {
+      const f = await loadFixture(baseFixture);
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E(1) });
+      await report(f, 1, 7130);
+      expect(await f.c.pendingCertificates(1, f.d1.address)).to.equal(0);
+    });
+
+    it("se transfieren como ERC-1155: directo, con operador y en lote", async function () {
+      const f = await loadFixture(claimed);
+      await expect(f.c.connect(f.d1).safeTransferFrom(f.d1.address, f.d3.address, 1, 21, "0x"))
+        .to.emit(f.c, "TransferSingle").withArgs(f.d1.address, f.d1.address, f.d3.address, 1, 21);
+      await expect(
+        f.c.connect(f.outsider).safeTransferFrom(f.d1.address, f.outsider.address, 1, 1, "0x")
+      ).to.be.revertedWith("sin permiso para transferir");
+      await expect(f.c.connect(f.d1).setApprovalForAll(f.outsider.address, true))
+        .to.emit(f.c, "ApprovalForAll").withArgs(f.d1.address, f.outsider.address, true);
+      await f.c.connect(f.outsider).safeBatchTransferFrom(f.d1.address, f.outsider.address, [1, 1], [100, 50], "0x");
+      const [a, b, c] = await f.c.balanceOfBatch([f.d1.address, f.d3.address, f.outsider.address], [1, 1, 1]);
+      expect([a, b, c]).to.deep.equal([150n, 21n, 150n]);
+      await expect(
+        f.c.connect(f.d1).safeTransferFrom(f.d1.address, f.d3.address, 1, 151, "0x")
+      ).to.be.revertedWith("saldo de certificados insuficiente");
+      await expect(
+        f.c.connect(f.d1).safeTransferFrom(f.d1.address, ethers.ZeroAddress, 1, 1, "0x")
+      ).to.be.revertedWith("destino vacio");
+      // un contrato que no implementa onERC1155Received no puede recibirlos
+      await expect(f.c.connect(f.d1).safeTransferFrom(f.d1.address, await f.c.getAddress(), 1, 1, "0x")).to.be.reverted;
+      expect(await f.c.supportsInterface("0xd9b67a26")).to.equal(true);
+      expect(await f.c.supportsInterface("0x01ffc9a7")).to.equal(true);
+      expect(await f.c.supportsInterface("0xffffffff")).to.equal(false);
+    });
+
+    it("sin plazo, se retiran cuando el donante quiere y quedan registrados a su nombre", async function () {
+      const f = await loadFixture(claimed);
+      await expect(f.c.connect(f.d1).retireCertificates(1, 100))
+        .to.emit(f.c, "CertificatesRetired").withArgs(1, f.d1.address, 100)
+        .and.to.emit(f.c, "TransferSingle").withArgs(f.d1.address, f.d1.address, ethers.ZeroAddress, 1, 100);
+      expect(await f.c.balanceOf(f.d1.address, 1)).to.equal(221);
+      expect(await f.c.certRetiredBy(1, f.d1.address)).to.equal(100);
+      expect(await f.c.certRetired(1)).to.equal(100);
+      expect(await f.c.certSupply(1)).to.equal(321 + 107 - 100);
+      await expect(f.c.connect(f.d2).retireCertificates(1, 108)).to.be.revertedWith("saldo de certificados insuficiente");
+      await expect(f.c.connect(f.d2).retireCertificates(1, 0)).to.be.revertedWith("cantidad en cero");
+    });
+
+    it("con plazo, quedan bloqueados hasta commitEnd (regla 9)", async function () {
+      const f = await deploy();
+      const end = BigInt(await time.latest()) + 400n * BigInt(DAY);
+      await f.c.registerParcel(f.ownerA.address, f.opA.address, E("0.1"), 0, 6000, 214, end);
+      await f.c.connect(f.d1).donate(1, Choice.Refund, { value: E(1) });
+      await report(f, 1, 9900);
+      await f.c.connect(f.d1).claimCertificates(1);
+      await expect(f.c.connect(f.d1).retireCertificates(1, 10)).to.be.revertedWith("bloqueados hasta el fin del compromiso");
+      await time.increaseTo(end);
+      await f.c.connect(f.d1).retireCertificates(1, 10);
+      expect(await f.c.certRetiredBy(1, f.d1.address)).to.equal(10);
+    });
+
+    it("si desmontan la parcela, los certificados quedan congelados", async function () {
+      const f = await loadFixture(claimed);
+      await report(f, 1, 7130);
+      await report(f, 1, 3860); // corte
+      expect((await f.c.getParcel(1)).status).to.equal(Status.Cleared);
+      expect(await f.c.balanceOf(f.d1.address, 1)).to.equal(321); // siguen a su nombre, como registro
+      await expect(
+        f.c.connect(f.d1).safeTransferFrom(f.d1.address, f.d3.address, 1, 1, "0x")
+      ).to.be.revertedWith("certificados congelados por desmonte");
+      await expect(f.c.connect(f.d1).retireCertificates(1, 1)).to.be.revertedWith("certificados congelados por desmonte");
+    });
+
+    it("se llaman certificados de monte en pie, no bonos", async function () {
+      const f = await loadFixture(baseFixture);
+      const name = await f.c.name();
+      expect(name).to.match(/certificado de monte en pie/);
+      expect(name.toLowerCase()).to.not.match(/bono|carbono|credit/);
+      expect(await f.c.symbol()).to.equal("MONTE");
+    });
+  });
+
   describe("ciclo completo de la parcela B", function () {
     it("6 cuotas, revisión, corte y todos los retiros: el dueño y el operador cobran solo las 6 cuotas", async function () {
       const f = await deploy();
