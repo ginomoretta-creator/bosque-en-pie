@@ -40,7 +40,6 @@ Todo lo que falta es humano; el paso a paso está en [ENTREGA.md](ENTREGA.md).
 - **Cargar el proyecto en Hacki** (#34) con los textos y links de ENTREGA.md, y sumar a los cuatro integrantes. Cierra el 13/11 a las 13:00.
 - **Grabar el video** (#33): pantalla con Screen Studio, voz y cámara con el estudio de grabación, según [pitch-2min.md](pitch-2min.md). La acción en el contrato es el envío en vivo del informe de noviembre 2026 de A (se manda una sola vez; `FUJI_RPC_URL` en publicnode).
 - **Subir el video** como «No listado» y poner el link en el README y en Hacki.
-- **Sumar al cuarto integrante** en la línea «Equipo» del README.
 
 ## Notas
 

@@ -18,7 +18,7 @@ Competencia Argentina Space (Salta, 11 al 13 de noviembre de 2026), track **Aval
 | Pitch (7 diapositivas) | [docs/pitch.pdf](docs/pitch.pdf) |
 | Guion del video y del pitch | [docs/pitch-2min.md](docs/pitch-2min.md) |
 
-**Equipo AMOCBA:** Gino Luciano Moretta, Valentino Galfré y Valentino Donayo.
+**Equipo AMOCBA:** Valentino Galfré, Gino Moretta, Juan Ignacio Angeloni y Valentino Donayo.
 
 El paso a paso de la entrega está en [docs/ENTREGA.md](docs/ENTREGA.md).
 
