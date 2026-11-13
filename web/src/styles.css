@@ -390,6 +390,16 @@ a.tx:hover { color: var(--v2-tinta); }
 .maptag-review { background: #e2b04a; }
 .maptag-cleared { background: #e58a66; }
 .leaflet-control-attribution { font-size: 10px; }
+.map-parcel-img { image-rendering: pixelated; }
+.leaflet-control.map-note {
+  max-width: 220px;
+  padding: 4px 8px;
+  border-radius: var(--v2-radio-2);
+  background: var(--v2-placa);
+  color: var(--v2-placa-texto);
+  font-size: 11px;
+  line-height: 1.3;
+}
 
 /* Imagen satelital de fondo en la tarjeta del % */
 .pcover.has-bg {
