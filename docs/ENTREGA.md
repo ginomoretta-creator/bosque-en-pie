@@ -72,7 +72,7 @@ En Hacki: **Mis proyectos → Nuevo proyecto → «Bosque en pie» → Crear pro
 | Pitch (PDF) | https://github.com/ginomoretta-creator/bosque-en-pie/blob/main/docs/pitch.pdf |
 | Video | el de YouTube (punto 4) |
 
-**Equipo:** sumar a los cuatro integrantes al proyecto. Si Hacki pide invitarlos, cada uno necesita su cuenta en Hacki. Revisar que figuren los cuatro antes de enviar.
+**Equipo:** AMOCBA. Sumar a los cuatro integrantes al proyecto. Si Hacki pide invitarlos, cada uno necesita su cuenta en Hacki. Revisar que figuren los cuatro antes de enviar.
 
 **Nunca se carga ni se comparte** el deck «para proyectar» ni la hoja de QR del jurado: tienen claves de prueba.
 
@@ -102,8 +102,8 @@ En GitHub, abrir `README.md` → lápiz (editar). En la sección «Entrega», ca
 - [ ] Los cinco links abren en una ventana de incógnito: el video, la web, Snowtrace, el PDF y el repo.
 - [ ] En Snowtrace, la dirección del contrato muestra la transacción del informe de noviembre.
 - [ ] La web muestra noviembre pagado en la parcela A.
-- [ ] En el README de `main` figuran el link del video y los cuatro integrantes.
-- [ ] Hacki: track Avalanche, los cuatro integrantes, la descripción y los cinco links.
+- [ ] En el README de `main` figuran el link del video, el equipo AMOCBA y los cuatro integrantes.
+- [ ] Hacki: track Avalanche, equipo AMOCBA, los cuatro integrantes, la descripción y los cinco links.
 - [ ] Nada con claves en lo cargado: ni el deck para proyectar, ni la hoja de QR, ni el `.env`.
 
 Después de enviar, abrir la página de BUIDLs de Hacki y confirmar que aparece Bosque en pie en el track Avalanche.
