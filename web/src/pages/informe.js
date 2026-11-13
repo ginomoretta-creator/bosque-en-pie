@@ -4,6 +4,7 @@ import { explorerAddress, explorerTx } from "../chain.js";
 import { MONTHS, avax, day, esc, pct, short } from "../format.js";
 import { REPORTS_DIR, letterOf, monthKey, reports } from "../reports.js";
 import { icon, statusChip, txLink } from "../ui.js";
+import { parcelMap } from "../map.js";
 
 const longMonth = (key) => {
   const [y, m] = key.split("-");
@@ -83,12 +84,12 @@ export function informe({ id, mes }, s) {
 
   const imgs = f?.rgb
     ? `<div class="sat">
-        <figure><img src="${esc(f.rgb)}" alt="Imagen Sentinel-2 en color real de ${esc(p.name)}, ${esc(longMonth(mes))}" loading="lazy"><figcaption class="mono-sm">Color real · ${isoDay(ev?.imagen?.fecha)}</figcaption></figure>
-        ${f.perdida ? `<figure><img src="${esc(f.perdida)}" alt="Mapa de pérdida de monte de ${esc(p.name)}, ${esc(longMonth(mes))}" loading="lazy"><figcaption class="mono-sm">Pérdida contra ${isoDay(ev?.imagen_base?.fecha)} · <i class="sw sw-v"></i>monte <i class="sw sw-t"></i>perdido</figcaption></figure>` : ""}
+        <figure><div class="sat-map" data-sat="rgb" role="img" aria-label="Imagen Sentinel-2 en color real de ${esc(p.name)}, ${esc(longMonth(mes))}"></div><figcaption class="mono-sm">Color real · ${isoDay(ev?.imagen?.fecha)}</figcaption></figure>
+        ${f.perdida ? `<figure><div class="sat-map" data-sat="loss" role="img" aria-label="Mapa de pérdida de monte de ${esc(p.name)}, ${esc(longMonth(mes))}"></div><figcaption class="mono-sm">Pérdida contra ${isoDay(ev?.imagen_base?.fecha)} · <i class="sw sw-v"></i>monte <i class="sw sw-t"></i>perdido</figcaption></figure>` : ""}
       </div>`
     : `<p class="muted">No hay imágenes de este mes en <span class="mono">${esc(REPORTS_DIR)}/</span>.</p>`;
 
-  return `
+  const html = `
   <section class="page">
     <a class="back" href="#/parcela/${p.id}">← ${esc(p.name)}</a>
     <div class="phead">
@@ -137,4 +138,23 @@ export function informe({ id, mes }, s) {
       </nav>
     </div>
   </section>`;
+  if (!f?.rgb) return html;
+  // Las dos imágenes van sobre el mapa, en contexto: color real y la marca de pérdida encima.
+  const mount = (root) => {
+    const maps = [];
+    const rgbEl = root.querySelector('[data-sat="rgb"]');
+    if (rgbEl) {
+      const m = parcelMap(rgbEl, letter, { padding: 0.6 });
+      m.show(f.rgb);
+      maps.push(m);
+    }
+    const lossEl = root.querySelector('[data-sat="loss"]');
+    if (lossEl && f.perdida) {
+      const m = parcelMap(lossEl, letter, { padding: 0.6 });
+      m.show(f.rgb, { lossUrl: f.perdida, lossOn: true, lossOpacity: 0.8 });
+      maps.push(m);
+    }
+    return () => maps.forEach((m) => m.destroy());
+  };
+  return { html, mount };
 }

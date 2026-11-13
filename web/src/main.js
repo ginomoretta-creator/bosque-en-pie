@@ -8,6 +8,7 @@ import { inicio } from "./pages/inicio.js";
 import { parcela } from "./pages/parcela.js";
 import { actividad, describe } from "./pages/actividad.js";
 import { informe } from "./pages/informe.js";
+import { como } from "./pages/como.js";
 import "./aportar/index.js"; // carril 4
 
 // La clave del QR se saca antes de que el router lea el fragmento.
@@ -17,9 +18,11 @@ route("/", inicio);
 route("/parcela/:id", parcela);
 route("/parcela/:id/:mes", informe);
 route("/actividad", actividad);
+route("/como-funciona", como);
 
 const NAV = [
   ["/", "Parcelas"],
+  ["/como-funciona", "Cómo funciona"],
   ["/actividad", "Actividad"],
   ["/mi-aporte", "Mi aporte"],
 ];

@@ -109,3 +109,57 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
   }
   return map;
 }
+
+/**
+ * Mapa chico de UNA parcela, para ver su imagen del mes en contexto: fondo EOX, la imagen Sentinel-2 del mes
+ * recortada a la parcela y su contorno. A este zoom cada píxel de 10 m mide unos pocos píxeles de pantalla,
+ * así que se ve como una foto satelital y no como bloques estirados.
+ * Devuelve { map, show(url, { loss }), destroy() }.
+ */
+export function parcelMap(el, letter, { color = "#F4F2EC", padding = 0.55 } = {}) {
+  const map = L.map(el, {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    dragging: true,
+    attributionControl: true,
+    zoomSnap: 0.25,
+  });
+  L.tileLayer(EOX_URL, { attribution: EOX_ATTR, maxZoom: 17, maxNativeZoom: 15 }).addTo(map);
+  const b = IMG_BOUNDS[letter];
+  const img = b ? L.imageOverlay("", b, { className: "pmap-img", alt: "" }).addTo(map) : null;
+  const loss = b ? L.imageOverlay("", b, { className: "pmap-loss", alt: "", opacity: 0 }).addTo(map) : null;
+  const f = geo[letter];
+  const outline = f ? L.geoJSON(f, { style: { color, weight: 2, fill: false, dashArray: null } }).addTo(map) : null;
+  const target = outline ? outline.getBounds() : b ? L.latLngBounds(b) : null;
+  if (target) map.fitBounds(target.pad(padding));
+  else map.setView([-22.45, -62.12], 14);
+  // El contenedor puede cambiar de tamaño al entrar (animación o grilla): recalcular una vez listo.
+  requestAnimationFrame(() => {
+    map.invalidateSize();
+    if (target) map.fitBounds(target.pad(padding));
+  });
+  return {
+    map,
+    show(url, { alt = "", lossUrl = null, lossOn = false, lossOpacity = 0.6 } = {}) {
+      if (!img || !url) return;
+      img.setUrl(url);
+      if (loss) {
+        if (lossUrl) loss.setUrl(lossUrl);
+        loss.setOpacity(lossOn && lossUrl ? lossOpacity : 0);
+      }
+      const node = img.getElement();
+      if (node) {
+        node.alt = alt;
+        node.classList.remove("pmap-in");
+        void node.offsetWidth;
+        node.classList.add("pmap-in");
+      }
+    },
+    color(c) {
+      outline?.setStyle({ color: c });
+    },
+    destroy() {
+      map.remove();
+    },
+  };
+}
