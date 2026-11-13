@@ -35,11 +35,11 @@ Bosque en pie paga cada mes que el monte sigue en pie: el satélite es el testig
 
 ## Pendiente y quién
 
-- **Decidir cuándo se usa el informe de noviembre 2026 de A.** Se puede enviar una sola vez: el contrato exige 20 días entre imágenes (`minInterval`). Si el pitch es en vivo, guardarlo para ahí. Para enviarlo, `FUJI_RPC_URL` tiene que apuntar a publicnode.
-- **Ensayo de punta a punta** (#40).
-- **Video de 1 a 3 minutos** (#33): la base del guion está en `docs/pitch-2min.md`; la acción en el contrato tiene que verse en Snowtrace.
-- **Slides:** pasar `docs/slides.md` a 6 diapositivas, con la de «por qué blockchain».
-- **Entregar en la competencia** (#34): link al contrato en el explorer, video, slides y repo.
+Todo lo que falta es humano; el paso a paso está en [ENTREGA.md](ENTREGA.md).
+
+- **Cargar el proyecto en Hacki** (#34) con los textos y links de ENTREGA.md, y sumar a los cuatro integrantes. Cierra el 13/11 a las 13:00.
+- **Grabar el video** (#33): pantalla con Screen Studio, voz y cámara con el estudio de grabación, según [pitch-2min.md](pitch-2min.md). La acción en el contrato es el envío en vivo del informe de noviembre 2026 de A (se manda una sola vez; `FUJI_RPC_URL` en publicnode).
+- **Subir el video** como «No listado» y poner el link en el README y en Hacki.
 
 ## Notas
 
