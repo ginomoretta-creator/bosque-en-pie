@@ -40,4 +40,18 @@ B cobra 6 cuotas (enero, febrero y abril a julio), entra en revisión en agosto 
 - **Con los datos corregidos,** los umbrales de partida (monte base 0,45; caída 0,25; NDVI final 0,35) detectaban el desmonte de B recién en noviembre: en la estación seca el monte chaqueño baja a NDVI ~0,30 y la caída no alcanzaba.
 - **Umbrales congelados:** monte base NDVI ≥ 0,25; pérdida = bajó ≥ 0,08 y quedó ≤ 0,28. Se probaron 480 combinaciones; con esta, A da 100 % todos los meses y B se detecta en agosto, cuando la imagen ya lo muestra talado. El monte intacto no baja de NDVI ~0,36 ni en septiembre, por eso el umbral final de 0,28 evita falsos positivos aun con una caída mínima chica.
 
+## Carbono estimado (bono de carbono · SIMULACIÓN, no validado)
+
+Cada mes trae `carbono.json` (`oracle/carbono.py`): t CO₂e = ha en pie × 115,9 t m.s./ha × (1 + 0,336) × 0,47 × 44/12 ≈ **267 t CO₂e por hectárea**. Factores por defecto del IPCC 2019 Refinement, Vol. 4, cap. 4, para bosque seco subtropical de Sudamérica: tabla 4.7 (115,9 ± 46,2 t/ha, p. 4.23) y tabla 4.4 (R = 0,336, p. 4.19). Es subtropical porque las zonas del IPCC/FAO van por clima, no por latitud. Referencia local: ~98 t m.s./ha en el Parque Chaqueño (Gasparri y Manghi, 2004).
+
+Va **aparte de `evidence.json`** a propósito: los `evidenceHash` ya están grabados en Fuji y no cambian si se agrega o se corrige esta estimación (`python -m oracle.make_report <A|B> --solo-carbono`).
+
+| | ha en pie | t CO₂e en pie |
+|---|---|---|
+| A, dic 2025 | 100,7 | ≈ 26.900 |
+| B, jul 2025 (antes del desmonte) | 83,6 | ≈ 22.300 |
+| B, sep 2025 (después del corte) | 1,2 | ≈ 320 |
+
+Es una estimación con factores por defecto, no una medición de la parcela ni un crédito certificado.
+
 Contiene datos Copernicus Sentinel modificados, 2024 y 2025. Máscara de árboles: ESA WorldCover 2021 (CC BY 4.0).
