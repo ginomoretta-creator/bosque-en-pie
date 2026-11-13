@@ -55,7 +55,7 @@ const EOX_ATTR =
  * Dibuja el mapa en `el`. `parcels`: las del store (con name, status, id).
  * Devuelve la instancia para poder destruirla al repintar.
  */
-export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
+export function drawMap(el, parcels, { onSelect, onHover, interactive = true, dateNote = true } = {}) {
   const map = L.map(el, {
     zoomControl: interactive,
     scrollWheelZoom: false,
@@ -89,9 +89,10 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
       { permanent: true, direction: "top", className: "maptip", offset: [0, -4] },
     );
     if (onSelect) layer.on("click", () => onSelect(p));
+    if (onHover) layer.on("mouseover", () => onHover(p));
     bounds.push(layer.getBounds());
   }
-  if (fechas.length) {
+  if (dateNote && fechas.length) {
     const note = L.control({ position: "topleft" });
     note.onAdd = () => {
       const d = L.DomUtil.create("div", "map-note");
@@ -103,7 +104,8 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
   }
   if (bounds.length) {
     const all = bounds.reduce((a, b) => a.extend(b), L.latLngBounds(bounds[0].getSouthWest(), bounds[0].getNorthEast()));
-    map.fitBounds(all, { padding: [48, 48] });
+    const top = dateNote && fechas.length ? 110 : 48; // arriba va la nota de fechas
+    map.fitBounds(all, { paddingTopLeft: [48, top], paddingBottomRight: [48, 40] });
   } else {
     map.setView([-22.45, -62.12], 12);
   }

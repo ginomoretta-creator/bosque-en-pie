@@ -7,11 +7,13 @@ const real = {
   json: import.meta.glob("../../reports/*/*/{report,skip}.json", { eager: true, import: "default" }),
   evidence: import.meta.glob("../../reports/*/*/evidence.json", { eager: true, query: "?raw", import: "default" }),
   png: import.meta.glob("../../reports/*/*/*.png", { eager: true, query: "?url", import: "default" }),
+  carbono: import.meta.glob("../../reports/*/*/carbono.json", { eager: true, import: "default" }),
 };
 const test = {
   json: import.meta.glob("../../reports-prueba/*/*/{report,skip}.json", { eager: true, import: "default" }),
   evidence: import.meta.glob("../../reports-prueba/*/*/evidence.json", { eager: true, query: "?raw", import: "default" }),
   png: {},
+  carbono: {},
 };
 
 const useReal = Object.keys(real.json).length > 0;
@@ -46,6 +48,11 @@ for (const [path, raw] of Object.entries(src.evidence)) {
   } catch {
     x.e.evidence = null;
   }
+}
+// Estimación de carbono (SIMULACIÓN · no validado): va aparte para no cambiar el evidenceHash.
+for (const [path, data] of Object.entries(src.carbono)) {
+  const x = entry(path);
+  if (x) x.e.carbono = data;
 }
 for (const [path, url] of Object.entries(src.png)) {
   const x = entry(path);
