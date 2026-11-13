@@ -128,11 +128,11 @@
 .cert-row .sub { display: block; margin-top: 2px; }
 
 /* Elegir parcela con el mapa: al pasar el mouse o tocar, el panel dice qué financia cada una. */
-.pick-page { max-width: 980px; }
+.pick-page { max-width: 1180px; }
 .pick-cards { display: grid; gap: 12px; }
 .pick-page .pick-cards { grid-template-columns: 1fr 1fr; }
-.pick-explore { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin: 8px 0 6px; }
-.pick-map { min-height: 420px; border-radius: var(--v2-radio-3); overflow: hidden; }
+.pick-explore { display: grid; grid-template-columns: 1.9fr 1fr; gap: 16px; margin: 8px 0 6px; }
+.pick-map { min-height: 580px; border-radius: var(--v2-radio-3); overflow: hidden; }
 .pick-map .leaflet-interactive { cursor: pointer; }
 .pick-info { display: flex; flex-direction: column; gap: 10px; }
 .pick-info .card-h { margin-bottom: 0; }
@@ -145,6 +145,16 @@
 .tag-sim { display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; background: #e2b04a; color: #1c1f17; vertical-align: middle; }
 @media (max-width: 760px) {
   .pick-explore { grid-template-columns: 1fr; }
-  .pick-map { min-height: 300px; }
+  .pick-map { min-height: 420px; }
   .pick-page .pick-cards { grid-template-columns: 1fr; }
 }
+.zona-img { image-rendering: pixelated; transition: opacity 0.3s; }
+.leaflet-tooltip.celltip { padding: 2px 6px; font-size: 11px; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; max-width: 300px; padding: 5px 8px; border-radius: var(--v2-radio-2); background: var(--v2-placa); color: var(--v2-placa-texto); font-size: 11px; }
+.map-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.lg { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.lg-monte { background: #6cc58a; }
+.lg-corte { background: #e58a66; }
+.lg-cand { border: 1.5px dashed #f4f2ec; }
+.chip-cand { background: #e9e6dc; color: #4a4d44; }
+.notice-mini { margin: 0; padding: 8px 10px; border-radius: 8px; background: #f6efd9; font-size: 13px; }

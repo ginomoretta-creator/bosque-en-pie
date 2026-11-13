@@ -83,6 +83,7 @@ export function drawMap(el, parcels, { onSelect, onHover, interactive = true, da
     }
     const layer = L.geoJSON(f, {
       style: { color: COLOR[key], weight: 2.5, fillColor: COLOR[key], fillOpacity: img ? 0 : 0.12 },
+      registered: true, // parcela del contrato: va arriba de otras capas (candidatas)
     }).addTo(map);
     layer.bindTooltip(
       `<span class="maptag maptag-${key}"><b>${esc(p.name)}</b> · ${esc(STATUS[p.status]).toLowerCase()}</span>`,

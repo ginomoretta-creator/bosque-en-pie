@@ -5,6 +5,7 @@ import { NET } from "../chain.js";
 import { avax, esc, int } from "../format.js";
 import { drawMap, latestImage } from "../map.js";
 import { reports } from "../reports.js";
+import { addCandidates, candidateInfo, candidatas } from "./candidatas.js";
 import { icon, statusChip } from "../ui.js";
 import { account, bindLogin, fillBalance, loginScreen, txDone, walletBar, withBusy } from "./comun.js";
 import { read, send } from "./billetera.js";
@@ -63,13 +64,28 @@ function pickParcel(s) {
       <div class="pick-map" data-pick-map role="application" aria-label="Mapa de las parcelas"></div>
       <div class="card pick-info" data-pick-info aria-live="polite">${parcelInfo(first)}</div>
     </div>
-    <p class="muted mono-sm pick-hint">Pasá el mouse o tocá una parcela en el mapa para ver qué financiás.
-      Adentro de cada parcela, la imagen Sentinel-2 de su último informe${fechas(s)}; alrededor, mosaico 2023.</p>`),
+    <p class="muted mono-sm pick-hint">Pasá el mouse o tocá una parcela para ver qué financiás. Acercate al monte para ver
+      ${candidatas.features.length ? `las ${candidatas.features.length} parcelas candidatas de 100 ha` : "las parcelas"}.
+      Zona pintada con bosque-v1 sobre Sentinel-2 y árboles de ESA WorldCover 2021 (CC BY 4.0).
+      En A y B, la imagen de su último informe${fechas(s)}; de fondo, mosaico 2023.</p>`),
     mount(el) {
       const info = el.querySelector("[data-pick-info]");
       const show = (p) => (info.innerHTML = parcelInfo(p));
       const map = drawMap(el.querySelector("[data-pick-map]"), s.parcels, { onSelect: show, onHover: show, dateNote: false });
-      return () => map.remove();
+      const zone = addCandidates(map, { onPick: (f) => (info.innerHTML = candidateInfo(f)) });
+      // Arranca con toda la zona a la vista; se encuadra cuando la grilla ya tiene su tamaño final.
+      let alive = true;
+      const frame = () => {
+        if (!alive || !zone) return;
+        map.invalidateSize();
+        map.fitBounds(zone, { padding: [8, 8], animate: false });
+      };
+      frame();
+      requestAnimationFrame(frame);
+      return () => {
+        alive = false;
+        map.remove();
+      };
     },
   };
 }
