@@ -1,0 +1,15 @@
+{
+  "network": "fuji",
+  "chainId": 43113,
+  "contract": "0x5A963552011bDA9EB20305f7EfdE3F7E932801be",
+  "parcel": "A",
+  "parcelId": 1,
+  "month": "2025-10",
+  "tx": "0xfe97debbc8b465a915b067dbe5011eb41f8fc7405e5b3b573f00603d4b2c3f0e",
+  "block": 60976706,
+  "firmas": 3,
+  "aplicado": true,
+  "pagadoWei": "10000000000000000",
+  "estado": "en pie",
+  "explorer": "https://testnet.snowtrace.io/tx/0xfe97debbc8b465a915b067dbe5011eb41f8fc7405e5b3b573f00603d4b2c3f0e"
+}
