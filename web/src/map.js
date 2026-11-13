@@ -61,7 +61,7 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
   L.tileLayer(EOX_URL, { attribution: EOX_ATTR, maxZoom: 16, maxNativeZoom: 15 }).addTo(map);
 
   const bounds = [];
-  const fechas = new Set();
+  const fechas = []; // [letra, fecha] de la imagen que se ve en cada parcela
   for (const p of parcels) {
     const letter = p.name.replace("Parcela ", "");
     const f = geo[letter];
@@ -75,7 +75,7 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
         alt: `${p.name}: imagen Sentinel-2 del ${img.fecha ?? img.month}`,
         className: "map-parcel-img",
       }).addTo(map);
-      if (img.fecha) fechas.add(img.fecha);
+      if (img.fecha) fechas.push([letter, img.fecha]);
     }
     const layer = L.geoJSON(f, {
       style: { color: COLOR[key], weight: 2.5, fillColor: COLOR[key], fillOpacity: img ? 0 : 0.12 },
@@ -87,12 +87,12 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
     if (onSelect) layer.on("click", () => onSelect(p));
     bounds.push(layer.getBounds());
   }
-  if (fechas.size) {
+  if (fechas.length) {
     const note = L.control({ position: "topleft" });
     note.onAdd = () => {
       const d = L.DomUtil.create("div", "map-note");
-      const f = [...fechas].sort().map(fmtFecha).join(", ");
-      d.innerHTML = `Parcelas: imagen real del ${esc(f)} · fondo: 2023`;
+      const f = fechas.map(([l, iso]) => `${l}: ${fmtFecha(iso)}`).join(" · ");
+      d.innerHTML = `Imagen real del último informe: ${esc(f)}. Fondo: 2023`;
       return d;
     };
     note.addTo(map);
