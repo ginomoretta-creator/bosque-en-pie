@@ -15,26 +15,35 @@ const STATUS_CLOSED = 4;  // compromiso cerrado
 const read = (functionName, args) =>
   client.readContract({ address: deployment.address, abi, functionName, args });
 
+const ZERO = "0x0000000000000000000000000000000000000000";
+
 /** Lo que la billetera puede retirar de cada parcela según su estado. */
-async function loadMyStake(account, parcels) {
+async function loadMyStake(account, parcels, events) {
   const timeout = Number(await read("restorationTimeout", []));
   const now = Math.floor(Date.now() / 1000);
+  // Certificados acuñados a nombre de esta billetera: mint = TransferSingle con from = 0x0
+  // (los emite solo claimCertificates; las transferencias entre billeteras no cuentan).
+  const minted = (pid) =>
+    events
+      .filter(
+        (e) => e.eventName === "TransferSingle" && e.args.from?.toLowerCase() === ZERO &&
+          e.args.to?.toLowerCase() === account.address.toLowerCase() && Number(e.args.id) === pid,
+      )
+      .reduce((a, e) => a + e.args.value, 0n);
   const out = [];
   for (const p of parcels) {
-    const [refund, restore, refundDone, restoreDone, leftoverDone, pending, held, retired] = await Promise.all([
+    const [refund, restore, refundDone, restoreDone, leftoverDone, pending] = await Promise.all([
       read("refundStake", [BigInt(p.id), account.address]),
       read("restoreStake", [BigInt(p.id), account.address]),
       read("refundClaimed", [BigInt(p.id), account.address]),
       read("restoreClaimed", [BigInt(p.id), account.address]),
       read("leftoverClaimed", [BigInt(p.id), account.address]),
       read("pendingCertificates", [BigInt(p.id), account.address]),
-      read("balanceOf", [account.address, BigInt(p.id)]),
-      read("certRetiredBy", [BigInt(p.id), account.address]),
     ]);
     const stake = refund + restore;
     if (stake === 0n && !refundDone && !restoreDone && !leftoverDone) continue;
-    // Lo ganado no desaparece al acuñarlo o retirarlo: suma pendiente + en billetera + retirado.
-    const certs = pending + held + retired;
+    // Lo ganado no desaparece al acuñarlo o retirarlo: pendiente + acuñado a su nombre.
+    const certs = pending + minted(p.id);
 
     // Monto recuperable, con la misma proporción que calcula el contrato.
     const actions = [];
@@ -121,7 +130,7 @@ export function miAporteScreen(_params, s) {
         return;
       }
       const account = privateKeyToAccount(key);
-      const mine = await loadMyStake(account, s.parcels);
+      const mine = await loadMyStake(account, s.parcels, s.events);
       if (cancelled) return;
       if (!mine.length) {
         box.innerHTML = `<p class="muted">La billetera <span class="mono">${short(account.address)}</span>
