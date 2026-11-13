@@ -28,13 +28,17 @@ const IMG_BOUNDS = {
   B: [[-22.467432, -62.107389], [-22.457812, -62.099358]],
 };
 
-/** Último informe con imagen de una parcela: { month, rgb, fecha }. */
-export function latestImage(letter) {
-  const months = Object.keys(reports[letter] || {}).sort().reverse();
-  for (const m of months) {
-    const r = reports[letter][m];
-    if (r.rgb) return { month: m, rgb: r.rgb, fecha: r.evidence?.imagen?.fecha?.slice(0, 10) ?? null };
-  }
+/**
+ * Imagen del último informe APLICADO en el contrato ({ month, rgb, fecha }); sin informes, la carpeta más nueva.
+ * Así el mapa no se adelanta a un informe que todavía no se mandó (por ejemplo el de la demo en vivo).
+ */
+export function latestImage(letter, parcel = null) {
+  const folders = reports[letter] || {};
+  const pick = (m) => (folders[m]?.rgb ? { month: m, rgb: folders[m].rgb, fecha: folders[m].evidence?.imagen?.fecha?.slice(0, 10) ?? null } : null);
+  const applied = (parcel?.reports || []).map((r) => new Date(r.tObs * 1000).toISOString().slice(0, 7)).reverse();
+  for (const m of applied) if (pick(m)) return pick(m);
+  if (applied.length) return null;
+  for (const m of Object.keys(folders).sort().reverse()) if (pick(m)) return pick(m);
   return null;
 }
 
@@ -61,7 +65,7 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
   L.tileLayer(EOX_URL, { attribution: EOX_ATTR, maxZoom: 16, maxNativeZoom: 15 }).addTo(map);
 
   const bounds = [];
-  const fechas = []; // [letra, fecha] de la imagen que se ve en cada parcela
+  const fechas = [];
   for (const p of parcels) {
     const letter = p.name.replace("Parcela ", "");
     const f = geo[letter];
@@ -69,7 +73,7 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
     const key = STATUS_KEY[p.status] || "none";
     // El fondo es de 2023: adentro de la parcela va la imagen real del último informe,
     // así se ve cómo está hoy (B talada, A en pie).
-    const img = latestImage(letter);
+    const img = latestImage(letter, p);
     if (img && IMG_BOUNDS[letter]) {
       L.imageOverlay(img.rgb, IMG_BOUNDS[letter], {
         alt: `${p.name}: imagen Sentinel-2 del ${img.fecha ?? img.month}`,
@@ -92,7 +96,7 @@ export function drawMap(el, parcels, { onSelect, interactive = true } = {}) {
     note.onAdd = () => {
       const d = L.DomUtil.create("div", "map-note");
       const f = fechas.map(([l, iso]) => `${l}: ${fmtFecha(iso)}`).join(" · ");
-      d.innerHTML = `Imagen real del último informe: ${esc(f)}. Fondo: 2023`;
+      d.innerHTML = `Imagen real del último informe · ${esc(f)}<br>Fondo: mosaico 2023`;
       return d;
     };
     note.addTo(map);

@@ -48,7 +48,7 @@ app.innerHTML = `
       }<br>${esc(NET.label)}</p></div>
       <div><strong>Código</strong><p><a href="https://github.com/ginomoretta-creator/bosque-en-pie" target="_blank" rel="noopener">GitHub ↗</a></p></div>
     </div>
-    <p class="foot-attr mono-sm">Contiene datos Copernicus Sentinel modificados, 2024 y 2025</p>
+    <p class="foot-attr mono-sm">Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026</p>
   </footer>`;
 
 /** Aviso de conexión en palabras simples; el detalle técnico queda plegado. */
