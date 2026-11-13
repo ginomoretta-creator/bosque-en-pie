@@ -26,6 +26,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from oracle.carbono import carbono_estimado
 from oracle.cover import VERSION, Thresholds, compute_cover, ndvi
 from oracle.s2 import best_scene, hectares, load_parcel, main_tile, read_clip, read_visual, search_scenes
 from oracle.signing import Report, evidence_hash, sign_report
@@ -68,7 +69,8 @@ def parcel_info(name: str) -> tuple[dict, int]:
     raise SystemExit(f"la parcela {name} no está en parcels/registry.json")
 
 
-def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: Path):
+def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: Path,
+                forest_type: str | None = None):
     start, end = month_range(year, month)
     bstart, bend = month_range(year - 1, month)
     now = best_scene(geom, start, end, tile=tile, min_datetime=min_dt)
@@ -100,6 +102,7 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
         "imagen": s_now.describe(),
         "imagen_base": s_base.describe(),
         "resultado": res.as_dict(),
+        "carbono_estimado": carbono_estimado(round(hectares(geom), 1), forest_type, res.cover_bps),
         "atribucion": ATTRIBUTION,
     }
     if not usable:
@@ -159,7 +162,8 @@ def main(argv=None):
         for f in ("evidence.json", "report.json", "skip.json"):
             (out_dir / f).unlink(missing_ok=True)
         min_dt = last + timedelta(days=args.min_interval_days) if last else None
-        report, info_or_reason = build_month(args.parcel, parcel_id, geom, tile, args.year, m, min_dt, th, out_dir)
+        report, info_or_reason = build_month(args.parcel, parcel_id, geom, tile, args.year, m, min_dt, th,
+                                             out_dir, info.get("forestType"))
         if report is None:
             print(f"  {args.year}-{m:02d}: sin informe ({info_or_reason})")
             continue
