@@ -61,6 +61,7 @@ export function parcela({ id }, s) {
         <div class="card-h"><p class="eyebrow">Doce cuotas · ${strip.year}</p><span class="pill">${strip.paid} de 12</span></div>
         ${strip.html}
         ${strip.legend}
+        ${strip.extra}
         <p class="muted hint">Imágenes reales de Sentinel-2 de ${strip.year}, aplicadas en el contrato de a un mes. Tocá un mes para ver la imagen y el informe.</p>
       </div>
 

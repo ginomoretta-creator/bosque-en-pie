@@ -33,7 +33,7 @@ function evidenceBlock(f, r) {
   const matches = r && f.evidenceHash.toLowerCase() === r.evidenceHash.toLowerCase();
   const ev = f.evidence || {};
   const verdict = !r
-    ? `<p class="muted">Este mes no tiene informe en el contrato, así que no hay hash para comparar.</p>`
+    ? `<p class="muted">Este mes todavía no tiene informe en el contrato, así que no hay hash para comparar.</p>`
     : matches
       ? `<div class="verify verify-ok">${icon("shield")}<div><strong>Evidencia verificada</strong><p>Esta página calculó el keccak256 de <span class="mono">evidence.json</span> y coincide con el hash que firmaron los verificadores y guardó el contrato.</p></div></div>`
       : `<div class="verify verify-bad">${icon("warn")}<div><strong>La evidencia no coincide</strong><p>El hash de <span class="mono">evidence.json</span> no es el que guardó el contrato.</p></div></div>`;
@@ -68,6 +68,7 @@ export function informe({ id, mes }, s) {
   const prev = i > 0 ? keys[i - 1] : null;
   const next = i >= 0 && i < keys.length - 1 ? keys[i + 1] : null;
 
+  const baseYear = (ev?.imagen_base?.fecha || "").slice(0, 4) || "el año anterior";
   const cover = r ? r.coverBps : ev?.resultado?.cover_bps;
   const valid = r ? r.validBps : ev?.resultado?.valid_bps;
   const state = r ? r.status : null;
@@ -75,7 +76,8 @@ export function informe({ id, mes }, s) {
 
   let notice = "";
   if (f?.skip) notice = `<div class="notice notice-ambar">${icon("satellite")}<div><strong>Sin informe este mes: nubes.</strong><p>${esc((f.skip.motivo || "Parte visible por debajo del 60 %.").replace(/(\d)\.(\d)/g, "$1,$2"))} No paga ni corta: se espera al mes siguiente.</p></div></div>`;
-  else if (!r && f) notice = `<div class="notice">${icon("axe")}<div><strong>No se envió al contrato.</strong><p>La parcela ya estaba desmontada: después del corte no se mandan más informes. La imagen queda como registro.</p></div></div>`;
+  else if (!r && f && p.status === 3) notice = `<div class="notice">${icon("axe")}<div><strong>No se envió al contrato.</strong><p>La parcela ya estaba desmontada: después del corte no se mandan más informes. La imagen queda como registro.</p></div></div>`;
+  else if (!r && f?.report) notice = `<div class="notice notice-ambar">${icon("satellite")}<div><strong>Listo para enviar.</strong><p>El oráculo ya calculó este informe con la imagen real, pero todavía no está en el contrato. Cuando lo firmen y se envíe, aparece acá con su transacción y, si sigue en pie, paga la cuota.</p></div></div>`;
   else if (r && !r.standing && r.status === 2) notice = `<div class="notice notice-ambar">${icon("warn")}<div><strong>Primera lectura mala: no paga ni corta.</strong><p>Si la próxima también da mal, la parcela queda desmontada.</p></div></div>`;
   else if (r && r.status === 3) notice = `<div class="notice notice-terra">${icon("axe")}<div><strong>Segunda lectura mala seguida: pagos cortados.</strong><p>El saldo vuelve a los donantes o queda para restaurar. Nunca va al dueño ni al operador.</p></div></div>`;
 
@@ -105,7 +107,7 @@ export function informe({ id, mes }, s) {
         </div>`
             : `<div class="month-num">
           <div class="big">${cover !== undefined ? `${pct(cover)}<small>%</small>` : "—"}</div>
-          <p>monte en pie contra el mismo mes de 2024 · el umbral es ${pct(p.thresholdBps)} %</p>
+          <p>monte en pie contra el mismo mes de ${esc(baseYear)} · el umbral es ${pct(p.thresholdBps)} %</p>
           <p class="mono-sm">Parte visible ${valid !== undefined ? `${pct(valid)} %` : "—"} · mínimo 60 %</p>
         </div>`
         }
