@@ -1,9 +1,9 @@
 {
   "network": "fuji",
   "chainId": 43113,
-  "address": "0x5A963552011bDA9EB20305f7EfdE3F7E932801be",
-  "deployTx": "0xdd26c960a444cfc94914c4d496d6cc15cb7f539c1c743c739cf74f1a5279e4d5",
-  "blockNumber": 60976293,
+  "address": "0x7eC244B5Baf9079AE21E721B1c507D493649b8c6",
+  "deployTx": "0xc18ff434e4f91bbcb1b288d86d21c5e624775e3602e25d3a3acda4b3c9f0eb8d",
+  "blockNumber": 61003927,
   "curator": "0x4672987D452ff25B2ad1a55153854225A12CB96b",
   "verifiers": [
     "0xe03DfFcF612Abb85aB452b592Fbdf97532f4200F",
@@ -17,18 +17,18 @@
     "maxObsAge": 0,
     "restorationTimeout": 31536000
   },
-  "explorer": "https://testnet.snowtrace.io/address/0x5A963552011bDA9EB20305f7EfdE3F7E932801be",
-  "deployedAt": "2026-11-13T01:13:41.850Z",
+  "explorer": "https://testnet.snowtrace.io/address/0x7eC244B5Baf9079AE21E721B1c507D493649b8c6",
+  "deployedAt": "2026-11-13T12:40:57.592Z",
   "parcels": [
     {
       "id": 1,
       "name": "A",
-      "tx": "0xd2abc862d086b4dc8526042f7da56b904b3d2258ab1dd27ec10216cca658ce7c"
+      "tx": "0x472c3fec736852fb4264c958f39bc03b123a604cf04bdb1f9866632e59dae09f"
     },
     {
       "id": 2,
       "name": "B",
-      "tx": "0x8ddec85764a8f33b8f758eb0e26678ecd9d024a90fab8d138476eaa23e297d1d"
+      "tx": "0x8dfe15a1d3771158fb7109dc9efa87a683ae177661c1ce6814e0f79901ce5a98"
     }
   ]
 }

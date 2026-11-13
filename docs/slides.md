@@ -52,8 +52,8 @@
 **La demo repite el 2025 real en un minuto.**
 
 - Parcela A (101 ha): monte en pie todo el año; cobró la cuota cada mes con informe.
-- Parcela B (84 ha): 6 cuotas pagadas (enero, febrero y abril a julio), en revisión en agosto (86,3 % en pie) y cortada en septiembre (1,4 %).
-- En marzo no hubo informe en ninguna: nubes taparon más del 40 % de cada parcela, y el contrato no paga sin evidencia.
+- Parcela B (84 ha): 7 cuotas pagadas (enero a julio), en revisión en agosto (48,7 % en pie) y cortada en septiembre (1,4 %).
+- Cada mes usa la imagen utilizable (60 % visible o más) más cercana al día 15; si un mes no tiene ninguna, no hay informe y el contrato ni paga ni corta.
 - La evidencia de cada informe queda en el repo con su hash: cualquiera rehace la cuenta.
 
 **Imagen:** `reports/B/2025-08/perdida.png` (píxeles perdidos en rojo) y `reports/B/2025-09/perdida.png`. Si hay tiempo, captura del replay corriendo.

@@ -79,9 +79,9 @@ npx hardhat run scripts/register-parcels.js --network fuji
 ## Contrato en Fuji
 
 - Red: Avalanche Fuji C-Chain (chain ID 43113)
-- Dirección: `0x5A963552011bDA9EB20305f7EfdE3F7E932801be`
-- Explorer (código verificado): https://testnet.snowtrace.io/address/0x5A963552011bDA9EB20305f7EfdE3F7E932801be
-- Transacción de despliegue: https://testnet.snowtrace.io/tx/0xdd26c960a444cfc94914c4d496d6cc15cb7f539c1c743c739cf74f1a5279e4d5 (bloque 60976293)
+- Dirección: `0x7eC244B5Baf9079AE21E721B1c507D493649b8c6`
+- Explorer (código verificado): https://testnet.snowtrace.io/address/0x7eC244B5Baf9079AE21E721B1c507D493649b8c6
+- Transacción de despliegue: https://testnet.snowtrace.io/tx/0xc18ff434e4f91bbcb1b288d86d21c5e624775e3602e25d3a3acda4b3c9f0eb8d (bloque 61003927)
 - Web de la demo: https://ginomoretta-creator.github.io/bosque-en-pie/
 - RPC: `https://avalanche-fuji-c-chain-rpc.publicnode.com` (el RPC oficial de Fuji corta con error 1015 cuando recibe muchas consultas; queda como respaldo)
 - Datos completos del despliegue: [deployments/fuji.json](deployments/fuji.json)
@@ -102,10 +102,10 @@ Esto se dice abiertamente en el pitch: en la demo los tres verificadores son del
 
 Dos parcelas de monte nativo del Chaco salteño (departamento Rivadavia, tile Sentinel-2 **20KNA**), a ~1,5 km una de la otra. Mismo monte, mismo clima, dos destinos distintos en 2025. Los dueños y operadores son billeteras de prueba: no se nombra a nadie ni se opina sobre la legalidad del desmonte.
 
-- **A (101 ha):** monte que siguió en pie todo el año. Cobró las cuotas todos los meses con informe.
-- **B (84 ha):** intacta hasta agosto; desmontada entre el 11/08 y el 15/09. Cobró 6 cuotas, entró en revisión en agosto (86,3 % en pie) y el contrato cortó en septiembre (1,4 %).
+- **A (101 ha):** monte que siguió en pie todo el año. Cobró las 12 cuotas de 2025.
+- **B (84 ha):** intacta hasta julio; desmontada entre mediados de julio y el 15/09. Cobró 7 cuotas (enero a julio), entró en revisión en agosto (48,7 % en pie el 16/08) y el contrato cortó en septiembre (1,4 %).
 
-En marzo no hubo informe (nubes: menos de 60 % de la parcela visible). La selección, la calibración del algoritmo bosque-v1 y la serie mensual completa están en [parcels/LEEME.md](parcels/LEEME.md); los informes y la evidencia de cada mes están en `reports/`.
+Cada mes se usa la imagen que deja ver al menos el 60 % de la parcela y está más cerca del día 15 (no la más limpia del mes): así una imagen de fin de mes no deja al mes siguiente sin imágenes posibles por la regla de 20 días entre informes. Con esa regla, 2025 tiene informe los doce meses en las dos parcelas. La selección, la calibración del algoritmo bosque-v1 y la serie mensual completa están en [parcels/LEEME.md](parcels/LEEME.md); los informes y la evidencia de cada mes están en `reports/`.
 
 ## Por qué blockchain
 

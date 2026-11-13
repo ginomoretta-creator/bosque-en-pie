@@ -270,20 +270,35 @@ def read_visual(scene: Scene, clip: Clip) -> np.ndarray | None:
     return np.transpose(arr, (1, 2, 0))
 
 
+MIN_VISIBLE_FRAC = 0.60   # igual que MIN_VALID_BPS del contrato
+
+
+def pick_scene(scored: list[tuple[Scene, float]], target: datetime | None = None,
+               min_frac: float = MIN_VISIBLE_FRAC) -> tuple[Scene, float] | None:
+    """Elige entre imágenes ya medidas (escena, parte visible de la parcela).
+
+    Con `target`: la utilizable (parte visible >= `min_frac`) más cercana a esa fecha; a igual
+    distancia, la más visible. Si ninguna es utilizable, la más visible, para que el informe
+    deje escrito el motivo. Sin `target`: la más visible (empate: menos nubes en la escena).
+    """
+    if not scored:
+        return None
+    most_visible = max(scored, key=lambda c: (c[1], -(c[0].cloud_cover or 0)))
+    usable = [c for c in scored if c[1] >= min_frac]
+    if target is None or not usable:
+        return most_visible
+    return min(usable, key=lambda c: (abs((c[0].datetime.date() - target.date()).days), -c[1]))
+
+
 def best_scene(geom, start: str, end: str, tile: str | None = None,
-               min_datetime: datetime | None = None) -> tuple[Scene, float] | None:
-    """La imagen con más parte visible de la parcela entre `start` y `end`.
+               min_datetime: datetime | None = None,
+               target: datetime | None = None) -> tuple[Scene, float] | None:
+    """La imagen de la parcela entre `start` y `end` que usa el informe (ver `pick_scene`).
 
     `min_datetime` deja afuera las imágenes anteriores (para respetar el minInterval del contrato).
-    Empate: la de menos nubes en la escena.
     """
     scenes = search_scenes(geom, start, end, tile)
     if min_datetime is not None:
         scenes = [s for s in scenes if s.datetime >= min_datetime]
-    best = None
-    for s in scenes:
-        frac = read_clip(s, geom, scl_only=True).visible_fraction()
-        score = (frac, -(s.cloud_cover or 0))
-        if best is None or score > best[0]:
-            best = (score, s, frac)
-    return (best[1], best[2]) if best else None
+    scored = [(s, read_clip(s, geom, scl_only=True).visible_fraction()) for s in scenes]
+    return pick_scene(scored, target)

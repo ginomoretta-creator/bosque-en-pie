@@ -5,7 +5,7 @@ Dos parcelas de monte nativo del Chaco salteño (departamento Rivadavia), a ~1,5
 | Parcela | Superficie | Qué pasó en 2025 |
 |---|---|---|
 | **A** | 101 ha | Monte nativo que siguió en pie todo el año |
-| **B** | 84 ha | Monte nativo intacto hasta agosto; desmontado entre el 11/08 y el 15/09 |
+| **B** | 84 ha | Monte nativo intacto hasta julio; desmontado entre mediados de julio y el 15/09 (86 % en pie el 11/08, 49 % el 16/08) |
 
 ## Cómo se eligieron
 
@@ -15,24 +15,24 @@ Dos parcelas de monte nativo del Chaco salteño (departamento Rivadavia), a ~1,5
 
 ## Serie mensual con bosque-v1 (umbrales congelados, año base 2024)
 
-Mejor imagen de cada mes contra el mismo mes de 2024. Menos de 60 % visible = sin informe. Es la salida real de `python -m oracle.make_report <A|B> --year 2025` (archivos en `reports/`).
+Imagen de cada mes contra el mismo mes de 2024: entre las que dejan ver al menos el 60 % de la parcela, la más cercana al día 15 (y al menos 20 días después de la del informe anterior, como exige el contrato). Es la salida real de `python -m oracle.make_report <A|B> --year 2025` (archivos en `reports/`).
 
-| Mes 2025 | A: visible · en pie | B: visible · en pie |
+| Mes 2025 | A: imagen · visible · en pie | B: imagen · visible · en pie |
 |---|---|---|
-| Ene | 100 % · 100 % | 100 % · 100 % |
-| Feb | 100 % · 100 % | 100 % · 100 % |
-| Mar | 53,8 % · sin informe (nubes) | 45,5 % · sin informe (nubes) |
-| Abr | 100 % · 100 % | 100 % · 100 % |
-| May | 100 % · 100 % | 100 % · 100 % |
-| Jun | 100 % · 100 % | 100 % · 100 % |
-| Jul | 100 % · 100 % | 100 % · 100 % |
-| Ago | 100 % · 100 % | 100 % · **86,3 %** → en revisión |
-| Sep | 100 % · 100 % | 100 % · **1,4 %** → **desmontada** |
-| Oct | 100 % · 100 % | 100 % · 3,4 % |
-| Nov | 100 % · 100 % | 100 % · 1,4 % |
-| Dic | 100 % · 100 % | 100 % · 13,3 % |
+| Ene | 16/01 · 100 % · 100 % | 16/01 · 100 % · 100 % |
+| Feb | 12/02 · 100 % · 100 % | 12/02 · 100 % · 100 % |
+| Mar | 07/03 · 100 % · 100 % | 07/03 · 100 % · 100 % |
+| Abr | 16/04 · 82,9 % · 100 % | 28/04 · 100 % · 100 % |
+| May | 13/05 · 100 % · 100 % | 28/05 · 100 % · 100 % |
+| Jun | 20/06 · 100 % · 100 % | 20/06 · 100 % · 100 % |
+| Jul | 15/07 · 100 % · 100 % | 15/07 · 100 % · 100 % |
+| Ago | 16/08 · 100 % · 100 % | 16/08 · 100 % · **48,7 %** → en revisión |
+| Sep | 15/09 · 100 % · 100 % | 15/09 · 100 % · **1,4 %** → **desmontada** |
+| Oct | 15/10 · 100 % · 100 % | 15/10 · 88,1 % · 1,2 % |
+| Nov | 12/11 · 100 % · 100 % | 12/11 · 100 % · 1,6 % |
+| Dic | 14/12 · 100 % · 100 % | 14/12 · 99,4 % · 9,4 % |
 
-B cobra 6 cuotas (enero, febrero y abril a julio), entra en revisión en agosto y se corta en septiembre.
+A cobra las 12 cuotas. B cobra 7 (enero a julio), entra en revisión en agosto y se corta en septiembre.
 
 ## Calibración (issue #18)
 
