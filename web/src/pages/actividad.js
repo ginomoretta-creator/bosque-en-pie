@@ -3,7 +3,7 @@ import { CHOICE, NET, STATUS, WITHDRAW_KIND, explorerTx, parcelName } from "../c
 import { avax, dateTime, esc, month, pct, short } from "../format.js";
 import { icon, statusChip, txLink } from "../ui.js";
 
-function describe(e, inTx) {
+export function describe(e, inTx) {
   const a = e.args;
   const name = esc(parcelName(a.parcelId));
   switch (e.eventName) {

@@ -3,6 +3,7 @@ import { NET, STATUS, explorerAddress, explorerTx } from "../chain.js";
 import { avax, day, esc, int, month, pct, short } from "../format.js";
 import { folderFor, letterOf, reports } from "../reports.js";
 import { icon, monthStrip, statusChip, txLink } from "../ui.js";
+import { visor } from "../visor.js";
 
 const who = (addr) => {
   const url = explorerAddress(addr);
@@ -22,6 +23,7 @@ export function parcela({ id }, s) {
 
   const letter = letterOf(s.deployment, p.id);
   const strip = monthStrip(p, { folders: reports[letter] || {} });
+  const sat = visor(p, reports[letter] || {}, strip.year);
   const r = p.lastReport;
   const lastFolder = r ? folderFor(letter, r) : null;
   const bg = lastFolder?.rgb ? ` style="--bg:url('${esc(lastFolder.rgb)}')"` : "";
@@ -38,7 +40,7 @@ export function parcela({ id }, s) {
       <td>${txLink(explorerTx(x.tx), short(x.tx))}</td>
     </tr>`).join("");
 
-  return `
+  const html = `
   <section class="page">
     <a class="back" href="#/">← Parcelas</a>
     <div class="phead">
@@ -46,6 +48,7 @@ export function parcela({ id }, s) {
       ${statusChip(p.status)}
     </div>
 
+    <div class="pwrap${sat ? " has-visor" : ""}">
     <div class="pmain">
       <div class="pcover pcover-${p.status}${bg ? " has-bg" : ""}"${bg}>
         <p class="mono-sm">${r ? `Sentinel-2 · ${day(r.tObs)}` : "Sin informes todavía"} · ${int(p.hectares)} ha</p>
@@ -80,10 +83,13 @@ export function parcela({ id }, s) {
 
       ${cleared ? `<a class="btn btn-dark btn-block" href="#/mi-aporte">Ver mi parte</a>` : `<a class="btn btn-dark btn-block" href="#/aportar/${p.id}">Aportar a esta parcela</a>`}
     </div>
+    ${sat ? sat.html : ""}
+    </div>
 
     <div class="block">
       <div class="block-h"><p class="eyebrow">Informes aplicados</p><span class="muted mono-sm">${esc(NET.label)} · ${esc(STATUS[p.status])}</span></div>
       ${rows ? `<div class="tablewrap"><table class="table"><thead><tr><th>Mes</th><th class="num">Monte en pie</th><th class="num">Visible</th><th class="num">Firmas</th><th>Quedó</th><th class="num">Pagó</th><th>Transacción</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">Todavía no hay informes para esta parcela.</p>`}
     </div>
   </section>`;
+  return sat ? { html, mount: sat.mount } : html;
 }
