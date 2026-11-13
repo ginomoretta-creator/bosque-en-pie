@@ -8,6 +8,7 @@ Por cada mes escribe en reports/<parcela>/<AAAA-MM>/ (formato de la issue #38):
     evidence.json  JSON en una sola línea, UTF-8, sin salto final. evidenceHash = keccak256 de esos bytes.
     report.json    parcelId, tObs, coverBps, validBps, evidenceHash y, con --sign, las firmas ordenadas.
     rgb.png        color real de la parcela (512 px de ancho como máximo).
+    carbono.json   carbono estimado en pie (simulación, #36). Aparte: no cambia evidenceHash.
     perdida.png    monte del año base en verde y píxeles perdidos en rojo.
 Si un mes no tiene imagen utilizable (nubes, poco monte base), escribe skip.json con el motivo.
 
@@ -102,7 +103,6 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
         "imagen": s_now.describe(),
         "imagen_base": s_base.describe(),
         "resultado": res.as_dict(),
-        "carbono_estimado": carbono_estimado(round(hectares(geom), 1), forest_type, res.cover_bps),
         "atribucion": ATTRIBUTION,
     }
     if not usable:
@@ -111,6 +111,7 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
         return None, evidence["motivo"]
 
     raw = dump_evidence(evidence)
+    write_carbon(out_dir, geom, forest_type, res.cover_bps)
     (out_dir / "evidence.json").write_bytes(raw)
     report = {
         "parcel": name,
@@ -123,6 +124,25 @@ def build_month(name, parcel_id, geom, tile, year, month, min_dt, th, out_dir: P
         "signatures": [],
     }
     return report, s_now.datetime
+
+
+def write_carbon(out_dir: Path, geom, forest_type, cover_bps: int) -> dict:
+    """carbono.json: estimación informativa (#36), aparte de evidence.json.
+
+    No va dentro de la evidencia a propósito: evidenceHash ya está grabado en Fuji y no tiene que
+    cambiar si se agrega o se corrige esta estimación.
+    """
+    est = carbono_estimado(round(hectares(geom), 1), forest_type, cover_bps)
+    (out_dir / "carbono.json").write_bytes(dump_evidence(est))
+    return est
+
+
+def carbon_only(name: str, geom, forest_type) -> None:
+    """Escribe carbono.json para los informes que ya existen, sin tocar evidence.json ni report.json."""
+    for ev in sorted((ROOT / "reports" / name).glob("*/evidence.json")):
+        cover = json.loads(ev.read_bytes())["resultado"]["cover_bps"]
+        est = write_carbon(ev.parent, geom, forest_type, cover)
+        print(f"  {ev.parent.name}: {est['tco2e']:,.0f} t CO₂e en {est['hectareas_en_pie']} ha en pie (simulación)")
 
 
 def sign(report: dict, network: str) -> dict:
@@ -147,12 +167,18 @@ def main(argv=None):
     ap.add_argument("--months", default="1-12", help="rango de meses, por ejemplo 1-12 o 3-5")
     ap.add_argument("--min-interval-days", type=int, default=20)
     ap.add_argument("--sign", metavar="RED", help="firma con las claves de .env para deployments/<RED>.json")
+    ap.add_argument("--solo-carbono", action="store_true",
+                    help="solo escribe carbono.json en los informes existentes (no toca la evidencia enviada)")
     args = ap.parse_args(argv)
 
     info, parcel_id = parcel_info(args.parcel)
     geom = load_parcel(ROOT / info["geojson"])
     tile = info.get("tile") or main_tile(search_scenes(geom, f"{args.year}-01-01", f"{args.year}-03-31"))
     th = Thresholds(**info.get("thresholds", {}))
+    if args.solo_carbono:
+        print(f"Parcela {args.parcel}: carbono estimado de los informes existentes")
+        carbon_only(args.parcel, geom, info.get("forestType"))
+        return
     print(f"Parcela {args.parcel} (id {parcel_id}) · {hectares(geom):.0f} ha · tile {tile}")
 
     m0, m1 = (int(x) for x in args.months.split("-"))
