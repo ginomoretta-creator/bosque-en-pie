@@ -7,6 +7,7 @@ import { logo } from "./ui.js";
 import { inicio } from "./pages/inicio.js";
 import { parcela } from "./pages/parcela.js";
 import { actividad } from "./pages/actividad.js";
+import { informe } from "./pages/informe.js";
 import "./aportar/index.js"; // carril 4
 
 // La clave del QR se saca antes de que el router lea el fragmento.
@@ -14,6 +15,7 @@ captureKeyFromHash();
 
 route("/", inicio);
 route("/parcela/:id", parcela);
+route("/parcela/:id/:mes", informe);
 route("/actividad", actividad);
 
 const NAV = [
@@ -54,12 +56,13 @@ const statusEl = document.getElementById("status");
 let lastSig = null;
 let lastPath = null;
 let hadData = false;
+let cleanup = null;
 
 function render(force = false) {
   const s = store.state;
   const path = currentPath();
   const m = match(path);
-  const sig = `${path}|${s.lastBlock}|${s.loading}|${s.error}`;
+  const sig = `${path}|${s.version}|${s.loading}|${s.error}`;
   if (!force && sig === lastSig) return;
   // Pantallas con formulario (live: false): se pintan al entrar y con la primera lectura, no con cada bloque.
   if (!force && path === lastPath && m && !m.route.live && hadData) return;
@@ -67,7 +70,11 @@ function render(force = false) {
   hadData = s.lastBlock !== null;
 
   statusEl.innerHTML = s.error ? `<div class="notice notice-terra"><div><strong>Sin conexión con el contrato</strong><p>${esc(s.error)}</p></div></div>` : "";
-  view.innerHTML = m ? m.route.render(m.params, s) : `<section class="page narrow"><h1 class="h1">No encontramos esa página</h1><a class="btn" href="#/">Volver</a></section>`;
+  if (cleanup) cleanup();
+  cleanup = null;
+  const out = m ? m.route.render(m.params, s) : `<section class="page narrow"><h1 class="h1">No encontramos esa página</h1><a class="btn" href="#/">Volver</a></section>`;
+  view.innerHTML = typeof out === "string" ? out : out.html;
+  if (out?.mount) cleanup = out.mount(view) || null;
 
   for (const a of document.querySelectorAll(".top-nav a")) {
     const p = a.dataset.path;

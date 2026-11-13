@@ -139,6 +139,7 @@ function createStore() {
     loading: true,
     error: deployment ? null : `No hay contrato desplegado en ${NET.label}: falta deployments/${NETWORK}.json`,
     lastBlock: null,
+    version: 0, // sube solo cuando llegan eventos nuevos: las pantallas se repintan con eso, no con cada bloque
     updatedAt: null,
   };
   const subs = new Set();
@@ -161,6 +162,7 @@ function createStore() {
         const parcels = await readParcels();
         state.events = rawEvents;
         state.parcels = derive(parcels, rawEvents);
+        if (logs.length || state.lastBlock === null) state.version++;
         state.lastBlock = head;
       }
       state.error = null;

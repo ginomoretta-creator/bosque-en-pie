@@ -29,24 +29,36 @@ export function txLink(url, text) {
 
 const MES = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
-/** Doce cuadros, uno por mes del año de los informes: pagado, en revisión, corte, sin informe. */
-export function monthStrip(p, { labels = true } = {}) {
-  const year = p.reports.length ? new Date(p.reports[0].tObs * 1000).getUTCFullYear() : 2025;
+/**
+ * Doce cuadros, uno por mes: pagado, en revisión, corte, nubes, sin informe.
+ * Con `folders` (las carpetas de reports/ de la parcela), cada mes con datos es un link a su informe.
+ */
+export function monthStrip(p, { labels = true, folders = null } = {}) {
+  const year = p.reports.length
+    ? new Date(p.reports[0].tObs * 1000).getUTCFullYear()
+    : Number(Object.keys(folders || {})[0]?.slice(0, 4)) || 2025;
   const byMonth = new Map();
   for (const r of p.reports) {
     const d = new Date(r.tObs * 1000);
     if (d.getUTCFullYear() === year) byMonth.set(d.getUTCMonth(), r);
   }
   const cells = MES.map((m, i) => {
+    const key = `${year}-${String(i + 1).padStart(2, "0")}`;
     const r = byMonth.get(i);
+    const f = folders?.[key];
     let cls = "empty";
     let title = "sin informe";
     if (r) {
       if (r.standing) (cls = "ok"), (title = "en pie · pagó");
       else if (r.status === 3) (cls = "cut"), (title = "segunda lectura mala · pagos cortados");
       else (cls = "review"), (title = "lectura mala · en revisión");
-    } else if (p.status === 3) cls = "off";
-    return `<li class="m m-${cls}" title="${MES[i]} ${year}: ${title}"><i></i>${labels ? `<span>${m}</span>` : ""}</li>`;
+    } else if (f?.skip) (cls = "cloud"), (title = "sin informe · nubes");
+    else if (p.status === 3) (cls = "off"), (title = "pagos cortados");
+    const inner = `<i></i>${labels ? `<span>${m}</span>` : ""}`;
+    const label = `${MES[i]} ${year}: ${title}`;
+    return folders && (r || f)
+      ? `<li class="m m-${cls}"><a href="#/parcela/${p.id}/${key}" title="${label}" aria-label="${label}">${inner}</a></li>`
+      : `<li class="m m-${cls}" title="${label}">${inner}</li>`;
   });
   const paid = p.reports.filter((r) => r.standing).length;
   return { html: `<ol class="months">${cells.join("")}</ol>`, year, paid };

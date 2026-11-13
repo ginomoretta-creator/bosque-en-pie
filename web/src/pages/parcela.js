@@ -1,6 +1,7 @@
 // Parcela: estado, monte en pie, doce meses, firmas, pagos y saldo (base de #25).
 import { NET, STATUS, explorerAddress, explorerTx } from "../chain.js";
 import { avax, day, esc, int, month, pct, short } from "../format.js";
+import { folderFor, letterOf, reports } from "../reports.js";
 import { icon, monthStrip, statusChip, txLink } from "../ui.js";
 
 const who = (addr) => {
@@ -12,13 +13,16 @@ export function parcela({ id }, s) {
   const p = s.parcels.find((x) => x.id === Number(id));
   if (!p) return `<section class="page narrow"><h1 class="h1">Parcela ${esc(id)}</h1><p class="muted">${s.loading ? "Leyendo el contrato…" : "No existe en este contrato."}</p><a class="btn" href="#/">Volver</a></section>`;
 
-  const strip = monthStrip(p);
+  const letter = letterOf(s.deployment, p.id);
+  const strip = monthStrip(p, { folders: reports[letter] || {} });
   const r = p.lastReport;
+  const lastFolder = r ? folderFor(letter, r) : null;
+  const bg = lastFolder?.rgb ? ` style="--bg:url('${esc(lastFolder.rgb)}')"` : "";
   const ownerPct = p.ownerShareBps / 100;
   const cleared = p.status === 3;
-  const reports = [...p.reports].reverse().map((x) => `
+  const rows = [...p.reports].reverse().map((x) => `
     <tr>
-      <td class="nowrap">${month(x.tObs)}<span class="sub muted mono-sm">imagen del ${day(x.tObs)}</span></td>
+      <td class="nowrap"><a href="#/parcela/${p.id}/${new Date(x.tObs * 1000).toISOString().slice(0, 7)}">${month(x.tObs)}</a><span class="sub muted mono-sm">imagen del ${day(x.tObs)}</span></td>
       <td class="num">${pct(x.coverBps)} %</td>
       <td class="num">${pct(x.validBps)} %</td>
       <td class="num">${x.signers} de ${s.deployment.verifiers.length}</td>
@@ -36,7 +40,7 @@ export function parcela({ id }, s) {
     </div>
 
     <div class="pmain">
-      <div class="pcover pcover-${p.status}">
+      <div class="pcover pcover-${p.status}${bg ? " has-bg" : ""}"${bg}>
         <p class="mono-sm">${r ? `Sentinel-2 · ${day(r.tObs)}` : "Sin informes todavía"} · ${int(p.hectares)} ha</p>
         <div class="big">${r ? `${pct(r.coverBps)}<small>%</small>` : "—"}</div>
         <p>del monte de la base sigue en pie · el umbral es ${pct(p.thresholdBps)} %</p>
@@ -49,6 +53,7 @@ export function parcela({ id }, s) {
       <div class="card">
         <div class="card-h"><p class="eyebrow">Doce cuotas · ${strip.year}</p><span class="pill">${strip.paid} de 12</span></div>
         ${strip.html}
+        <p class="muted hint">Tocá un mes para ver la imagen satelital y el informe.</p>
       </div>
 
       <div class="duo">
@@ -69,7 +74,7 @@ export function parcela({ id }, s) {
 
     <div class="block">
       <div class="block-h"><p class="eyebrow">Informes aplicados</p><span class="muted mono-sm">${esc(NET.label)} · ${esc(STATUS[p.status])}</span></div>
-      ${reports ? `<div class="tablewrap"><table class="table"><thead><tr><th>Mes</th><th class="num">Monte en pie</th><th class="num">Visible</th><th class="num">Firmas</th><th>Quedó</th><th class="num">Pagó</th><th>Transacción</th></tr></thead><tbody>${reports}</tbody></table></div>` : `<p class="muted">Todavía no hay informes para esta parcela.</p>`}
+      ${rows ? `<div class="tablewrap"><table class="table"><thead><tr><th>Mes</th><th class="num">Monte en pie</th><th class="num">Visible</th><th class="num">Firmas</th><th>Quedó</th><th class="num">Pagó</th><th>Transacción</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">Todavía no hay informes para esta parcela.</p>`}
     </div>
   </section>`;
 }

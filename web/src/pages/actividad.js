@@ -35,6 +35,19 @@ function describe(e, inTx) {
       return { ic: "shield", text: `Informe de ${name} impugnado por <span class="mono">${short(a.by)}</span>` };
     case "ChallengeResolved":
       return { ic: "shield", text: `El curador ${a.accepted ? "aceptó" : "rechazó"} el informe impugnado de ${name}` };
+    case "TransferSingle": {
+      // Certificados de monte en pie (ERC-1155): id = parcela, 1 unidad = 1 hectárea-mes.
+      const zero = /^0x0+$/;
+      const cert = `${a.value} ha-mes de ${esc(parcelName(a.id))}`;
+      if (zero.test(a.from)) return { ic: "medal", text: `Certificados de monte en pie: <b>${cert}</b> para <span class="mono">${short(a.to)}</span>` };
+      if (zero.test(a.to)) return null; // lo cuenta CertificatesRetired
+      return { ic: "medal", text: `Pasaron ${cert} de <span class="mono">${short(a.from)}</span> a <span class="mono">${short(a.to)}</span>` };
+    }
+    case "CertificatesRetired":
+      return { ic: "medal", text: `<span class="mono">${short(a.account)}</span> retiró a su nombre ${a.amount} ha-mes de ${name}` };
+    case "ApprovalForAll":
+    case "TransferBatch":
+      return null;
     case "Withdrawn":
       return { ic: "coins", text: `Retiro de ${avax(a.amount)} AVAX (${WITHDRAW_KIND[a.kind]}) de ${name}` };
     default:

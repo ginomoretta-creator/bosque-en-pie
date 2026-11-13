@@ -1,6 +1,8 @@
 // Inicio: portada y una tarjeta por parcela con datos leídos del contrato.
 import { NET } from "../chain.js";
 import { avax, esc, int, month, pct } from "../format.js";
+import { drawMap } from "../map.js";
+import { go } from "../router.js";
 import { icon, monthStrip, statusChip } from "../ui.js";
 
 function parcelCard(p) {
@@ -27,7 +29,8 @@ export function inicio(_params, s) {
   const parcels = s.parcels.length
     ? s.parcels.map(parcelCard).join("")
     : `<p class="muted">${s.loading ? "Leyendo el contrato…" : "Todavía no hay parcelas registradas."}</p>`;
-  return `
+  const html = `
+  <div class="hero-grid">
   <section class="hero">
     <div class="hero-txt">
       <p class="tag"><i></i>Verificado por Sentinel-2 · en Avalanche</p>
@@ -40,6 +43,11 @@ export function inicio(_params, s) {
     </div>
     <div class="hero-ic">${icon("tree")}</div>
   </section>
+  <section class="mapcard" aria-label="Mapa de las parcelas">
+    <div id="mapa" class="map"></div>
+    <p class="map-cap mono-sm">Chaco salteño · departamento Rivadavia</p>
+  </section>
+  </div>
 
   <section class="block" id="parcelas">
     <div class="block-h"><p class="eyebrow">01 / Parcelas</p><span class="muted mono-sm">${esc(NET.label)}</span></div>
@@ -52,4 +60,12 @@ export function inicio(_params, s) {
     <article>${icon("sigs")}<p class="eyebrow">03 · Firman 2 de 3</p><h3>Tres verificadores</h3><p>El informe vale con dos firmas de tres. Hacen falta dos lecturas malas seguidas para cortar.</p></article>
     <article>${icon("tree")}<p class="eyebrow">04 · Pago o corte</p><h3>El monte paga a quien lo cuida</h3><p>En pie: cuota para el dueño y el operador. Desmonte: se corta para siempre y nadie cobra por eso.</p></article>
   </section>`;
+
+  return {
+    html,
+    mount(el) {
+      const map = drawMap(el.querySelector("#mapa"), s.parcels, { onSelect: (p) => go(`/parcela/${p.id}`) });
+      return () => map.remove();
+    },
+  };
 }

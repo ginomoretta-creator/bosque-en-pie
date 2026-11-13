@@ -3,7 +3,8 @@
 const routes = [];
 
 /**
- * route("/parcela/:id", (params, state) => html)
+ * route("/parcela/:id", (params, state) => html | { html, mount(el) })
+ * mount(el) corre después de pintar (por ejemplo, para el mapa) y puede devolver una función de limpieza.
  * opts.live = false: no se vuelve a pintar cuando llegan bloques nuevos (útil en formularios).
  */
 export function route(pattern, render, opts = {}) {
