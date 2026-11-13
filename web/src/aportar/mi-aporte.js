@@ -8,6 +8,28 @@ import { read, send } from "./billetera.js";
 
 const same = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
 
+/**
+ * Parte de los pagos que corresponde a esta cuenta: cada pago se reparte entre quienes ya habían aportado,
+ * en proporción a lo aportado hasta ese momento. Un aporte nuevo no «hereda» lo que se pagó antes.
+ */
+function paidShareOf(events, parcelId, addr) {
+  const ordered = events
+    .filter((e) => Number(e.args.parcelId) === parcelId && (e.eventName === "Donated" || e.eventName === "Paid"))
+    .sort((a, b) => (a.blockNumber === b.blockNumber ? (a.logIndex ?? 0) - (b.logIndex ?? 0) : a.blockNumber < b.blockNumber ? -1 : 1));
+  let total = 0n;
+  let mine = 0n;
+  let share = 0n;
+  for (const e of ordered) {
+    if (e.eventName === "Donated") {
+      total += e.args.amount;
+      if (same(e.args.donor, addr)) mine += e.args.amount;
+    } else if (total > 0n && mine > 0n) {
+      share += ((e.args.ownerAmount + e.args.operatorAmount) * mine) / total;
+    }
+  }
+  return share;
+}
+
 /** Lo que el contrato le debe a esta cuenta en cada parcela (misma cuenta que withdraw*). */
 export async function myPosition(s, addr) {
   const timeout = BigInt(await read("restorationTimeout"));
@@ -45,8 +67,7 @@ export async function myPosition(s, addr) {
         refund,
         restore,
         stake,
-        // Parte de lo que ya se pagó, en proporción al aporte (exacta si todos aportaron antes de los pagos).
-        paidShare: totalStake > 0n ? (p.totalPaid * stake) / totalStake : 0n,
+        paidShare: stake > 0n ? paidShareOf(s.events, p.id, addr) : 0n,
         owed,
         pending,
         certs,
@@ -78,7 +99,9 @@ function card(x) {
     <div class="bar" aria-hidden="true"><i class="bar-ok" style="width:${paidPct}%"></i>${cleared ? `<i class="bar-cut" style="width:${100 - paidPct}%"></i>` : ""}</div>
     <div class="rows rows-flat">
       <div><span>Aportaste · ${choice}</span><b class="num">${avax(x.stake, 4)}</b></div>
-      <div><span>Llegó a quienes cuidan · tu parte</span><b class="num">≈ ${avax(x.paidShare, 4)}</b></div>
+      ${x.paidShare > 0n
+        ? `<div><span>Llegó a quienes cuidan · tu parte</span><b class="num">≈ ${avax(x.paidShare, 4)}</b></div>`
+        : `<div><span>Llegó a quienes cuidan · tu parte</span><b class="num">${p.status === 1 || p.status === 2 ? "con el próximo informe" : "nada"}</b></div>`}
       ${owedRows}
     </div>
     ${actions}
