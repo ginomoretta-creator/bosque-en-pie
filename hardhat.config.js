@@ -16,7 +16,7 @@ module.exports = {
   networks: {
     hardhat: { chainId: 31337 },
     fuji: {
-      url: process.env.FUJI_RPC_URL || "https://api.avax-test.network/ext/bc/C/rpc",
+      url: process.env.FUJI_RPC_URL || "https://avalanche-fuji-c-chain-rpc.publicnode.com",
       chainId: 43113,
       accounts: keys,
     },

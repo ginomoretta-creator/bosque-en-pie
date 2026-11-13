@@ -9,6 +9,13 @@ const who = (addr) => {
   return url ? `<a class="mono" href="${esc(url)}" target="_blank" rel="noopener">${short(addr)} ↗</a>` : `<span class="mono">${short(addr)}</span>`;
 };
 
+/** Cuántas cuotas más paga lo que hay en el contrato. */
+function poolHint(p) {
+  const n = p.fee > 0n ? Number(p.balance / p.fee) : 0;
+  const alcanza = n === 0 ? "no alcanza para otra cuota: hacen falta aportes" : `alcanza para ${n} ${n === 1 ? "cuota" : "cuotas"} más`;
+  return `en el pozo · ${alcanza} · cuota ${avax(p.fee)}`;
+}
+
 export function parcela({ id }, s) {
   const p = s.parcels.find((x) => x.id === Number(id));
   if (!p) return `<section class="page narrow"><h1 class="h1">Parcela ${esc(id)}</h1><p class="muted">${s.loading ? "Leyendo el contrato…" : "No existe en este contrato."}</p><a class="btn" href="#/">Volver</a></section>`;
@@ -53,11 +60,12 @@ export function parcela({ id }, s) {
       <div class="card">
         <div class="card-h"><p class="eyebrow">Doce cuotas · ${strip.year}</p><span class="pill">${strip.paid} de 12</span></div>
         ${strip.html}
-        <p class="muted hint">Tocá un mes para ver la imagen satelital y el informe.</p>
+        ${strip.legend}
+        <p class="muted hint">Imágenes reales de Sentinel-2 de ${strip.year}, aplicadas en el contrato de a un mes. Tocá un mes para ver la imagen y el informe.</p>
       </div>
 
       <div class="duo">
-        <div class="card stat">${icon("coins")}<div class="stat-n">${avax(cleared ? p.refundPool + p.restorePool : p.balance)} AVAX</div><p class="muted">${cleared ? "saldo al corte" : "en el pozo"} · cuota ${avax(p.fee)}</p></div>
+        <div class="card stat">${icon("coins")}<div class="stat-n">${avax(cleared ? p.refundPool + p.restorePool : p.balance)} AVAX</div><p class="muted">${cleared ? `saldo al corte · cuota ${avax(p.fee)}` : poolHint(p)}</p></div>
         <div class="card stat">${icon("sigs")}<div class="stat-n">${r ? `${r.signers} de ${s.deployment.verifiers.length}` : "—"}</div><p class="muted">firmas del último informe</p></div>
       </div>
 

@@ -19,7 +19,7 @@ EXPLORADOR_FUJI = "https://testnet.snowtrace.io"
 
 def rpc_de(red: str) -> str:
     if red == "fuji":
-        return os.environ.get("FUJI_RPC_URL", "https://api.avax-test.network/ext/bc/C/rpc")
+        return os.environ.get("FUJI_RPC_URL", "https://avalanche-fuji-c-chain-rpc.publicnode.com")
     if red == "localhost":
         return os.environ.get("LOCAL_RPC_URL", "http://127.0.0.1:8545")
     raise ValueError(f"red desconocida: {red} (usá localhost o fuji)")

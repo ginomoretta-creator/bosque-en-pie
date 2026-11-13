@@ -1,9 +1,9 @@
 // Billetera de prueba del carril 4: la clave sale del QR del jurado (#k=… en el fragmento, ver ../wallet.js).
 // En la red local, sin QR, se puede elegir una cuenta del nodo de Hardhat (mnemónico público de prueba).
 // Solo claves de prueba: nunca se manda la clave a ningún servidor; firma el navegador y va directo al RPC.
-import { createWalletClient, formatEther, http } from "viem";
+import { createWalletClient, formatEther } from "viem";
 import { mnemonicToAccount, privateKeyToAccount } from "viem/accounts";
-import { NET, NETWORK, abi, client, deployment, store } from "../chain.js";
+import { NET, NETWORK, abi, client, deployment, store, transport } from "../chain.js";
 import { captureKeyFromHash, forgetKey, judgeKey } from "../wallet.js";
 
 const LOCAL_MNEMONIC = "test test test test test test test test test test test junk";
@@ -78,7 +78,7 @@ export const avaxNumber = (wei) => Number(formatEther(wei));
 export async function send(functionName, args, value) {
   const acc = account();
   if (!acc) throw new Error("No hay billetera de prueba activa.");
-  const wallet = createWalletClient({ account: acc, chain: NET.chain, transport: http(NET.rpc) });
+  const wallet = createWalletClient({ account: acc, chain: NET.chain, transport: transport() });
   // Simular primero: si el contrato lo rechaza, el motivo llega en español antes de firmar.
   const { request } = await client.simulateContract({
     account: acc,

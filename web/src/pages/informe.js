@@ -74,7 +74,7 @@ export function informe({ id, mes }, s) {
   const tone = r ? (r.standing ? "standing" : r.status === 3 ? "cleared" : "review") : f?.skip ? "cloud" : p.status === 3 ? "cleared" : "none";
 
   let notice = "";
-  if (f?.skip) notice = `<div class="notice notice-ambar">${icon("satellite")}<div><strong>Sin informe este mes: nubes.</strong><p>${esc(f.skip.motivo || "Parte visible por debajo del 60 %.")} No paga ni corta: se espera al mes siguiente.</p></div></div>`;
+  if (f?.skip) notice = `<div class="notice notice-ambar">${icon("satellite")}<div><strong>Sin informe este mes: nubes.</strong><p>${esc((f.skip.motivo || "Parte visible por debajo del 60 %.").replace(/(\d)\.(\d)/g, "$1,$2"))} No paga ni corta: se espera al mes siguiente.</p></div></div>`;
   else if (!r && f) notice = `<div class="notice">${icon("axe")}<div><strong>No se envió al contrato.</strong><p>La parcela ya estaba desmontada: después del corte no se mandan más informes. La imagen queda como registro.</p></div></div>`;
   else if (r && !r.standing && r.status === 2) notice = `<div class="notice notice-ambar">${icon("warn")}<div><strong>Primera lectura mala: no paga ni corta.</strong><p>Si la próxima también da mal, la parcela queda desmontada.</p></div></div>`;
   else if (r && r.status === 3) notice = `<div class="notice notice-terra">${icon("axe")}<div><strong>Segunda lectura mala seguida: pagos cortados.</strong><p>El saldo vuelve a los donantes o queda para restaurar. Nunca va al dueño ni al operador.</p></div></div>`;

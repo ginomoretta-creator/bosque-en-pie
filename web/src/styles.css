@@ -456,3 +456,8 @@ a.tx:hover { color: var(--v2-tinta); }
   .sigs { grid-template-columns: 1fr; }
   .month-nav .btn { flex: 1; font-size: var(--v2-cuerpo-sm); }
 }
+
+/* leyenda de los doce meses */
+.mlegend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 12px 0 0; padding: 0; list-style: none; font-size: var(--v2-cuerpo-xs); color: var(--v2-gris); }
+.mlegend li { display: flex; align-items: center; gap: 6px; }
+.mlegend i { display: block; width: 12px; height: 12px; border-radius: 2px; background: var(--v2-franja); flex: none; }
