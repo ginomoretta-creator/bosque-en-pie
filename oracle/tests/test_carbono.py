@@ -29,6 +29,17 @@ def test_tipo_de_bosque_desconocido():
         estimate_tco2e(1, "selva_valdiviana")
 
 
+def test_none_cae_al_bosque_por_defecto():
+    assert estimate_tco2e(1, None) == pytest.approx(EXPECTED_PER_HA)
+    assert carbono_estimado(1, None)["tipo_bosque"] == "subtropical_dry_forest"
+
+
+def test_solo_la_parte_en_pie():
+    c = carbono_estimado(84, cover_bps=144)  # B en 2025-09: 1,44 % en pie
+    assert c["hectareas_en_pie"] == pytest.approx(84 * 144 / 10_000, abs=0.05)
+    assert c["tco2e"] == pytest.approx(84 * 144 / 10_000 * EXPECTED_PER_HA, abs=0.05)
+
+
 def test_bloque_de_evidencia():
     c = carbono_estimado(101)
     assert c["tco2e"] == pytest.approx(101 * EXPECTED_PER_HA, abs=0.05)
