@@ -1,18 +1,13 @@
-// Carril 4 (#26, #27, #28): pantallas de aportar, mi aporte y certificados.
-// Este archivo es solo el lugar donde se enchufan: reemplazá estas rutas por las pantallas reales.
-// Con route(path, render, { live: false }) la pantalla no se repinta sola mientras alguien completa un formulario.
-// La clave del QR está en judgeKey() de ../wallet.js; la lectura del contrato, en ../chain.js.
+// Carril 4 (#26, #27, #28): aportar, mi aporte y certificados, con la billetera de prueba del QR del jurado.
+// live: false → main.js no las repinta con cada bloque; cada pantalla se actualiza sola (store.subscribe)
+// sin borrar un formulario a medio completar.
+import "./aportar.css";
 import { route } from "../router.js";
+import { aportar } from "./aportar.js";
+import { miAporte } from "./mi-aporte.js";
+import { certificados } from "./certificados.js";
 
-const pending = (title, issue) => () => `
-  <section class="page narrow">
-    <p class="eyebrow">En construcción · carril 4</p>
-    <h1 class="h1">${title}</h1>
-    <p class="muted">Esta pantalla llega con ${issue}.</p>
-    <a class="btn" href="#/">Volver a las parcelas</a>
-  </section>`;
-
-route("/aportar", pending("Aportar", "#26"));
-route("/aportar/:id", pending("Aportar", "#26"));
-route("/mi-aporte", pending("Mi aporte", "#27"));
-route("/certificados", pending("Certificados", "#28"));
+route("/aportar", aportar, { live: false });
+route("/aportar/:id", aportar, { live: false });
+route("/mi-aporte", miAporte, { live: false });
+route("/certificados", certificados, { live: false });

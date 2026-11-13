@@ -1,0 +1,128 @@
+/* Carril 4: aportar, mi aporte y certificados. Solo tokens de design/tokens-v2.css (los importa styles.css). */
+
+.page.narrow > * + * { margin-top: 12px; }
+.page.narrow .rows > div > span:first-child { flex: 1 1 60%; min-width: 0; }
+
+/* billetera */
+.wbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--v2-hoja);
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-5);
+}
+.wdot { width: 10px; height: 10px; border-radius: 50%; background: var(--v2-verde); flex: none; }
+.wbar-t { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.wbar-t .mono-sm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wbal { margin-left: auto; font-family: var(--v2-font-mono); font-weight: 600; }
+.wbar-out { min-height: 36px; padding: 6px 12px; }
+
+/* formularios */
+.lbl { display: block; margin: 12px 0 6px; font-weight: 600; font-size: var(--v2-cuerpo-sm); }
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-4);
+  background: var(--v2-hoja);
+  color: var(--v2-tinta);
+  font: 500 var(--v2-cuerpo-md) var(--v2-font-sans);
+}
+.input.mono { font-family: var(--v2-font-mono); }
+.input:focus { outline: 2px solid var(--v2-verde); outline-offset: 1px; border-color: var(--v2-verde); }
+.num-in { font-variant-numeric: tabular-nums; }
+.err { margin: 8px 0 0; color: var(--v2-terra-texto); font-size: var(--v2-cuerpo-sm); font-weight: 600; }
+.center { text-align: center; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+
+/* elegir parcela */
+.pick { display: block; text-decoration: none; }
+.pick:hover { border-color: var(--v2-tinta); }
+.pick-n { font-size: var(--v2-titulo-xs); font-weight: 800; letter-spacing: -0.02em; text-decoration: none; }
+.pick-cta { margin: 8px 0 0; font-weight: 600; color: var(--v2-verde-texto); }
+.pick-off { opacity: 0.7; }
+.pick-off .pick-cta { color: var(--v2-gris); }
+
+/* montos */
+.amounts { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.amt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-5);
+  background: var(--v2-hoja);
+  color: var(--v2-tinta);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.amt b { font-family: var(--v2-font-mono); font-size: 22px; font-weight: 600; }
+.amt span { font-size: var(--v2-cuerpo-xs); color: var(--v2-gris); }
+.amt.on { border-color: var(--v2-oscuro); box-shadow: inset 0 0 0 1px var(--v2-oscuro); background: var(--v2-verde-tenue); }
+
+/* devolución o restauración */
+.choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  margin-top: 8px;
+  border: var(--v2-borde) solid var(--v2-linea);
+  border-radius: var(--v2-radio-5);
+  background: var(--v2-hoja);
+  cursor: pointer;
+}
+.choice input { margin-top: 4px; accent-color: var(--v2-verde); width: 18px; height: 18px; flex: none; }
+.choice > span { display: flex; flex-direction: column; gap: 2px; }
+.choice > span > span { font-size: var(--v2-cuerpo-sm); color: var(--v2-gris); }
+.choice:has(input:checked) { border-color: var(--v2-oscuro); box-shadow: inset 0 0 0 1px var(--v2-oscuro); }
+.aform .rows-flat { margin: 14px 0; }
+.aform .btn-block { margin-top: 4px; }
+
+/* mi aporte */
+.mine .bar { display: flex; height: 8px; border-radius: 2px; overflow: hidden; background: var(--v2-franja); margin-bottom: 8px; }
+.bar-ok { background: var(--v2-verde); }
+.bar-cut { background: var(--v2-terra); }
+.mine .owe { color: var(--v2-terra-texto); }
+.mine .btn-block { margin-top: 12px; }
+.notice-verde { background: var(--v2-verde-tenue); border-color: var(--v2-verde); color: var(--v2-verde-texto); }
+.notice-link { text-decoration: none; }
+.notice-link:hover { border-color: var(--v2-oscuro); }
+
+/* entrar */
+.accs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.paste summary { cursor: pointer; font-weight: 600; }
+.paste-f .btn { margin-top: 12px; width: 100%; }
+
+/* certificados */
+.cert {
+  padding: 20px;
+  border-radius: var(--v2-radio-5);
+  background: var(--v2-oscuro);
+  color: var(--v2-papel);
+}
+.cert .eyebrow { color: var(--v2-verde-claro); }
+.cert p { margin: 8px 0 0; }
+.cert-n {
+  margin-top: 6px;
+  font-family: var(--v2-font-mono);
+  font-size: clamp(44px, 14vw, var(--v2-cifra-md));
+  font-weight: 600;
+  line-height: 1;
+  color: var(--v2-verde-claro);
+  font-variant-numeric: tabular-nums;
+}
+.cert-n small { font-size: var(--v2-cuerpo-lg); color: var(--v2-oscuro-texto); }
+.cert-row .btn-block { margin-top: 12px; }
+
+@media (max-width: 640px) {
+  .two, .accs { grid-template-columns: 1fr; }
+  .wbar { flex-wrap: wrap; }
+}
+.cert-row .sub { display: block; margin-top: 2px; }
