@@ -33,6 +33,17 @@ const MES = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
  * Doce cuadros, uno por mes: pagado, en revisión, corte, nubes, sin informe.
  * Con `folders` (las carpetas de reports/ de la parcela), cada mes con datos es un link a su informe.
  */
+const MES_LARGO = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+const LEYENDA = [
+  ["ok", "en pie · pagó la cuota"],
+  ["cloud", "nubes · ni paga ni corta"],
+  ["review", "lectura mala · en revisión"],
+  ["cut", "segunda lectura mala · corte"],
+  ["off", "pagos cortados"],
+  ["empty", "sin informe todavía"],
+];
+
 export function monthStrip(p, { labels = true, folders = null } = {}) {
   const year = p.reports.length
     ? new Date(p.reports[0].tObs * 1000).getUTCFullYear()
@@ -55,11 +66,13 @@ export function monthStrip(p, { labels = true, folders = null } = {}) {
     } else if (f?.skip) (cls = "cloud"), (title = "sin informe · nubes");
     else if (p.status === 3) (cls = "off"), (title = "pagos cortados");
     const inner = `<i></i>${labels ? `<span>${m}</span>` : ""}`;
-    const label = `${MES[i]} ${year}: ${title}`;
+    const label = `${MES_LARGO[i]} ${year}: ${title}`;
     return folders && (r || f)
       ? `<li class="m m-${cls}"><a href="#/parcela/${p.id}/${key}" title="${label}" aria-label="${label}">${inner}</a></li>`
       : `<li class="m m-${cls}" title="${label}">${inner}</li>`;
   });
   const paid = p.reports.filter((r) => r.standing).length;
-  return { html: `<ol class="months">${cells.join("")}</ol>`, year, paid };
+  const used = [...new Set(cells.map((c) => c.match(/m-(\w+)/)[1]))];
+  const legend = `<ul class="mlegend">${LEYENDA.filter(([k]) => used.includes(k)).map(([k, t]) => `<li class="m-${k}"><i></i>${t}</li>`).join("")}</ul>`;
+  return { html: `<ol class="months">${cells.join("")}</ol>`, year, paid, legend };
 }

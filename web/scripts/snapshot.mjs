@@ -13,10 +13,11 @@ import { createPublicClient, http } from "viem";
 const NETWORK = process.argv[2] || process.env.VITE_NETWORK || "fuji";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const RPC = {
-  fuji: process.env.FUJI_RPC_URL || "https://api.avax-test.network/ext/bc/C/rpc",
+  // publicnode: el oficial (api.avax-test.network) corta con «error 1015» y solo deja 100 bloques por pedido.
+  fuji: process.env.SNAPSHOT_RPC_URL || "https://avalanche-fuji-c-chain-rpc.publicnode.com",
   localhost: "http://127.0.0.1:8545",
 }[NETWORK];
-const CHUNK = NETWORK === "fuji" ? 100n : 50_000n;
+const CHUNK = NETWORK === "fuji" ? 2000n : 50_000n;
 const PARALLEL = 4;
 
 const depFile = join(ROOT, "deployments", `${NETWORK}.json`);

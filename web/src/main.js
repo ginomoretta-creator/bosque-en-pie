@@ -51,6 +51,19 @@ app.innerHTML = `
     <p class="foot-attr mono-sm">Contiene datos Copernicus Sentinel modificados, 2024 y 2025</p>
   </footer>`;
 
+/** Aviso de conexión en palabras simples; el detalle técnico queda plegado. */
+function statusNotice(s) {
+  if (!s.error) return "";
+  if (!deployment) return `<div class="notice notice-terra"><div><strong>Todavía no hay contrato en ${esc(NET.label)}</strong><p>${esc(s.error)}</p></div></div>`;
+  const stale = s.lastBlock !== null;
+  const when = s.updatedAt ? s.updatedAt.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }) : null;
+  return `<div class="notice notice-terra"><div>
+    <strong>${stale ? `Se cortó la conexión con ${esc(NET.label)}` : `Conectando con ${esc(NET.label)}…`}</strong>
+    <p>${stale ? `Lo que ves es la última lectura${when ? ` (${when})` : ""}.` : "La red de prueba tarda en responder."} Reintentamos solos cada pocos segundos.</p>
+    <details class="mono-sm"><summary>Detalle técnico</summary>${esc(s.error)}</details>
+  </div></div>`;
+}
+
 const view = document.getElementById("view");
 const statusEl = document.getElementById("status");
 let lastSig = null;
@@ -64,12 +77,11 @@ function render(force = false) {
   const m = match(path);
   const sig = `${path}|${s.version}|${s.loading}|${s.error}`;
   if (!force && sig === lastSig) return;
+  statusEl.innerHTML = statusNotice(s);
   // Pantallas con formulario (live: false): se pintan al entrar y con la primera lectura, no con cada bloque.
   if (!force && path === lastPath && m && !m.route.live && hadData) return;
   lastSig = sig;
   hadData = s.lastBlock !== null;
-
-  statusEl.innerHTML = s.error ? `<div class="notice notice-terra"><div><strong>${deployment ? "Sin conexión con el contrato" : `Todavía no hay contrato en ${esc(NET.label)}`}</strong><p>${esc(s.error)}</p></div></div>` : "";
   if (cleanup) cleanup();
   cleanup = null;
   const out = m ? m.route.render(m.params, s) : `<section class="page narrow"><h1 class="h1">No encontramos esa página</h1><a class="btn" href="#/">Volver</a></section>`;

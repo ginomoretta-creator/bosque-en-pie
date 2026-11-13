@@ -101,7 +101,7 @@ web/         página (Vite + viem + Leaflet)
 ```
 
 - Contrato: Solidity 0.8.24, `evmVersion: "paris"`, Hardhat **2** (fijar la versión; Hardhat 3 cambia la configuración). Pruebas en JavaScript con ethers v6.
-- Red: Fuji C-Chain, chain ID 43113, RPC `https://api.avax-test.network/ext/bc/C/rpc`. Explorer: `https://subnets-test.avax.network/c-chain` o `https://testnet.snowtrace.io`.
+- Red: Fuji C-Chain, chain ID 43113, RPC `https://avalanche-fuji-c-chain-rpc.publicnode.com` (el oficial `api.avax-test.network` corta con «error 1015» si recibe muchos pedidos). Explorer: `https://subnets-test.avax.network/c-chain` o `https://testnet.snowtrace.io`.
 - Con `web3.py` en Avalanche: agregar el middleware de PoA (`ExtraDataToPOAMiddleware`) y usar `gasPrice` en las transacciones.
 - Web: página estática que lee eventos del contrato. Pantallas: mapa con estado de cada parcela; parcela (imagen de cada mes, monte en pie, firmas, pagos, saldo, botón de aportar); mi aporte (con botón de recuperar); actividad (eventos con link al explorer). Interfaz en español.
 - Billeteras del jurado: billeteras de prueba precargadas, cuya clave viaja en el fragmento de la URL de un QR. El jurado no instala nada y firma desde su celular. Solo claves de prueba sin valor.

@@ -76,6 +76,7 @@ export function actividad(_params, s) {
   <section class="page">
     <div class="block-h"><div><p class="eyebrow">Actividad</p><h1 class="h1">Lo que pasó en el contrato</h1></div>
     <span class="muted mono-sm">${esc(NET.label)} · ${s.events.length} eventos${s.lastBlock !== null ? ` · bloque ${s.lastBlock}` : ""}</span></div>
+    <p class="muted hint">Para la demo, los doce informes de 2025 se aplicaron juntos en el contrato. Un aporte nuevo aparece arriba a los pocos segundos.</p>
     ${rows ? `<ol class="evlist">${rows}</ol>` : `<p class="muted">${s.loading ? "Leyendo eventos…" : "Todavía no hay eventos."}</p>`}
   </section>`;
 }

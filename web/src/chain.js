@@ -6,7 +6,7 @@
 //   import { store, NET, explorerTx } from "./chain.js";
 //   store.subscribe((s) => render(s));   // s.parcels, s.events, s.error, s.loading
 //   store.start();                       // primera lectura y luego cada POLL_MS
-import { createPublicClient, defineChain, http, parseEventLogs } from "viem";
+import { createPublicClient, defineChain, fallback, http, parseEventLogs } from "viem";
 import { avalancheFuji } from "viem/chains";
 import abi from "../../deployments/BosqueEnPie.abi.json";
 
@@ -27,25 +27,43 @@ const NETS = {
   localhost: {
     chain: localChain,
     // Con el host de la página, la web abierta desde otro equipo de la red local también llega al nodo.
-    rpc: import.meta.env.VITE_RPC_URL || `http://${location.hostname || "127.0.0.1"}:8545`,
+    rpcs: [import.meta.env.VITE_RPC_URL || `http://${location.hostname || "127.0.0.1"}:8545`],
     label: "Red local",
     explorer: null,
     logChunk: 50_000n,
+    minChunk: 50_000n,
   },
   fuji: {
     chain: avalancheFuji,
-    rpc: import.meta.env.VITE_RPC_URL || "https://api.avax-test.network/ext/bc/C/rpc",
+    // publicnode primero: el RPC oficial (api.avax-test.network) corta con «error code: 1015» de Cloudflare
+    // cuando hay muchos pedidos desde la misma IP (varios celulares en la WiFi del evento). Queda de respaldo.
+    rpcs: [
+      import.meta.env.VITE_RPC_URL,
+      "https://avalanche-fuji-c-chain-rpc.publicnode.com",
+      "https://api.avax-test.network/ext/bc/C/rpc",
+    ].filter(Boolean),
     label: "Red de prueba Fuji",
     explorer: "https://testnet.snowtrace.io",
-    logChunk: 100n, // el RPC público de Fuji deja leer eventos de a 100 bloques (ver snapshot/)
+    logChunk: 2000n, // publicnode lee eventos de a miles de bloques; si cae al oficial (100), readLogs parte el tramo
+    minChunk: 100n,
   },
 };
 
 if (!NETS[NETWORK]) throw new Error(`VITE_NETWORK desconocida: ${NETWORK} (usar localhost o fuji)`);
 
 export const NET = { name: NETWORK, ...NETS[NETWORK] };
+NET.rpc = NET.rpcs[0];
 export const deployment = deployments[`../../deployments/${NETWORK}.json`] || null;
-export const client = createPublicClient({ chain: NET.chain, transport: http(NET.rpc) });
+/** Transporte compartido por la lectura y la billetera: si un RPC falla, pasa al siguiente. */
+export const transport = () =>
+  NET.rpcs.length > 1 ? fallback(NET.rpcs.map((u) => http(u, { timeout: 12_000, retryCount: 1 }))) : http(NET.rpc);
+
+// multicall junta las lecturas del contrato de una misma vuelta en un solo pedido (Fuji tiene Multicall3).
+export const client = createPublicClient({
+  chain: NET.chain,
+  transport: transport(),
+  batch: NET.chain.contracts?.multicall3 ? { multicall: true } : undefined,
+});
 
 export const STATUS = ["Sin registrar", "En pie", "En revisión", "Desmontada", "Compromiso cerrado"];
 export const STATUS_KEY = ["none", "standing", "review", "cleared", "closed"];
@@ -60,7 +78,8 @@ export function parcelName(id) {
   return p ? `Parcela ${p.name}` : `Parcela ${id}`;
 }
 
-const POLL_MS = NETWORK === "fuji" ? 6000 : 3000;
+const POLL_MS = NETWORK === "fuji" ? 8000 : 3000;
+const PARCEL_EVERY = 6; // sin eventos nuevos, las parcelas se releen cada tantas vueltas (por si acaso)
 
 // ------------------------------------------------------------------ lectura
 
@@ -74,7 +93,22 @@ async function readParcels() {
   return raw.map((p, i) => ({ id: ids[i], name: parcelName(ids[i]), ...p, status: Number(p.status) }));
 }
 
-const PARALLEL = 6;
+const PARALLEL = 3;
+
+/** Eventos de un tramo; si el RPC no acepta el tramo (por ejemplo el oficial de Fuji, 100 bloques), lo parte. */
+async function readRange(a, b) {
+  try {
+    return await client.getContractEvents({ address: deployment.address, abi, fromBlock: a, toBlock: b });
+  } catch (e) {
+    if (b - a + 1n <= NET.minChunk) throw e;
+    const out = [];
+    for (let s = a; s <= b; s += NET.minChunk) {
+      const t = s + NET.minChunk - 1n < b ? s + NET.minChunk - 1n : b;
+      out.push(...(await client.getContractEvents({ address: deployment.address, abi, fromBlock: s, toBlock: t })));
+    }
+    return out;
+  }
+}
 
 /** Eventos entre dos bloques, en tramos de NET.logChunk y de a PARALLEL pedidos a la vez. */
 async function readLogs(fromBlock, toBlock) {
@@ -84,11 +118,7 @@ async function readLogs(fromBlock, toBlock) {
   }
   const out = [];
   for (let i = 0; i < ranges.length; i += PARALLEL) {
-    const batch = await Promise.all(
-      ranges
-        .slice(i, i + PARALLEL)
-        .map(([a, b]) => client.getContractEvents({ address: deployment.address, abi, fromBlock: a, toBlock: b })),
-    );
+    const batch = await Promise.all(ranges.slice(i, i + PARALLEL).map(([a, b]) => readRange(a, b)));
     out.push(...batch.flat());
   }
   return out;
@@ -170,6 +200,8 @@ function createStore() {
   let timer = null;
   let busy = false;
   let rawEvents = snapshot ? snapshot.logs : [];
+  let rounds = 0;
+  let failures = 0;
 
   const emit = () => subs.forEach((fn) => fn(state));
 
@@ -184,18 +216,25 @@ function createStore() {
         const logs = from <= head ? await readLogs(from, head) : [];
         await addTimestamps(logs);
         rawEvents = rawEvents.concat(logs);
-        const parcels = await readParcels();
         state.events = rawEvents;
-        state.parcels = derive(parcels, rawEvents);
+        if (logs.length || state.lastBlock === null || rounds % PARCEL_EVERY === 0) {
+          state.parcels = derive(await readParcels(), rawEvents);
+        }
         if (logs.length || state.lastBlock === null) state.version++;
         state.lastBlock = head;
       }
       state.error = null;
       state.updatedAt = new Date();
+      failures = 0;
     } catch (e) {
       console.error(e);
-      state.error = `No se pudo leer el contrato en ${NET.label} (${NET.rpc}). ${e.shortMessage || e.message || e}`;
+      failures++;
+      // Con datos ya leídos, un corte suelto no se muestra: se reintenta en la próxima vuelta.
+      if (state.lastBlock === null || failures >= 3) {
+        state.error = `No se pudo leer el contrato en ${NET.label}. ${e.shortMessage || e.message || e}`;
+      }
     } finally {
+      rounds++;
       state.loading = false;
       busy = false;
       emit();
