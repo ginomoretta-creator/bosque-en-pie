@@ -701,3 +701,106 @@ a.tx:hover { color: var(--v2-tinta); }
 .qrhelp-steps li { margin-bottom: 4px; }
 .qrhelp .muted { margin: 0; font-size: var(--v2-cuerpo-sm); }
 @media (max-width: 640px) { .qrhelp { flex-direction: column; gap: 8px; } }
+
+/* ------------------------------------------------------------ portada (landing) */
+
+.land { display: grid; gap: 0; }
+.land-hero { padding: clamp(24px, 6vw, 72px) 0 clamp(24px, 4vw, 40px); border-bottom: var(--v2-borde) solid var(--v2-linea); }
+.land-tag { margin: 0 0 20px; color: var(--v2-verde-texto); letter-spacing: 0.08em; text-transform: uppercase; }
+.land-hero h1 {
+  margin: 0;
+  max-width: 15ch;
+  font-size: clamp(44px, 9vw, 112px);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+.land-hero h1 em { font-style: normal; color: var(--v2-verde); }
+.land-sub {
+  display: grid;
+  grid-template-columns: minmax(0, 56ch) auto;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px 40px;
+  margin-top: clamp(24px, 4vw, 40px);
+}
+.land-lead { margin: 0; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.5; color: var(--v2-gris); }
+.land-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.land-proof { padding: 16px; margin-top: 24px; border-radius: var(--v2-radio-5); background: var(--v2-oscuro); color: var(--v2-oscuro-claro); }
+.land-proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.land-shot { margin: 0; }
+.land-map { aspect-ratio: 4 / 3; border-radius: var(--v2-radio-3); overflow: hidden; background: var(--v2-oscuro-2); }
+/* El crédito del fondo va escrito en la leyenda (.land-proof-cap): en el mapa chico tapaba la imagen. */
+.land-map .leaflet-control-attribution { display: none; }
+.land-proof-cap a { color: var(--v2-oscuro-claro); }
+.land-shot figcaption { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 2px 0; }
+.land-shot figcaption .mono-sm { width: 100%; color: var(--v2-oscuro-texto); text-transform: uppercase; letter-spacing: 0.06em; }
+.land-shot figcaption b { font-size: clamp(32px, 4vw, 48px); line-height: 1; font-weight: 800; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.land-shot figcaption b small { font-size: 0.45em; letter-spacing: 0; }
+.land-ok figcaption b { color: var(--v2-verde-texto-oscuro); }
+.land-cut figcaption b { color: var(--v2-terra-texto-oscuro); }
+.land-shot figcaption span:last-child { font-size: var(--v2-cuerpo-sm); }
+.land-proof-cap { margin: 16px 2px 0; color: var(--v2-oscuro-texto); }
+
+.land-sec { padding: clamp(40px, 6vw, 72px) 0 0; }
+.land-steps { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.land-steps li { padding-top: 16px; border-top: 2px solid var(--v2-tinta); }
+.land-n { color: var(--v2-gris); }
+.land-steps h3 { margin: 12px 0 8px; font-size: var(--v2-titulo-xs); letter-spacing: -0.02em; }
+.land-steps p { margin: 0; color: var(--v2-gris); max-width: 40ch; }
+
+.land-cert-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px 48px; align-items: start; margin-top: 16px; }
+.land-cert h2 { margin: 0; font-size: clamp(30px, 4vw, var(--v2-titulo-xl)); line-height: 1.02; letter-spacing: -0.04em; font-weight: 800; text-wrap: balance; }
+.land-eq { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 16px; font-size: var(--v2-mono-md); }
+.land-eq span, .land-eq b { padding: 6px 10px; border: var(--v2-borde) solid var(--v2-linea); border-radius: var(--v2-radio-3); background: var(--v2-hoja); }
+.land-eq b { background: var(--v2-verde-tenue); border-color: transparent; color: var(--v2-verde-texto); }
+.land-eq i { font-style: normal; color: var(--v2-gris); }
+.land-cert p.muted { margin: 0; max-width: 52ch; }
+
+.land-parcels { list-style: none; margin: 0; padding: 0; border-top: var(--v2-borde) solid var(--v2-linea); }
+.land-parcels a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto 24px;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 12px 4px;
+  border-bottom: var(--v2-borde) solid var(--v2-linea);
+  text-decoration: none;
+}
+.land-parcels a:hover { background: var(--v2-hoja); }
+.land-pn { font-size: var(--v2-titulo-xs); font-weight: 700; letter-spacing: -0.02em; }
+.land-pc { font-weight: 800; font-size: var(--v2-titulo-xs); font-variant-numeric: tabular-nums; text-align: right; }
+.land-pc small { margin-left: 6px; font-weight: 500; font-size: var(--v2-cuerpo-sm); color: var(--v2-gris); }
+.land-ph { font-family: var(--v2-font-mono); font-size: var(--v2-mono-sm); }
+.land-go { color: var(--v2-gris); transition: transform 0.2s ease; }
+.land-parcels a:hover .land-go { transform: translateX(3px); color: var(--v2-tinta); }
+
+.land-end { margin-top: clamp(48px, 7vw, 88px); padding: clamp(28px, 5vw, 56px); border-radius: var(--v2-radio-5); background: var(--v2-oscuro); color: var(--v2-oscuro-claro); }
+.land-end h2 { margin: 0 0 12px; color: #fff; font-size: clamp(30px, 4vw, var(--v2-titulo-xl)); line-height: 1.02; letter-spacing: -0.04em; font-weight: 800; }
+.land-end p { margin: 0 0 24px; max-width: 56ch; color: var(--v2-oscuro-texto); font-size: var(--v2-cuerpo-lg); }
+
+@media (max-width: 860px) {
+  .land-sub, .land-cert-grid { grid-template-columns: 1fr; }
+  .land-steps { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 640px) {
+  .land-proof { padding: 12px; }
+  .land-proof-grid { gap: 10px; }
+  .land-map { aspect-ratio: 1 / 1; }
+  .land-shot figcaption span:last-child { font-size: var(--v2-cuerpo-xs); }
+  .land-parcels a { grid-template-columns: minmax(0, 1fr) auto 20px; gap: 6px 12px; }
+  .land-parcels .chip { grid-column: 1; grid-row: 2; justify-self: start; }
+  .land-pc { grid-column: 2; grid-row: 1 / span 2; }
+  .land-ph { display: none; }
+  .land-go { grid-column: 3; grid-row: 1 / span 2; }
+  .land-cta .btn { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #view.enter .land > * { animation: land-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  #view.enter .land > :nth-child(2) { animation-delay: 0.08s; }
+  #view.enter .land > :nth-child(3) { animation-delay: 0.14s; }
+}
+@keyframes land-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
