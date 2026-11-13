@@ -69,7 +69,7 @@ function render(force = false) {
   lastSig = sig;
   hadData = s.lastBlock !== null;
 
-  statusEl.innerHTML = s.error ? `<div class="notice notice-terra"><div><strong>Sin conexión con el contrato</strong><p>${esc(s.error)}</p></div></div>` : "";
+  statusEl.innerHTML = s.error ? `<div class="notice notice-terra"><div><strong>${deployment ? "Sin conexión con el contrato" : `Todavía no hay contrato en ${esc(NET.label)}`}</strong><p>${esc(s.error)}</p></div></div>` : "";
   if (cleanup) cleanup();
   cleanup = null;
   const out = m ? m.route.render(m.params, s) : `<section class="page narrow"><h1 class="h1">No encontramos esa página</h1><a class="btn" href="#/">Volver</a></section>`;

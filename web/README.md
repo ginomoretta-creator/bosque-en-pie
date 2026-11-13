@@ -27,6 +27,14 @@ npm run dev:fuji          # o VITE_NETWORK=fuji npm run build
 
 Necesita `deployments/fuji.json` (lo escribe `npm run fuji:deploy`). Si no está, la página lo dice.
 
+## Publicada (#30)
+
+**https://ginomoretta-creator.github.io/bosque-en-pie/** · la publica `.github/workflows/web.yml` en cada merge a `main` que toque `web/`, `deployments/`, `reports/`, `parcels/` o `design/`. También se puede correr a mano desde la pestaña *Actions* («Run workflow»), por ejemplo después del replay en Fuji.
+
+El RPC público de Fuji deja leer eventos de a **100 bloques**. Por eso el workflow corre `node scripts/snapshot.mjs fuji`, que lee toda la historia del contrato una vez y la guarda en `src/snapshot/fuji.json` (no se commitea). La página arranca de esa foto y solo pide los bloques nuevos. Sin foto, lee todo en tramos de 100, de a 6 pedidos a la vez.
+
+Para la hoja de QR del jurado: `WEB_URL=https://ginomoretta-creator.github.io/bosque-en-pie npm run fuji:jurado`.
+
 ## Variables
 
 | Variable | Valores | Por defecto |
@@ -43,6 +51,7 @@ Necesita `deployments/fuji.json` (lo escribe `npm run fuji:deploy`). Si no está
 | `src/wallet.js` | Saca la clave de prueba del QR (`#k=…`) antes de que arranque el router; `judgeKey()` |
 | `src/ui.js` | Logo en línea, íconos, chip de estado, doce cuadros por mes |
 | `src/pages/` | Inicio, Parcela y Actividad (carril 3) |
+| `scripts/snapshot.mjs` | Foto de eventos para la web publicada |
 | `src/aportar/` | Aportar, Mi aporte y Certificados (carril 4): `index.js` registra las rutas |
 
 Para sumar una pantalla: `route("/mi-ruta", (params, state) => html)` en `src/aportar/index.js`. Con `{ live: false }` no se repinta con cada bloque, así no se borra un formulario a medio completar.

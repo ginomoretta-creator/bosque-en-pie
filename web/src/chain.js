@@ -6,7 +6,7 @@
 //   import { store, NET, explorerTx } from "./chain.js";
 //   store.subscribe((s) => render(s));   // s.parcels, s.events, s.error, s.loading
 //   store.start();                       // primera lectura y luego cada POLL_MS
-import { createPublicClient, defineChain, http } from "viem";
+import { createPublicClient, defineChain, http, parseEventLogs } from "viem";
 import { avalancheFuji } from "viem/chains";
 import abi from "../../deployments/BosqueEnPie.abi.json";
 
@@ -37,7 +37,7 @@ const NETS = {
     rpc: import.meta.env.VITE_RPC_URL || "https://api.avax-test.network/ext/bc/C/rpc",
     label: "Red de prueba Fuji",
     explorer: "https://testnet.snowtrace.io",
-    logChunk: 2_000n, // el RPC público limita el rango de eth_getLogs
+    logChunk: 100n, // el RPC público de Fuji deja leer eventos de a 100 bloques (ver snapshot/)
   },
 };
 
@@ -74,15 +74,39 @@ async function readParcels() {
   return raw.map((p, i) => ({ id: ids[i], name: parcelName(ids[i]), ...p, status: Number(p.status) }));
 }
 
+const PARALLEL = 6;
+
+/** Eventos entre dos bloques, en tramos de NET.logChunk y de a PARALLEL pedidos a la vez. */
 async function readLogs(fromBlock, toBlock) {
+  const ranges = [];
+  for (let s = fromBlock; s <= toBlock; s += NET.logChunk) {
+    ranges.push([s, s + NET.logChunk - 1n < toBlock ? s + NET.logChunk - 1n : toBlock]);
+  }
   const out = [];
-  for (let start = fromBlock; start <= toBlock; start += NET.logChunk) {
-    const end = start + NET.logChunk - 1n < toBlock ? start + NET.logChunk - 1n : toBlock;
-    const logs = await client.getContractEvents({ address: deployment.address, abi, fromBlock: start, toBlock: end });
-    out.push(...logs);
+  for (let i = 0; i < ranges.length; i += PARALLEL) {
+    const batch = await Promise.all(
+      ranges
+        .slice(i, i + PARALLEL)
+        .map(([a, b]) => client.getContractEvents({ address: deployment.address, abi, fromBlock: a, toBlock: b })),
+    );
+    out.push(...batch.flat());
   }
   return out;
 }
+
+// Foto de eventos tomada al publicar (web/scripts/snapshot.mjs): la página arranca de ahí y
+// solo pide al RPC los bloques posteriores. Si no hay foto, o es de otro contrato, lee todo.
+const snapshots = import.meta.glob("./snapshot/*.json", { eager: true, import: "default" });
+const snapshot = (() => {
+  const snap = snapshots[`./snapshot/${NETWORK}.json`];
+  if (!snap || !deployment || snap.address.toLowerCase() !== deployment.address.toLowerCase()) return null;
+  const logs = parseEventLogs({
+    abi,
+    logs: snap.logs.map((l) => ({ ...l, blockNumber: BigInt(l.blockNumber), removed: false })),
+  });
+  return { lastBlock: BigInt(snap.lastBlock), logs, takenAt: snap.takenAt };
+})();
+export const snapshotInfo = snapshot ? { lastBlock: snapshot.lastBlock, takenAt: snapshot.takenAt, events: snapshot.logs.length } : null;
 
 const blockTimes = new Map();
 async function addTimestamps(logs) {
@@ -145,7 +169,7 @@ function createStore() {
   const subs = new Set();
   let timer = null;
   let busy = false;
-  let rawEvents = [];
+  let rawEvents = snapshot ? snapshot.logs : [];
 
   const emit = () => subs.forEach((fn) => fn(state));
 
@@ -154,7 +178,8 @@ function createStore() {
     busy = true;
     try {
       const head = await client.getBlockNumber();
-      const from = state.lastBlock === null ? BigInt(deployment.blockNumber || 0) : state.lastBlock + 1n;
+      const start = snapshot ? snapshot.lastBlock + 1n : BigInt(deployment.blockNumber || 0);
+      const from = state.lastBlock === null ? start : state.lastBlock + 1n;
       if (state.lastBlock === null || head > state.lastBlock) {
         const logs = from <= head ? await readLogs(from, head) : [];
         await addTimestamps(logs);

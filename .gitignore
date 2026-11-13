@@ -39,3 +39,5 @@ Thumbs.db
 
 # Caché de recortes Sentinel-2 (se regenera)
 .cache/
+# Foto de eventos que arma el workflow de publicación (web/scripts/snapshot.mjs)
+web/src/snapshot/
