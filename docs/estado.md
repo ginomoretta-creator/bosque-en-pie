@@ -1,49 +1,48 @@
-# Estado del proyecto · jueves 12/11/2026
+# Estado del proyecto · viernes 13/11/2026
 
-Resumen para el equipo. Cierre: **viernes 13/11 a las 09:00**. Repo: https://github.com/ginomoretta-creator/bosque-en-pie · Issues y milestones: pestaña *Issues*. El contexto completo del proyecto está en `CLAUDE.md`.
+Resumen para el equipo. Cierre: **viernes 13/11** (confirmar la hora en la página de la competencia: `CLAUDE.md` dice 09:00). Repo: https://github.com/ginomoretta-creator/bosque-en-pie · El contexto completo está en `CLAUDE.md`.
 
 ## La idea en una línea
 
 Bosque en pie paga cada mes que el monte sigue en pie: el satélite es el testigo y un contrato en Avalanche paga.
 
-## Decisiones tomadas hoy
+## Lo que está andando
 
-- **Cliente:** una empresa con metas ambientales, por ejemplo una minera de la región (sin nombrar empresas reales; en la demo es "empresa de prueba"). En el código el rol sigue siendo "donante".
-- **Cómo paga:** la empresa paga **por adelantado** el compromiso (por ejemplo, 24 cuotas). El contrato paga una cuota **por cada informe verificado** (uno por mes) al dueño (60 %) y al operador (40 %).
-- **Compromiso con plazo (regla 9):** la plata queda bloqueada en la parcela hasta `commitEnd`; no se retira ni se pasa a otra parcela. Al terminar con el monte en pie, cada donante retira el sobrante. En la demo `commitEnd = 0`.
-- **Quien paga no cobra (regla 10):** el dueño y el operador no pueden aportar a su propia parcela.
-- **Token:** el certificado de monte en pie (ERC-1155, 1 token = 1 hectárea-mes). Queda bloqueado hasta el fin del compromiso y congelado si hay desmonte. **Todavía no está implementado** (issue #8).
-- **Carbono:** se muestra como **"bono de carbono (simulación)"**, con las t CO₂e estimadas con factores públicos (IPCC / Inventario Nacional) y siempre con la etiqueta "SIMULACIÓN · no validado". No decir que está validado.
-- **Parcelas:** A, monte en pie (propuesta: Yungas cerca de San Lorenzo, mejor fuera del área protegida). B, un desmonte real de 2025 en el Chaco salteño.
-
-## Hecho (todo en el repo)
-
-| Paso | Estado | Cómo verificarlo |
+| Pieza | Estado | Dónde verlo |
 |---|---|---|
-| 1 · Contrato y pruebas | ✅ `contracts/BosqueEnPie.sol`, reglas 1 a 10 | `npx hardhat test` → 34 pasando |
-| 2 · Firma desde Python | ✅ `oracle/signing.py` | `pytest oracle/tests` → 5 pasando (incluye nodo local) |
-| 3 · Despliegue en Fuji | ⏳ scripts listos y probados en local | falta AVAX de prueba en las billeteras |
-| Pitch | ✅ `docs/pitch-2min.md` | guion de 2 minutos + respuestas al jurado |
-| Diseño | 🟡 `design/mock-v4-standalone.html` (abrir en el navegador) | falta elegir íconos y poner el logo v2 original |
+| Contrato | ✅ Desplegado en Fuji, código verificado en el explorer | `0x5A963552011bDA9EB20305f7EfdE3F7E932801be` · https://testnet.snowtrace.io/address/0x5A963552011bDA9EB20305f7EfdE3F7E932801be |
+| Pruebas | ✅ CI verde en `main` (contrato con Hardhat, oráculo con pytest, build de la web) | pestaña *Actions* |
+| Oráculo | ✅ bosque-v1 sobre Sentinel-2 L2A (Earth Search), firma 2 de 3, envío y repetición del año | `oracle/` |
+| Informes | ✅ 2025 completo de A y B aplicado en el contrato; noviembre 2026 de A listo para enviar en vivo (sin firmar) | `reports/A`, `reports/B` |
+| Web | ✅ Publicada; lee el contrato por RPC publicnode (el oficial queda de respaldo) | https://ginomoretta-creator.github.io/bosque-en-pie/ |
+| QR del jurado | ✅ 5 billeteras con 0,03 AVAX de prueba cada una; flujo probado de punta a punta en la web publicada | hoja local `jurado/hoja-qr-fuji.html` (no se sube) |
+| Certificados | ✅ ERC-1155, 1 unidad = 1 hectárea-mes; acuñar, transferir y retirar desde la web | pantalla *Certificados* |
 
-Billeteras de prueba: direcciones en `deployments/addresses-fuji.md`. Las claves están solo en el `.env` de Gino; si alguien las necesita, se pasan por privado, nunca por el repo ni por el grupo.
+## Qué muestra la demo
+
+- **Parcela A (101 ha):** en pie todo 2025. 11 de 12 cuotas pagadas; marzo sin informe por nubes (menos de 60 % visible).
+- **Parcela B (84 ha):** en pie hasta julio, en revisión en agosto (86,3 %), desmontada en septiembre (1,4 %). Pagos cortados desde ahí; el saldo vuelve a los donantes o queda para restaurar, según lo que eligió cada uno.
+- **Evidencia:** cada informe muestra la imagen, las firmas y el keccak256 de `evidence.json` calculado en el navegador, que coincide con el que guarda el contrato.
+- **Acción en vivo:** aportar con una billetera del QR y ver la transacción en Snowtrace. Opcional: enviar el informe de noviembre 2026 de A.
+
+## Decisiones vigentes
+
+- **Cliente:** una empresa con metas ambientales (sin nombrar empresas reales). En el código el rol es «donante».
+- **Pago:** por adelantado; el contrato paga una cuota por cada informe verificado al dueño (60 %) y al operador (40 %).
+- **Certificado de monte en pie:** cuenta hectáreas-mes, no carbono. Nunca llamarlo «bono».
+- **Carbono:** solo como estimación informativa en `reports/*/*/carbono.json`, con la etiqueta «SIMULACIÓN · no validado». No se muestra en la web.
+- **Parámetros de la demo:** `challengeWindow = 0`, `maxObsAge = 0`, `commitEnd = 0`; los tres verificadores son del equipo. Se dice en el pitch.
 
 ## Pendiente y quién
 
-**Gino (bloquea al resto):**
-- Cargar AVAX de Fuji en el curador `0x4672987D452ff25B2ad1a55153854225A12CB96b` y el relayer `0xd298C86F22D85f7fcE77fd38e0941687484b76AC` (faucet: https://core.app/tools/testnet-faucet).
-- Dibujar las parcelas A y B en GeoJSON (`parcels/A.geojson`, `parcels/B.geojson`) y anotar las hectáreas en `parcels/registry.json`.
-- Pasar el logo v2 en SVG (Figma → clic derecho → Copiar como SVG).
-- Elegir el estilo de íconos en `design/icon-options.html` (A emoji 3D, B emoji a color, C emoji plano, D línea).
-
-**Para repartir:**
-- Paso 4 · Algoritmo: `oracle/cover.py` (bosque-v1) con pruebas, `oracle/s2.py` (Earth Search), calibración con 2025, estimación de carbono (#16, #17, #18, #36).
-- Paso 5 · Informes: `make_report.py`, `relay.py`, `replay.py` (#19 a #22).
-- Paso 6 · Web: Vite + viem + Leaflet sobre el mock v4; publicarla para los QR (#24 a #30).
-- Certificados ERC-1155 en el contrato (#8) y su pantalla (#28): lo primero que se recorta si falta tiempo.
-- Entrega: slides de 5 a 7 (con "por qué blockchain"), video de 1 a 3 minutos, README final y carga en la competencia (#31 a #34).
+- **Decidir cuándo se usa el informe de noviembre 2026 de A.** Se puede enviar una sola vez: el contrato exige 20 días entre imágenes (`minInterval`). Si el pitch es en vivo, guardarlo para ahí. Para enviarlo, `FUJI_RPC_URL` tiene que apuntar a publicnode.
+- **Ensayo de punta a punta** (#40).
+- **Video de 1 a 3 minutos** (#33): la base del guion está en `docs/pitch-2min.md`; la acción en el contrato tiene que verse en Snowtrace.
+- **Slides:** pasar `docs/slides.md` a 6 diapositivas, con la de «por qué blockchain».
+- **Entregar en la competencia** (#34): link al contrato en el explorer, video, slides y repo.
 
 ## Notas
 
-- La cuenta de Figma de Gino tiene asiento View: no se puede editar por el conector. Quien tenga plan pago puede pasar el mock v4 al Figma; cada pantalla lista qué componentes usa.
-- Atribución obligatoria en README y slides: "Contiene datos Copernicus Sentinel modificados, 2024 y 2025".
+- Las claves privadas están solo en el `.env` local; nunca en el repo, las issues ni el grupo.
+- El texto de atribución dentro de `reports/A/2026-11/evidence.json` dice «2024 y 2025»: no se toca, porque ese archivo es lo que se firma y su hash va al contrato.
+- Atribución obligatoria en README y slides: «Contiene datos Copernicus Sentinel modificados, 2024, 2025 y 2026».
